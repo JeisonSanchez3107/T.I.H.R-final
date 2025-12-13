@@ -30,6 +30,7 @@ urlpatterns = [
     path('obtener-pedidos-cliente/<int:cliente_id>/', views.obtener_pedidos_cliente_view, name='obtener_pedidos_cliente'),
     path('actualizar-estado-pedido/<int:pedido_id>/', csrf_exempt(views.actualizar_estado_pedido_view), name='actualizar_estado_pedido'),
     path('estadisticas/', views.estadisticas_view, name='estadisticas'),
+    path('estadisticas/pdf/', views.descargar_estadisticas_pdf, name='descargar_estadisticas_pdf'),
     path('inventario/', views.inventario_view, name='inventario'),
     path('actualizar-inventario/', csrf_exempt(views.actualizar_inventario_view), name='actualizar_inventario'),
     path('contactar-usuario-idea/<int:idea_id>/', csrf_exempt(views.contactar_usuario_idea), name='contactar_usuario_idea'),

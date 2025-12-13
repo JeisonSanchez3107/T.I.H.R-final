@@ -30,7 +30,7 @@ def empresa_login_required(view_func):
     return wrapper
 
 # Importar vistas adicionales
-from .views_estadisticas import estadisticas_view, inventario_view, actualizar_inventario_view
+from .views_estadisticas import estadisticas_view, inventario_view, actualizar_inventario_view, descargar_estadisticas_pdf
 
 # Vista para registro de empresas simplificado
 def registro_empresa_view(request):

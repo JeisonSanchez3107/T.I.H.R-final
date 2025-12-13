@@ -49,9 +49,14 @@
         <main>
             <header>
                 <h1><i class="fas fa-chart-line"></i> Estadísticas del Negocio</h1>
-                <button class="btn-refresh" onclick="actualizarEstadisticas()">
-                    <i class="fas fa-sync-alt"></i> Actualizar
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-refresh" onclick="actualizarEstadisticas()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <button class="btn-download" onclick="descargarEstadisticas()">
+                        <i class="fas fa-file-pdf"></i> Descargar PDF
+                    </button>
+                </div>
             </header>
 
             <!-- Tarjetas de Estadísticas Principales -->
@@ -462,6 +467,24 @@ function actualizarNotificacionesEmpresa() {
 document.addEventListener('DOMContentLoaded', function() {
     setInterval(actualizarNotificacionesEmpresa, 30000);
 });
+
+// Función para descargar estadísticas en PDF
+function descargarEstadisticas() {
+    // Mostrar mensaje de que se está generando el PDF
+    const btn = event.target.closest('button');
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando PDF...';
+    
+    // Redirigir a la URL de descarga del PDF
+    window.location.href = '/empresa/estadisticas/pdf/';
+    
+    // Restaurar el botón después de 3 segundos
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }, 3000);
+}
 </script>
 
 </body>

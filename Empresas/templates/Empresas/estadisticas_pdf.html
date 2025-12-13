@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Estadísticas</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #A0662F;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #A0662F;
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .header p {
+            color: #666;
+            margin: 10px 0 0 0;
+            font-size: 12px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .section h2 {
+            color: #4A3428;
+            border-left: 5px solid #A0662F;
+            padding-left: 15px;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .stats-grid {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .stat-row {
+            display: table-row;
+        }
+        
+        .stat-cell {
+            display: table-cell;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            width: 50%;
+            vertical-align: top;
+        }
+        
+        .stat-cell h3 {
+            color: #A0662F;
+            margin: 0 0 8px 0;
+            font-size: 14px;
+        }
+        
+        .stat-cell .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4A3428;
+            margin: 5px 0;
+        }
+        
+        .stat-cell .label {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .category-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .category-table th {
+            background-color: #A0662F;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+        
+        .category-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 12px;
+        }
+        
+        .category-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .chart-container {
+            text-align: center;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid #A0662F;
+            text-align: center;
+            color: #666;
+            font-size: 11px;
+        }
+        
+        .highlight {
+            background-color: #FFF3E0;
+            padding: 15px;
+            border-left: 4px solid #FF9800;
+            margin: 15px 0;
+        }
+        
+        .highlight .amount {
+            font-size: 28px;
+            font-weight: bold;
+            color: #E65100;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 REPORTE DE ESTADÍSTICAS</h1>
+        <p>Tu Idea Hecha Realidad - Gangazos</p>
+        <p>Fecha de generación: {{ fecha_generacion }}</p>
+    </div>
+
+    <!-- Resumen General -->
+    <div class="section">
+        <h2>Resumen General</h2>
+        <div class="stats-grid">
+            <div class="stat-row">
+                <div class="stat-cell">
+                    <h3>👥 Usuarios Totales</h3>
+                    <div class="number">{{ total_usuarios }}</div>
+                    <div class="label">{{ usuarios_activos }} activos</div>
+                </div>
+                <div class="stat-cell">
+                    <h3>📦 Productos</h3>
+                    <div class="number">{{ total_productos }}</div>
+                    <div class="label">{{ total_inventario }} unidades en total</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell">
+                    <h3>🛒 Pedidos Totales</h3>
+                    <div class="number">{{ total_pedidos }}</div>
+                    <div class="label">{{ pedidos_entregado }} entregados</div>
+                </div>
+                <div class="stat-cell">
+                    <h3>💰 Ingresos Totales</h3>
+                    <div class="number">${{ ingresos_totales|floatformat:2 }}</div>
+                    <div class="label">Pagos confirmados</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingresos Destacados -->
+    <div class="highlight">
+        <p style="margin: 0; font-size: 14px; color: #666;">Total de Ingresos Confirmados</p>
+        <div class="amount">${{ ingresos_totales|floatformat:2 }} COP</div>
+    </div>
+
+    <!-- Productos por Categoría -->
+    <div class="section">
+        <h2>Productos por Categoría</h2>
+        <table class="category-table">
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th style="text-align: center;">Productos</th>
+                    <th style="text-align: center;">Unidades Disponibles</th>
+                    <th style="text-align: right;">% del Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>🪑 Mesas</td>
+                    <td style="text-align: center;">{{ total_mesas }}</td>
+                    <td style="text-align: center;">{{ inventario_mesas }}</td>
+                    <td style="text-align: right;">{% widthratio total_mesas total_productos|default:1 100 %}%</td>
+                </tr>
+                <tr>
+                    <td>💺 Sillas</td>
+                    <td style="text-align: center;">{{ total_sillas }}</td>
+                    <td style="text-align: center;">{{ inventario_sillas }}</td>
+                    <td style="text-align: right;">{% widthratio total_sillas total_productos|default:1 100 %}%</td>
+                </tr>
+                <tr>
+                    <td>🚪 Armarios</td>
+                    <td style="text-align: center;">{{ total_armarios }}</td>
+                    <td style="text-align: center;">{{ inventario_armarios }}</td>
+                    <td style="text-align: right;">{% widthratio total_armarios total_productos|default:1 100 %}%</td>
+                </tr>
+                <tr>
+                    <td>📦 Cajoneras</td>
+                    <td style="text-align: center;">{{ total_cajoneras }}</td>
+                    <td style="text-align: center;">{{ inventario_cajoneras }}</td>
+                    <td style="text-align: right;">{% widthratio total_cajoneras total_productos|default:1 100 %}%</td>
+                </tr>
+                <tr>
+                    <td>🖥️ Escritorios</td>
+                    <td style="text-align: center;">{{ total_escritorios }}</td>
+                    <td style="text-align: center;">{{ inventario_escritorios }}</td>
+                    <td style="text-align: right;">{% widthratio total_escritorios total_productos|default:1 100 %}%</td>
+                </tr>
+                <tr>
+                    <td>🍴 Utensilios</td>
+                    <td style="text-align: center;">{{ total_utensilios }}</td>
+                    <td style="text-align: center;">{{ inventario_utensilios }}</td>
+                    <td style="text-align: right;">{% widthratio total_utensilios total_productos|default:1 100 %}%</td>
+                </tr>
+                <tr style="background-color: #FFF3E0; font-weight: bold;">
+                    <td>TOTAL</td>
+                    <td style="text-align: center;">{{ total_productos }}</td>
+                    <td style="text-align: center;">{{ total_inventario }}</td>
+                    <td style="text-align: right;">100%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="chart-container">
+            <img src="data:image/png;base64,{{ grafica1 }}" alt="Gráfica de Productos por Categoría">
+            <p style="color: #666; font-size: 12px; margin-top: 10px;">Distribución de Productos por Categoría</p>
+        </div>
+    </div>
+
+    <!-- Estado de Pedidos -->
+    <div class="section" style="page-break-before: always;">
+        <h2>Estado de Pedidos</h2>
+        <div class="stats-grid">
+            <div class="stat-row">
+                <div class="stat-cell">
+                    <h3>⏳ Procesando</h3>
+                    <div class="number">{{ pedidos_procesando }}</div>
+                    <div class="label">{% widthratio pedidos_procesando total_pedidos|default:1 100 %}% del total</div>
+                </div>
+                <div class="stat-cell">
+                    <h3>🚚 Enviado</h3>
+                    <div class="number">{{ pedidos_enviado }}</div>
+                    <div class="label">{% widthratio pedidos_enviado total_pedidos|default:1 100 %}% del total</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell">
+                    <h3>✅ Entregado</h3>
+                    <div class="number">{{ pedidos_entregado }}</div>
+                    <div class="label">{% widthratio pedidos_entregado total_pedidos|default:1 100 %}% del total</div>
+                </div>
+                <div class="stat-cell">
+                    <h3>📊 Total</h3>
+                    <div class="number">{{ total_pedidos }}</div>
+                    <div class="label">Todos los pedidos</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <img src="data:image/png;base64,{{ grafica2 }}" alt="Gráfica de Estado de Pedidos">
+            <p style="color: #666; font-size: 12px; margin-top: 10px;">Distribución de Pedidos por Estado</p>
+        </div>
+    </div>
+
+    <!-- Estado de Pagos -->
+    <div class="section">
+        <h2>Estado de Pagos</h2>
+        <div class="stats-grid">
+            <div class="stat-row">
+                <div class="stat-cell">
+                    <h3>⏰ Pendientes</h3>
+                    <div class="number">{{ pagos_pendientes }}</div>
+                    <div class="label">En espera de confirmación</div>
+                </div>
+                <div class="stat-cell">
+                    <h3>✔️ Confirmados</h3>
+                    <div class="number">{{ pagos_confirmados }}</div>
+                    <div class="label">Pagos aprobados</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-cell">
+                    <h3>❌ Rechazados</h3>
+                    <div class="number">{{ pagos_rechazados }}</div>
+                    <div class="label">Pagos no aprobados</div>
+                </div>
+                <div class="stat-cell">
+                    <h3>💵 Ingresos</h3>
+                    <div class="number">${{ ingresos_totales|floatformat:2 }}</div>
+                    <div class="label">Total confirmado</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <img src="data:image/png;base64,{{ grafica3 }}" alt="Gráfica de Estado de Pagos">
+            <p style="color: #666; font-size: 12px; margin-top: 10px;">Distribución de Pagos por Estado</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Este reporte fue generado automáticamente el {{ fecha_generacion }}</p>
+        <p>Tu Idea Hecha Realidad - Gangazos © {{ fecha_generacion|slice:":4" }}</p>
+    </div>
+</body>
+</html>
