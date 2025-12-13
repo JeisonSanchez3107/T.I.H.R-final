@@ -1,0 +1,55 @@
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #4A3428;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e0e6ec;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #A0662F;
+}
+
+.badge-procesando {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.badge-empacado {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.badge-enviado {
+    background-color: #f5e6d3;
+    color: #7A3E0E;
+}
+
+.badge-en_transito {
+    background-color: #e2d9f3;
+    color: #432874;
+}
+
+.badge-entregado {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.badge-cancelado {
+    background-color: #f8d7da;
+    color: #721c24;
+}

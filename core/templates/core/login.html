@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Inicia sesión en Tu Idea Hecha Realidad. Accede a tu cuenta para comprar muebles artesanales, gestionar tus pedidos y descubrir gangazos exclusivos.">
+    <meta name="keywords" content="login, iniciar sesión, cuenta usuario, muebles artesanales, tu idea hecha realidad, gangazos">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Iniciar Sesión - Tu Idea Hecha Realidad">
+    <meta property="og:description" content="Accede a tu cuenta para comprar muebles artesanales y gestionar tus pedidos.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/StylesLogin.css' %}">
+</head>
+<body class="landing-page">
+
+    <div class="login-container">
+        <form class="form" method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <h1>Iniciar Sesión</h1>
+            
+            {% if error_message %}
+                <div class="message error">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="input-group">
+                <input type="text"
+                       name="usernameCliente"
+                       placeholder="Nombre de usuario"
+                       required
+                       value="{{ request.POST.usernameCliente|default:'' }}">
+            </div>
+
+            <div class="input-group">
+                <input type="password"
+                       name="passwordCliente"
+                       placeholder="Contraseña"
+                       required
+                       id="password">
+            </div>
+            
+            <button type="submit" class="btn btn-registrar">
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <div class="register-link">
+            ¿No tienes cuenta? <a href="{% url 'registro' %}">Regístrate</a>
+            <br>
+            <br>
+            <a href="{% url 'home' %}"> <-- Volver a la página principal</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Verificación de seguridad empresarial mediante autenticación de dos factores.">
+    <meta name="keywords" content="verificación 2FA empresa, código seguridad, autenticación empresa">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Verificación 2FA - Empresa">
+    <meta property="og:description" content="Verifica tu identidad empresarial.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Verificación 2FA - Empresa</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/StylesLogin.css' %}">
+    <style>
+        .instructions {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            border-left: 4px solid #A0662F;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <form class="form" method="POST">
+            {% csrf_token %}
+            
+            <h1>Verificación 2FA</h1>
+            <p style="text-align: center; color: #666; margin-bottom: 10px;">
+                <strong>Cuenta Empresa</strong>
+            </p>
+            
+            <div class="instructions">
+                <p><strong>Abre tu app de autenticación</strong></p>
+                <p>Ingresa el código de 6 dígitos generado por la aplicación</p>
+            </div>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="input-group">
+                <label for="codigo">Código de Verificación:</label>
+                <input type="text"
+                       name="codigo"
+                       id="codigo"
+                       placeholder="000000"
+                       required
+                       maxlength="6"
+                       pattern="[0-9]{6}"
+                       autofocus
+                       style="text-align: center; font-size: 32px; letter-spacing: 8px; font-weight: bold;">
+            </div>
+            
+            <button type="submit" class="btn">
+                Verificar
+            </button>
+        </form>
+
+        <div class="register-link">
+            <a href="{% url 'loginEmpresa_login' %}">Volver al inicio de sesión</a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-enviar cuando se ingresan 6 dígitos
+        document.getElementById('codigo').addEventListener('input', function(e) {
+            // Solo permitir números
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            if (this.value.length === 6) {
+                this.form.submit();
+            }
+        });
+    </script>
+</body>
+</html>
+

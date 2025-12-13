@@ -1,0 +1,357 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: transparent; /* Fondo transparente para el body */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* --- Estilos de la Barra de Navegación (completa el ancho de la página) --- */
+.navbar {
+    background-color: #A0662F; /* Marrón para la barra de navegación */
+    align-items: center;
+    padding: 25px 0; /* Padding vertical */
+    color: black;
+    width: 100%; /* La barra de navegación ocupa el 100% del ancho del viewport */
+    box-sizing: border-box; /* Incluye padding en el ancho total */
+    /* La sombra se moverá al .page-container si queremos que el cuadro la tenga */
+}
+
+.navbar nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start; /* Alinear los elementos a la izquierda */
+    align-items: center;
+    padding-left: 50px; /* Espacio a la izquierda para los enlaces */
+    padding-right: 50px; /* Añadir padding a la derecha también */
+}
+
+.navbar nav ul li {
+    margin: 0 25px; /* Espacio entre los elementos del menú */
+}
+
+.navbar nav ul li a {
+    color: white; /* Texto blanco para los enlaces */
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 1.15em; /* Letras un poco más grandes */
+    padding: 5px 0;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.navbar nav ul li a:hover {
+    color: #f0f0f0;
+    border-bottom: 2px solid #fff;
+}
+
+.cart-button {
+    margin-left: auto; /* Empuja el botón del carrito a la derecha */
+    margin-right: 0; /* Ajustar margen para que esté alineado con el padding de la nav */
+    font-size: 1.4em; /* Un poco más grande para que escale con la barra */
+    display: flex;
+    align-items: center;
+    padding: 5px 12px; /* Más padding para el botón */
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.cart-button a {
+    color: rgb(45, 113, 158) !important;
+    text-decoration: none;
+    border-bottom: none !important;
+}
+
+.cart-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Estilos del Contenedor Principal (el "cuadro" centrado) --- */
+.page-container {
+    background-color: white; /* El color blanco del cuadro principal */
+    border-radius: 12px; /* Mantenemos los bordes redondeados */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra pronunciada */
+    width: 90%; /* Ancho base del contenedor */
+    max-width: 960px; /* Límite de ancho para el centrado */
+    margin: 20px auto; /* Centra el cuadro horizontalmente y le da margen superior/inferior */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Permite que el contenedor crezca y ocupe el espacio disponible */
+    box-sizing: border-box;
+    /* Este contenedor ahora actúa como el "cuadro" que está centrado */
+}
+
+.shopping-cart-content {
+    padding: 50px 80px; /* Más padding para el contenido interno del carrito */
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.shopping-cart-content h1 {
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 2.5em; /* Título aún más grande */
+}
+
+.empty-cart-message {
+    padding: 60px; /* Más padding */
+    border: 1px dashed #0c0c0c;
+    border-radius: 8px;
+    color: #666;
+    font-size: 1.2em; /* Letras más grandes en el mensaje */
+    width: 80%;
+    max-width: 500px; /* Ancho máximo para el mensaje */
+    margin-top: 30px;
+    box-sizing: border-box;
+}
+
+.btn-add-products {
+    display: inline-block;
+    background-color: #6B8E23;
+    color: rgb(0, 0, 0);
+    padding: 15px 30px; /* Botón más grande */
+    border-radius: 5px;
+    text-decoration: none;
+    margin-top: 40px; /* Más espacio sobre el botón */
+    font-weight: bold;
+    font-size: 1.1em; /* Letras del botón un poco más grandes */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-add-products:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 768px) {
+    .navbar nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .navbar nav ul li {
+        margin: 8px 12px;
+    }
+
+    .cart-button {
+        margin-left: auto; /* Mantener empujado a la derecha */
+        margin-right: 15px; /* Un poco de margen en móvil */
+        width: auto;
+        justify-content: flex-end;
+    }
+
+    .page-container {
+        width: 95%; /* Un poco más de ancho en pantallas pequeñas */
+        margin: 10px auto; /* Ajuste de margen para móvil */
+        border-radius: 8px; /* Reducir borde radius en móvil */
+    }
+
+    .shopping-cart-content {
+        padding: 30px 15px;
+    }
+
+    .shopping-cart-content h1 {
+        font-size: 2em;
+    }
+
+    .empty-cart-message {
+        padding: 40px;
+        width: 95%;
+        color: black
+    }
+}
+.a{
+    color: black;
+}
+
+/* ============================================
+   MEDIA QUERIES RESPONSIVAS ADICIONALES
+   ============================================ */
+
+/* Tablets */
+@media screen and (max-width: 1366px) and (min-width: 768px) {
+    .navbar {
+        padding: 20px 0;
+    }
+
+    .navbar nav ul {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .navbar nav ul li {
+        margin: 0 20px;
+    }
+
+    .navbar nav ul li a {
+        font-size: 1.1em;
+    }
+
+    .page-container {
+        width: 92%;
+        max-width: 900px;
+    }
+
+    .shopping-cart-content {
+        padding: 40px 60px;
+    }
+
+    .shopping-cart-content h1 {
+        font-size: 2.2em;
+    }
+}
+
+/* Móviles adicionales */
+@media screen and (max-width: 767px) {
+    .navbar {
+        padding: 15px 0;
+    }
+
+    .navbar nav ul {
+        flex-direction: column;
+        padding: 0 15px;
+        gap: 10px;
+    }
+
+    .navbar nav ul li {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .navbar nav ul li a {
+        font-size: 1rem;
+        display: block;
+        padding: 10px;
+    }
+
+    .cart-button {
+        margin: 10px auto 0;
+        justify-content: center;
+        width: auto;
+    }
+
+    .page-container {
+        width: 95%;
+        margin: 15px auto;
+        border-radius: 10px;
+    }
+
+    .shopping-cart-content {
+        padding: 25px 15px;
+    }
+
+    .shopping-cart-content h1 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+
+    .empty-cart-message {
+        padding: 30px 20px;
+        width: 100%;
+        font-size: 1rem;
+        margin-top: 20px;
+    }
+
+    .btn-add-products {
+        padding: 12px 25px;
+        font-size: 1rem;
+        margin-top: 30px;
+    }
+}
+
+/* Móviles pequeños */
+@media screen and (max-width: 480px) {
+    .navbar {
+        padding: 12px 0;
+    }
+
+    .navbar nav ul li a {
+        font-size: 0.95rem;
+        padding: 8px;
+    }
+
+    .shopping-cart-content {
+        padding: 20px 12px;
+    }
+
+    .shopping-cart-content h1 {
+        font-size: 1.6em;
+        margin-bottom: 18px;
+    }
+
+    .empty-cart-message {
+        padding: 25px 15px;
+        font-size: 0.95rem;
+    }
+
+    .btn-add-products {
+        padding: 11px 20px;
+        font-size: 0.95rem;
+        margin-top: 25px;
+    }
+}
+
+/* Pantallas grandes */
+@media screen and (min-width: 1367px) {
+    .page-container {
+        max-width: 1200px;
+    }
+
+    .shopping-cart-content {
+        padding: 60px 100px;
+    }
+}
+
+/* Orientación horizontal */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .navbar {
+        padding: 10px 0;
+    }
+
+    .shopping-cart-content {
+        padding: 25px 40px;
+    }
+
+    .shopping-cart-content h1 {
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+
+    .empty-cart-message {
+        padding: 30px;
+        margin-top: 20px;
+    }
+}
+
+/* Dispositivos táctiles */
+@media (hover: none) and (pointer: coarse) {
+    .navbar nav ul li a,
+    .btn-add-products {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .cart-button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}

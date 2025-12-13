@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Regístrate en Tu Idea Hecha Realidad. Crea tu cuenta para comprar muebles artesanales colombianos, publicar ideas y acceder a ofertas exclusivas.">
+    <meta name="keywords" content="registro, crear cuenta, nuevos usuarios, muebles artesanales, tu idea hecha realidad">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Registro - Tu Idea Hecha Realidad">
+    <meta property="og:description" content="Crea tu cuenta para comprar muebles artesanales y publicar tus ideas.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Registro</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/StylesRegistro.css' %}">
+</head>
+<body class="landing-page">
+
+    <div class="container">
+        <form class="form-glass" method="POST" id="registerForm">
+            {% csrf_token %}
+            <h2>Registro</h2>
+
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if form.errors %}
+                <div class="messages">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <div class="alert alert-error" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #dc3545;">
+                                <strong>{% if field == 'usernameCliente' %}Nombre de usuario{% elif field == 'email' %}Correo{% else %}{{ field }}{% endif %}:</strong> {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="input-group">
+                <input type="text"
+                       name="usernameCliente"
+                       placeholder="Crear nombre de usuario"
+                       required
+                       pattern="[a-zA-Z0-9_]+"
+                       title="Solo letras, números y guiones bajos"
+                       value="{{ request.POST.usernameCliente|default:'' }}">
+            </div>
+
+            <div class="input-group">
+                <input type="email"
+                       name="email"
+                       placeholder="Email (solo Gmail)"
+                       required
+                       pattern="[a-zA-Z0-9._%+-]+@gmail\.com$"
+                       title="Solo se permiten correos de Gmail"
+                       value="{{ request.POST.email|default:'' }}">
+            </div>
+
+            <div class="input-group">
+                <input type="password"
+                       name="passwordCliente"
+                       placeholder="Contraseña (mínimo 8 caracteres)"
+                       required
+                       minlength="8"
+                       id="password"
+                       title="La contraseña debe tener al menos 8 caracteres">
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                Registrarse
+            </button>
+
+            <div class="login-link">
+                ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+                <br>
+                <br>
+                <a href="{% url 'home' %}">Volver a la página principal</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

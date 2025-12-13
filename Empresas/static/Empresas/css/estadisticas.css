@@ -1,0 +1,372 @@
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+[data-animate="fade-in"].animated {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+[data-animate="slide-up"].animated {
+    animation: slideUp 0.8s ease-out forwards;
+}
+
+[data-animate="zoom-in"].animated {
+    animation: zoomIn 0.5s ease-out forwards;
+}
+
+[data-animate="bounce-in"].animated {
+    animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+[data-animate] {
+    opacity: 0;
+}
+
+/* Header con botón de actualizar */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+header h1 {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 0;
+    color: #4A3428;
+    font-size: 2rem;
+}
+
+header h1 i {
+    color: #A0662F;
+}
+
+.btn-refresh {
+    background: white;
+    color: #A0662F;
+    border: 2px solid #A0662F;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(160, 102, 47, 0.15);
+}
+
+.btn-refresh:hover {
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(160, 102, 47, 0.3);
+    border-color: #7A3E0E;
+}
+
+.btn-refresh:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(160, 102, 47, 0.2);
+}
+
+.btn-refresh i {
+    transition: transform 0.5s ease;
+    font-size: 16px;
+}
+
+.btn-refresh:hover i {
+    transform: rotate(180deg);
+}
+
+/* Barras de progreso */
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1.5s ease-out;
+    animation: progressAnimation 2s ease-out;
+}
+
+@keyframes progressAnimation {
+    from { width: 0; }
+}
+
+.usuarios-fill {
+    background: linear-gradient(90deg, #4169E1, #6495ED);
+}
+
+.productos-fill {
+    background: linear-gradient(90deg, #A0662F, #C9A882);
+}
+
+.pedidos-fill {
+    background: linear-gradient(90deg, #32CD32, #90EE90);
+}
+
+.ingresos-fill {
+    background: linear-gradient(90deg, #FFD700, #FFA500);
+}
+
+/* Mini barras de progreso para categorías */
+.mini-progress {
+    width: 100%;
+    height: 4px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.mini-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #A0662F, #7A3E0E);
+    border-radius: 4px;
+    transition: width 1.5s ease-out 0.5s;
+    animation: progressAnimation 2s ease-out 0.5s;
+}
+
+/* Barras de estado */
+.estado-bar {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.estado-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1.5s ease-out 0.8s;
+    animation: progressAnimation 2s ease-out 0.8s;
+}
+
+.procesando-fill {
+    background: linear-gradient(90deg, #FFA500, #FFD700);
+}
+
+.enviado-fill {
+    background: linear-gradient(90deg, #4169E1, #6495ED);
+}
+
+.entregado-fill {
+    background: linear-gradient(90deg, #32CD32, #90EE90);
+}
+
+.pendiente-fill {
+    background: linear-gradient(90deg, #FFA500, #FFD700);
+}
+
+.confirmado-fill {
+    background: linear-gradient(90deg, #32CD32, #90EE90);
+}
+
+.rechazado-fill {
+    background: linear-gradient(90deg, #DC3545, #FF6B6B);
+}
+
+/* Containers para gráficos */
+.chart-container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+    height: 300px;
+}
+
+.chart-container-small {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    height: 250px;
+}
+
+/* Efectos hover mejorados */
+.stat-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.stat-icon {
+    transition: all 0.3s ease;
+}
+
+.categoria-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.categoria-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+.categoria-item:hover .categoria-icon {
+    transform: scale(1.2) rotate(-5deg);
+}
+
+.categoria-icon {
+    transition: all 0.3s ease;
+}
+
+.estado-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.estado-item:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+.estado-item i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.estado-item.procesando i {
+    color: #FFA500;
+}
+
+.estado-item.enviado i {
+    color: #4169E1;
+}
+
+.estado-item.entregado i {
+    color: #32CD32;
+}
+
+.estado-item.pendiente i {
+    color: #FFA500;
+}
+
+.estado-item.confirmado i {
+    color: #32CD32;
+}
+
+.estado-item.rechazado i {
+    color: #DC3545;
+}
+
+/* Estilos de refuerzo para asegurar visibilidad de números */
+.stat-number {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: #003366 !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+}
+
+.categoria-cantidad {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: #003366 !important;
+    display: block !important;
+    margin: 0.5rem 0 !important;
+}
+
+.estado-numero {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: #003366 !important;
+    display: block !important;
+    margin: 0 !important;
+}
+
+.stat-label {
+    font-size: 0.875rem !important;
+    color: #627d98 !important;
+    display: block !important;
+}
+
+.categoria-nombre {
+    font-size: 0.875rem !important;
+    color: #627d98 !important;
+    font-weight: 600 !important;
+    margin: 0.5rem 0 !important;
+}
+
+.estado-label {
+    font-size: 0.875rem !important;
+    color: #627d98 !important;
+    font-weight: 600 !important;
+}

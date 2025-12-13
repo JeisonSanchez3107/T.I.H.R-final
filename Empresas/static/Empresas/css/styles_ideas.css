@@ -1,0 +1,136 @@
+/* Estilos específicos para ideas */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-primary {
+    background-color: #A0662F;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #7A3E0E;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(160, 102, 47, 0.3);
+}
+
+.btn-info {
+    background-color: #A0662F;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #7A3E0E;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(160, 102, 47, 0.3);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.idea-actions {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+/* Botones para ver imagen y modelo 3D */
+.idea-media-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.idea-media-buttons .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+}
+
+.fecha {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
+}
+
+.estado {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.alert {
+    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.ideas-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.ideas-section h3 {
+    font-size: 1.3rem;
+    color: #2b3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e0e6ec;
+}
+
+.no-ideas {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Estado específicos */
+.idea-card.pendiente .estado {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.idea-card.en-proceso .estado {
+    background-color: #f5e6d3;
+    color: #7A3E0E;
+}
+
+.idea-card.completada .estado {
+    background-color: #d4edda;
+    color: #155724;
+}

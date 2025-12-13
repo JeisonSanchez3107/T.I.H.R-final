@@ -1,0 +1,47 @@
+from django.urls import path, include
+from django.views.decorators.csrf import csrf_exempt
+from . import views
+
+urlpatterns = [
+    # Registro y autenticación de empresas (registro como página principal)
+    path('', views.registro_empresa_view, name='registro_empresa'),
+    path('registro/', views.registro_empresa_view, name='registro_empresa_alt'),
+    path('login/', views.login_empresa_view, name='login_empresa'),
+    path('configurar-2fa/', views.configurar_2fa_empresa_view, name='configurar_2fa_empresa'),
+    path('verificar-2fa-login/', views.verificar_2fa_empresa_login, name='verificar_2fa_empresa_login'),
+    
+    path('dashboardEmpresa/',views.Dasboard_view,name='dashboardEmpresa'),
+    path('GestiProductos/',views.GestionarProductos_view,name='GestiProductos'),
+    path('agregar_producto2/', views.agregar_producto_view2, name='agregar_producto2'),
+    path('editar_producto2/<str:categoria>/<int:producto_id>/', views.editar_producto_view2, name='editar_producto2'),
+    path('eliminar_producto/<str:categoria>/<int:producto_id>/', views.eliminar_producto_view2, name='eliminar_producto2'),
+    path("ideas/", views.empresa_ideas_view, name="empresa_ideas"),
+    path("idea/imagen/<int:idea_id>/", views.ver_imagen_idea, name="ver_imagen_idea"),
+    path("idea/modelo3d/<int:idea_id>/", views.ver_modelo_3d_idea, name="ver_modelo_3d_idea"),
+    path('usuarios/', views.usuarios_view, name='usuarios'),
+    path('toggle-user-status/<int:user_id>/<str:user_type>/<str:action>/', csrf_exempt(views.toggle_user_status), name='toggle_user_status'),
+    path('update-user/', csrf_exempt(views.update_user), name='update_user'),
+    path('csrf_token/', views.get_csrf_token, name='get_csrf_token'),
+    path('gestion-pagos/', views.gestion_pagos_view, name='gestion_pagos'),
+    path('obtener-pagos-cliente/<int:cliente_id>/', views.obtener_pagos_cliente_view, name='obtener_pagos_cliente'),
+    path('confirmar-pago/<int:pago_id>/', csrf_exempt(views.confirmar_pago_view), name='confirmar_pago'),
+    path('rechazar-pago/<int:pago_id>/', csrf_exempt(views.rechazar_pago_view), name='rechazar_pago'),
+    path('gestion-pedidos/', views.gestion_pedidos_view, name='gestion_pedidos'),
+    path('obtener-pedidos-cliente/<int:cliente_id>/', views.obtener_pedidos_cliente_view, name='obtener_pedidos_cliente'),
+    path('actualizar-estado-pedido/<int:pedido_id>/', csrf_exempt(views.actualizar_estado_pedido_view), name='actualizar_estado_pedido'),
+    path('estadisticas/', views.estadisticas_view, name='estadisticas'),
+    path('inventario/', views.inventario_view, name='inventario'),
+    path('actualizar-inventario/', csrf_exempt(views.actualizar_inventario_view), name='actualizar_inventario'),
+    path('contactar-usuario-idea/<int:idea_id>/', csrf_exempt(views.contactar_usuario_idea), name='contactar_usuario_idea'),
+    path('solicitar-permiso-publicacion/<int:idea_id>/', csrf_exempt(views.solicitar_permiso_publicacion), name='solicitar_permiso_publicacion'),
+    path('publicar-idea-producto/<int:idea_id>/', views.publicar_idea_como_producto, name='publicar_idea_producto'),
+    path('obtener-mensajes-pago/<int:pago_id>/', views.obtener_mensajes_pago_view, name='obtener_mensajes_pago'),
+    path('enviar-mensaje-pago/<int:pago_id>/', csrf_exempt(views.enviar_mensaje_pago_view), name='enviar_mensaje_pago'),
+    path('obtener-ideas-usuario/<int:usuario_id>/', views.obtener_ideas_usuario_view, name='obtener_ideas_usuario'),
+    path('obtener-detalle-idea/<int:idea_id>/', views.obtener_detalle_idea_view, name='obtener_detalle_idea'),
+    path('rechazar-idea/<int:idea_id>/', csrf_exempt(views.rechazar_idea_view), name='rechazar_idea'),
+    path('aceptar-idea/<int:idea_id>/', csrf_exempt(views.aceptar_idea_view), name='aceptar_idea'),
+    path('completar-idea/<int:idea_id>/', csrf_exempt(views.completar_idea_view), name='completar_idea'),
+    path('finalizar-idea/<int:idea_id>/', csrf_exempt(views.finalizar_idea_view), name='finalizar_idea'),
+    path('factura/<int:pago_id>/', views.ver_factura_view, name='ver_factura'),
+]

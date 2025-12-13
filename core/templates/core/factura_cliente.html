@@ -1,0 +1,436 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura {{ factura.numero_factura }}</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 2cm;
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                margin: 0;
+                padding: 20px;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica', Arial, sans-serif;
+            background-color: #f9fafb;
+            padding: 30px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .btn-print {
+            background: #9ca3af;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 10px 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .btn-print:hover {
+            background: #6b7280;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .btn-download {
+            background: #059669;
+        }
+        
+        .btn-download:hover {
+            background: #047857;
+        }
+        
+        .header {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .logo-section {
+            flex: 1;
+        }
+        
+        .logo-circle {
+            width: 140px;
+            height: 140px;
+            border: 3px solid #9ca3af;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .logo-text-main {
+            font-size: 18px;
+            color: #6b7280;
+            font-weight: 300;
+            font-style: italic;
+        }
+        
+        .logo-text-sub {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+        
+        .company-info {
+            color: #6b7280;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+        
+        .factura-section {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .factura-title {
+            font-size: 48px;
+            color: #9ca3af;
+            font-weight: 300;
+            letter-spacing: 10px;
+            margin: 0;
+        }
+        
+        .factura-numero {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 10px;
+        }
+        
+        .separator {
+            border-bottom: 1px solid #e5e7eb;
+            margin: 30px 0;
+        }
+        
+        .cliente-info {
+            margin: 30px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .info-row {
+            margin-bottom: 12px;
+        }
+        
+        .info-label {
+            color: #6b7280;
+            font-size: 11px;
+            display: inline-block;
+            width: 140px;
+        }
+        
+        .info-value {
+            color: #374151;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        table.productos {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        
+        table.productos thead {
+            background-color: #9ca3af;
+            color: white;
+        }
+        
+        table.productos th {
+            padding: 15px 12px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        table.productos td {
+            padding: 18px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 11px;
+            color: #6b7280;
+        }
+        
+        .right {
+            text-align: right;
+        }
+        
+        .center {
+            text-align: center;
+        }
+        
+        .totals-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .totals-table {
+            width: 350px;
+        }
+        
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            font-size: 12px;
+        }
+        
+        .totals-label {
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+        }
+        
+        .totals-value {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .total-final {
+            border: 2px solid #374151;
+            background-color: #ffffff;
+            margin-top: 5px;
+            padding: 15px 20px !important;
+        }
+        
+        .total-final .totals-label,
+        .total-final .totals-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+            letter-spacing: 1px;
+        }
+        
+        .footer {
+            margin-top: 80px;
+            padding-top: 20px;
+        }
+        
+        .footer-message {
+            color: #9ca3af;
+            font-style: italic;
+            font-size: 13px;
+            margin-bottom: 40px;
+        }
+        
+        .firma-section {
+            text-align: right;
+        }
+        
+        .firma-line {
+            border-top: 1px solid #9ca3af;
+            width: 250px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        
+        .firma-label {
+            color: #9ca3af;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Botones de acción (solo visible en HTML) -->
+        {% if not es_pdf %}
+        <div class="no-print" style="text-align: center; margin-bottom: 30px;">
+            <button onclick="window.print()" class="btn-print">
+                📄 Imprimir Factura
+            </button>
+            <button onclick="descargarPDF()" class="btn-print btn-download">
+                📥 Descargar PDF
+            </button>
+        </div>
+        {% endif %}
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo-circle">
+                    <div class="logo-text-main">Tu Idea</div>
+                    <div class="logo-text-sub">Hecha Realidad</div>
+                </div>
+                <div class="company-info">
+                    <div>Mail: info@tuideahecharealidad.com</div>
+                    <div>Teléfono: +57 300 123 4567</div>
+                    <div>Dirección: Calle Principal 123,</div>
+                    <div>Ciudad, Colombia</div>
+                </div>
+            </div>
+            <div class="factura-section">
+                <h1 class="factura-title">FACTURA</h1>
+                <div class="factura-numero">Número: {{ factura.numero_factura }}</div>
+            </div>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <!-- Cliente Information -->
+        <div class="cliente-info">
+            <div>
+                <div class="info-row">
+                    <span class="info-label">Nombre:</span>
+                    <span class="info-value">{{ factura.nombre_cliente }}</span>
+                </div>
+                {% if pago.cedula %}
+                <div class="info-row">
+                    <span class="info-label">Cédula:</span>
+                    <span class="info-value">{{ pago.cedula }}</span>
+                </div>
+                {% endif %}
+                {% if factura.direccion_cliente %}
+                <div class="info-row">
+                    <span class="info-label">Dirección:</span>
+                    <span class="info-value">{{ factura.direccion_cliente }}</span>
+                </div>
+                {% endif %}
+                {% if factura.telefono_cliente %}
+                <div class="info-row">
+                    <span class="info-label">Teléfono:</span>
+                    <span class="info-value">{{ factura.telefono_cliente }}</span>
+                </div>
+                {% endif %}
+            </div>
+            <div>
+                <div class="info-row">
+                    <span class="info-label">Fecha:</span>
+                    <span class="info-value">{{ factura.fecha_emision|date:"d/m/Y" }}</span>
+                </div>
+                {% if factura.email_cliente %}
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">{{ factura.email_cliente }}</span>
+                </div>
+                {% endif %}
+                <div class="info-row">
+                    <span class="info-label">Condición de pago:</span>
+                    <span class="info-value">{{ pago.get_estado_display }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Método de pago:</span>
+                    <span class="info-value">{{ pago.get_metodo_pago_display }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Products Table -->
+        <table class="productos">
+            <thead>
+                <tr>
+                    <th style="width: 45%;">DESCRIPCIÓN</th>
+                    <th class="center" style="width: 15%;">CANTIDAD</th>
+                    <th class="right" style="width: 20%;">PRECIO</th>
+                    <th class="right" style="width: 20%;">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }} - {{ producto.categoria|title }}</td>
+                    <td class="center">{{ producto.cantidad }}</td>
+                    <td class="right">${{ producto.precio_unitario|floatformat:2 }}</td>
+                    <td class="right">${{ producto.subtotal|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Totals -->
+        <div class="totals-section">
+            <div class="totals-table">
+                <div class="totals-row">
+                    <span class="totals-label">Subtotal</span>
+                    <span class="totals-value">${{ factura.subtotal|floatformat:2 }}</span>
+                </div>
+                {% if factura.impuestos > 0 %}
+                <div class="totals-row">
+                    <span class="totals-label">Impuesto (19%)</span>
+                    <span class="totals-value">${{ factura.impuestos|floatformat:2 }}</span>
+                </div>
+                {% endif %}
+                <div class="totals-row total-final">
+                    <span class="totals-label">Total</span>
+                    <span class="totals-value">${{ factura.total|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-message">
+                Gracias por su compra.
+            </div>
+            <div class="firma-section">
+                <div class="firma-line"></div>
+                <div class="firma-label">Firma</div>
+            </div>
+        </div>
+        
+        <!-- Botón de cerrar (solo visible en HTML) -->
+        {% if not es_pdf %}
+        <div class="no-print" style="text-align: center; margin-top: 40px;">
+            <button onclick="window.close()" style="background: #6b7280; color: white; padding: 10px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                Cerrar
+            </button>
+        </div>
+        {% endif %}
+    </div>
+    
+    {% if not es_pdf %}
+    <script>
+        function descargarPDF() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('formato', 'pdf');
+            
+            const link = document.createElement('a');
+            link.href = url.toString();
+            link.download = 'Factura_{{ factura.numero_factura }}.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+    {% endif %}
+</body>
+</html>

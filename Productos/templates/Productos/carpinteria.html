@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Armarios de madera artesanales - Compra armarios hechos a mano en Colombia. Gangazos en armarios de alta calidad, diversos estilos y tamaños.">
+    <meta name="keywords" content="armarios madera, armarios artesanales, comprar armarios, armarios colombia, armarios bogota, closet madera, guardarropa artesanal">
+    <meta name="robots" content="index, follow">
+    
+    <title>{% block title %} {% endblock %} | Tu Idea Hecha Realidad</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'Productos/css/styles1.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/responsive.css' %}">
+    <script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+</head>
+<body>
+
+<!-- Overlay para cerrar sidebar en móvil -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  
+<!-- BARRA LATERAL (MENÚ + FILTROS) -->
+<div class="sidebar">
+    <div class="sidebar-user-info">
+        <a href="{% url 'perfilUsuario' %}" class="user-avatar-link">
+            {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F; object-fit: cover;">
+            {% else %}
+                <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #A0662F; background: linear-gradient(135deg, #A0662F, #7A3E0E); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">👤</div>
+            {% endif %}
+        </a>
+        <span class="username-display">{{ usuario.usernameCliente }}</span>
+    </div>
+    <ul>
+        <li><a href="{% url 'productos' %}">Gangazos</a></li>
+        <li><a href="{% url 'idea' %}">Crear Idea</a></li>
+        <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+        <li><a href="{% url 'contact' %}">Contáctenos</a></li>
+        <li><a href="{% url 'comentarios' %}">Comentarios</a></li>
+        <li><a href="{% url 'logout' %}" class="logout-button">Cerrar Sesión</a></li>
+    </ul>  <!-- FILTROS -->
+  <div class="filtros">
+    <h2 for="categoria" class="h2-side">Categoría:</h2>
+    <select id="categoria">
+        <option value="">Elegir Categoria</option> 
+        <option value="carpinteria">Armarios</option>
+        <option value="marroquineria">Escritorios</option>
+        <option value="vidrieria">Sillas</option>
+        <option value="metaleria">Cajoneras</option>
+        <option value="ceramica">Mesas</option>
+        <option value="tapiceria">Utensilios</option>
+    </select>
+
+    <button onclick="aplicarFiltros()">Aplicar filtros</button>
+  </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="main-content-wrapper">
+  <header>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <h1 class="div" style="text-align: center;">
+      <img src="{% static 'core/img/Gemini_Generated_Image_tzay6utzay6utzay.jfif' %}" alt="Logo" width="75" height="75">
+      Tu Idea Hecha Realidad
+    </h1>
+  </header>
+
+<section>
+    <div>
+        <h2>CARPINTERIA</h2>
+        <section class="seccion-at">
+            <div>
+                <div>
+                    <div>
+                        <div>
+                            <div>
+                                <h3>Armarios:</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contenedor-articulos" id="contenedorArticulos">
+                        {% for armario in armarios %}
+                        <div class="articulo">
+                            {% if armario.imagen3 %}
+                            <img src="{{ armario.imagen3.url }}" alt="{{ armario.nombre3 }}">
+                            {% else %}
+                            <img src="{% static 'Productos/img/Armario.jpg' %}" alt="{{ armario.nombre3 }}">
+                            {% endif %}
+                            <div class="contenido-articulo">
+                                <h3>{{ armario.nombre3 }}</h3>
+                                <p>{{ armario.descripcion3 }}</p>
+                                <p class="precio-destacado">Precio: ${{ armario.precio3|floatformat:0 }}</p>
+                                <button class="btn-ver-detalles" onclick="mostrarDetalles('armario', {{ armario.id }}, '{{ armario.nombre3|escapejs }}', '{{ armario.descripcion3|escapejs }}', '{{ armario.precio3 }}', '{% if armario.imagen3 %}{{ armario.imagen3.url }}{% else %}{% static 'Productos/img/Armario.jpg' %}{% endif %}')">Ver Detalles</button>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="articulo">
+                            <img src="{% static 'Productos/img/Armario.jpg' %}" alt="Imagen del Producto 1">
+                            <div class="contenido-articulo">
+                                <h3>No hay productos disponibles</h3>
+                                <p>Próximamente nuevos productos</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">📞 Contáctenos</h3>
+                <div class="footer-info">
+                    <i>📞</i>
+                    <span>+57 300 123 4567</span>
+                </div>
+                <div class="footer-info">
+                    <i>✉️</i>
+                    <span>info@gangasca-tirr.com</span>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">📍 Dirección</h3>
+                <div class="footer-info">
+                    <i>📍</i>
+                    <span>Carrera 45 P. 26-85<br>RoyalA, Colombia</span>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">🌐 Síguenos</h3>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/tu_idea_hecha_realidad?igsh=Y3ByM2lyZGcwNHVy" class="social-icon-img" aria-label="Instagram">
+                        <img src="{% static 'core/img/Instagram.webp' %}" alt="Instagram" class="social-logo" width="24" height="24">
+                    </a>
+                    <a href="https://www.facebook.com/share/1ACEVZbZHV/" class="social-icon-img" aria-label="Facebook">
+                        <img src="{% static 'core/img/Facebook.png' %}" alt="Facebook" class="social-logo" width="24" height="24">
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 Tu Idea Herba Realidad - Todos los derechos reservados</p>
+        </div>
+    </footer>
+</div>
+
+<!-- Modal de Detalles del Producto -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="cerrarModal()">&times;</span>
+        <div class="modal-header">
+            <h2 id="modalTitle">Detalles del Producto</h2>
+        </div>
+        <div class="modal-body">
+            <img id="modalImage" class="modal-product-image" src="" alt="Producto">
+            <div class="modal-product-info">
+                <h3 id="modalProductName"></h3>
+                <p id="modalProductDescription"></p>
+                <p class="precio-destacado">Precio: $<span id="modalProductPrice"></span></p>
+                <p id="disponibilidadText" style="color: #28a745; font-weight: bold; margin: 10px 0;"></p>
+                
+                <div class="quantity-selector">
+                    <label for="quantity">Cantidad:</label>
+                    <button onclick="cambiarCantidad(-1)">-</button>
+                    <input type="number" id="quantity" value="1" min="1" max="99" readonly>
+                    <button onclick="cambiarCantidad(1)">+</button>
+                </div>
+                
+                <p><strong>Total: $<span id="totalPrice"></span></strong></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-comprar" onclick="agregarAlCarrito()">Agregar al Carrito</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Función para formatear números con separador de miles
+    function formatNumber(num) {
+        return Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    
+    // Función para obtener la clave del carrito única por usuario
+    function getCarritoKey() {
+        const username = '{{ usuario.usernameCliente|default:"guest" }}';
+        return `carrito_${username}`;
+    }
+    
+    let currentProduct = {};
+    async function mostrarDetalles(tipo, id, nombre, descripcion, precio, imagen) {
+        console.log('Mostrando detalles:', tipo, id, nombre);
+        currentProduct = {tipo: tipo, id: id, nombre: nombre, descripcion: descripcion, precio: parseFloat(precio), imagen: imagen, cantidad_disponible: 0, cantidad_restante: 0};
+        try {
+            const url = `/api/producto/cantidad-disponible/?tipo=${tipo}&id=${id}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                let errorMsg = `Error HTTP ${response.status}`;
+                try { const errorData = await response.json(); errorMsg = errorData.error || errorMsg; } catch (e) { console.error('Error parsing:', e); }
+                alert('Error al obtener disponibilidad: ' + errorMsg);
+                return;
+            }
+            const data = await response.json();
+            currentProduct.cantidad_disponible = data.cantidad_disponible || 0;
+            let carrito = JSON.parse(sessionStorage.getItem(getCarritoKey()) || '[]');
+            let existente = carrito.find(item => item.tipo === tipo && item.id === id);
+            let cantidadEnCarrito = existente ? existente.cantidad : 0;
+            currentProduct.cantidad_restante = currentProduct.cantidad_disponible - cantidadEnCarrito;
+            if (currentProduct.cantidad_disponible === 0) { alert('Este producto no está disponible en inventario.'); return; }
+            if (currentProduct.cantidad_restante <= 0) { alert(`Ya tienes todas las unidades disponibles (${currentProduct.cantidad_disponible}) en tu carrito.`); return; }
+            document.getElementById('modalProductName').textContent = nombre;
+            document.getElementById('modalProductDescription').textContent = descripcion;
+            document.getElementById('modalProductPrice').textContent = formatNumber(precio);
+            document.getElementById('modalImage').src = imagen;
+            document.getElementById('quantity').value = 1;
+            document.getElementById('quantity').max = currentProduct.cantidad_restante;
+            const dispText = document.getElementById('disponibilidadText');
+            if (cantidadEnCarrito > 0) {
+                dispText.textContent = `Disponibles: ${currentProduct.cantidad_restante} unidades (${cantidadEnCarrito} ya en tu carrito)`;
+                dispText.style.color = currentProduct.cantidad_restante < 5 ? '#ff9800' : '#28a745';
+            } else {
+                dispText.textContent = `Disponibles: ${currentProduct.cantidad_disponible} unidades`;
+                dispText.style.color = currentProduct.cantidad_disponible < 5 ? '#ff9800' : '#28a745';
+            }
+            actualizarTotal();
+            document.getElementById('productModal').style.display = 'block';
+        } catch (error) {
+            console.error('Error completo:', error);
+            alert('Error al cargar la información del producto: ' + error.message);
+        }
+    }
+    function cerrarModal() { document.getElementById('productModal').style.display = 'none'; }
+    function cambiarCantidad(delta) {
+        let input = document.getElementById('quantity');
+        let newValue = parseInt(input.value) + delta;
+        let maxCantidad = currentProduct.cantidad_restante || 1;
+        if (newValue < 1) return;
+        if (newValue > maxCantidad) { alert(`Solo puedes agregar ${maxCantidad} unidades más de este producto.`); return; }
+        input.value = newValue;
+        actualizarTotal();
+    }
+    function actualizarTotal() {
+        let cantidad = parseInt(document.getElementById('quantity').value);
+        let total = currentProduct.precio * cantidad;
+        document.getElementById('totalPrice').textContent = formatNumber(total);
+    }
+    async function agregarAlCarrito() {
+        let cantidad = parseInt(document.getElementById('quantity').value);
+        if (!currentProduct.tipo || !currentProduct.id) { alert('Error: Información del producto no disponible'); return; }
+        try {
+            const response = await fetch(`/api/producto/cantidad-disponible/?tipo=${currentProduct.tipo}&id=${currentProduct.id}`);
+            if (!response.ok) { alert('Error al verificar disponibilidad del producto. Código: ' + response.status); return; }
+            const data = await response.json();
+            let carrito = JSON.parse(sessionStorage.getItem(getCarritoKey()) || '[]');
+            let existente = carrito.find(item => item.tipo === currentProduct.tipo && item.id === currentProduct.id);
+            let cantidadEnCarrito = existente ? existente.cantidad : 0;
+            let cantidadTotal = cantidadEnCarrito + cantidad;
+            if (data.cantidad_disponible === 0) { alert('Este producto no está disponible en inventario en este momento.'); return; }
+            if (cantidadTotal > data.cantidad_disponible) { alert(`Solo hay ${data.cantidad_disponible} unidades disponibles en inventario. Ya tienes ${cantidadEnCarrito} en tu carrito.`); return; }
+            if (existente) { existente.cantidad += cantidad; } 
+            else { carrito.push({tipo: currentProduct.tipo, id: currentProduct.id, nombre: currentProduct.nombre, precio: currentProduct.precio, cantidad: cantidad, imagen: currentProduct.imagen, descripcion: currentProduct.descripcion}); }
+            sessionStorage.setItem(getCarritoKey(), JSON.stringify(carrito));
+            updateCartBadge();
+            alert('¡Producto agregado al carrito!');
+            cerrarModal();
+            if (confirm('¿Desea ir al carrito ahora?')) { window.location.href = '{% url "carrito" %}'; }
+        } catch (error) { console.error('Error:', error); alert('Error al agregar el producto al carrito'); }
+    }
+    window.onclick = function(event) { let modal = document.getElementById('productModal'); if (event.target == modal) { cerrarModal(); } }
+  function aplicarFiltros() {
+        const categoria = document.getElementById('categoria').value;
+        if (categoria) { window.location.href = '/' + categoria + '/'; } 
+        else { window.location.href = '/productos/'; }
+    }
+    
+    // Función para actualizar el badge del carrito
+    function updateCartBadge() {
+        // Actualizar botón flotante si existe la función global
+        if (typeof updateFloatingCartButton === 'function') {
+            updateFloatingCartButton();
+        }
+    }
+    
+    // Actualizar badge al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartBadge();
+    });
+</script>
+
+</script>
+
+<script src="{% static 'core/javascript/Carrito.js' %}"></script>
+<script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+
+{% include 'core/floating_buttons.html' %}
+{% include 'core/modal_notificaciones.html' %}
+</body>
+</html>

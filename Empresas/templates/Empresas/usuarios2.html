@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Administra usuarios y empresas registradas. Gestiona permisos, estados y accesos del sistema.">
+    <meta name="keywords" content="gestión usuarios, administrar usuarios, usuarios sistema, panel admin">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Gestión de Usuarios - Dashboard Empresa">
+    <meta property="og:description" content="Administra los usuarios del sistema.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Gestión de Usuarios - Dashboard de Empresa</title>
+    {% load static %}
+    {% csrf_token %}
+    <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/usuarios.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside>
+            <h2>Dashboard de Empresa</h2>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'dashboardEmpresa' %}">Inicio</a></li>
+                    <li><a href="{% url 'usuarios' %}">Gestión de usuarios</a></li>
+                    <li><a href="{% url 'GestiProductos' %}">Gestión de productos</a></li> 
+                    <li><a href="{% url 'inventario' %}">Inventario</a></li>
+                    <li><a href="{% url 'empresa_ideas' %}">Gestión de ideas</a></li>
+                    <li><a href="{% url 'empresa_comentarios' %}">Gestión de comentarios</a></li>
+                    <li><a href="{% url 'gestion_pagos' %}">Gestión de pagos</a></li>
+                    <li><a href="{% url 'gestion_pedidos' %}">Gestión de pedidos</a></li>
+                    <li><a href="{% url 'estadisticas' %}">Estadísticas</a></li>
+                </ul>
+            </nav>
+            <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+        </aside>
+
+        <main>
+            <header>
+                <h1>Gestión de Usuarios</h1>
+            </header>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo de Usuario</th>
+                            <th>Nombre de Usuario</th>
+                            <th>Email</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr class="{% if not user.is_active %}usuario-inactivo{% endif %}">
+                            <td>Cliente</td>
+                            <td>{{ user.usernameCliente }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{% if user.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+                            <td class="action-links">
+                                <a href="#" class="button edit-user" data-id="{{ user.id }}" data-type="cliente">Editar</a>
+                                {% if user.is_active %}
+                                <a href="#" class="button disable-user" data-id="{{ user.id }}" data-type="cliente">Desactivar</a>
+                                {% else %}
+                                <a href="#" class="button enable-user" data-id="{{ user.id }}" data-type="cliente">Activar</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de edición -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editar Usuario</h2>
+            <form id="editUserForm" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="userId" name="userId">
+                <input type="hidden" id="userType" name="userType">
+                <div class="form-group">
+                    <label for="username">Nombre de Usuario:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group" id="emailGroup">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email">
+                </div>
+                <button type="submit" class="button">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('editModal');
+            const closeBtn = document.getElementsByClassName('close')[0];
+            const editUserForm = document.getElementById('editUserForm');
+
+            // Manejar clics en botones de editar
+            document.querySelectorAll('.edit-user').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const userId = this.dataset.id;
+                    const userType = this.dataset.type;
+                    const row = this.closest('tr');
+                    
+                    document.getElementById('userId').value = userId;
+                    document.getElementById('userType').value = userType;
+                    document.getElementById('username').value = row.children[1].textContent.trim();
+                    
+                    // Mostrar email para ambos tipos de usuario
+                    document.getElementById('emailGroup').style.display = 'block';
+                    document.getElementById('email').value = row.children[2].textContent.trim();
+                    
+                    // Hacer el email obligatorio solo para clientes
+                    if (userType === 'cliente') {
+                        document.getElementById('email').required = true;
+                    } else {
+                        document.getElementById('email').required = false;
+                    }
+                    
+                    modal.style.display = 'block';
+                });
+            });
+
+            // Manejar clics en botones de activar/desactivar
+            document.querySelectorAll('.disable-user, .enable-user').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('¿Estás seguro de que quieres cambiar el estado de este usuario?')) {
+                        const userId = this.dataset.id;
+                        const userType = this.dataset.type;
+                        const action = this.classList.contains('disable-user') ? 'disable' : 'enable';
+                        
+                        fetch(`/toggle-user-status/${userId}/${userType}/${action}/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/json'
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.error || 'Error al cambiar el estado del usuario');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al procesar la solicitud');
+                        });
+                    }
+                });
+            });
+
+            // Cerrar modal
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            // Manejar envío del formulario de edición
+            editUserForm.onsubmit = function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                fetch('/update-user/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.error || 'Error al actualizar el usuario');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar la solicitud');
+                });
+            }
+        });
+    </script>
+
+{% load static %}
+<!-- Incluir estilos para el botón flotante de notificaciones empresa -->
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Botón flotante de notificaciones para empresa -->
+<a id="floating-notif-btn-empresa" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+    <span class="fb-icon">🔔</span>
+    <span id="floating-notif-badge-empresa" class="fb-badge" style="display:none">0</span>
+</a>
+
+{% include 'core/modal_notificaciones.html' %}
+
+<script>
+// Actualizar notificaciones cada 30 segundos para empresa
+function actualizarNotificacionesEmpresa() {
+    fetch('/api/conversaciones/')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('floating-notif-btn-empresa');
+            const badge = document.getElementById('floating-notif-badge-empresa');
+            
+            if (data.success && data.conversaciones) {
+                const tieneNoLeidos = data.conversaciones.some(c => c.mensajes_no_leidos > 0);
+                
+                if (tieneNoLeidos) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'inline-block';
+                } else if (data.conversaciones.length > 0) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'none';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.warn('Error al verificar notificaciones empresa:', err));
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(actualizarNotificacionesEmpresa, 30000);
+});
+</script>
+
+</body>
+</html>

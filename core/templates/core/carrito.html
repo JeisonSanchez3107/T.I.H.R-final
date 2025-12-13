@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras | Tu Idea Hecha Realidad</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/carrito.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/responsive.css' %}">
+    <script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+</head>
+<body>
+{% csrf_token %}
+
+<!-- Overlay para cerrar sidebar en móvil -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- BARRA LATERAL (MENÚ + FILTROS) -->
+<div class="sidebar">
+    <div class="sidebar-user-info">
+        <a href="{% url 'perfilUsuario' %}" class="user-avatar-link">
+            {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F; object-fit: cover;">
+            {% else %}
+                <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #A0662F; background: linear-gradient(135deg, #A0662F, #7A3E0E); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">👤</div>
+            {% endif %}
+        </a>
+        <span class="username-display">{{ usuario.usernameCliente }}</span>
+    </div>
+  <ul>
+    <li><a href="{% url 'productos' %}">Gangazos</a></li>
+    <li><a href="{% url 'idea' %}">Crear Idea</a></li>
+    <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+    <li><a href="{% url 'contact' %}">Contáctenos</a></li>
+    <li><a href="{% url 'comentarios' %}">Comentarios</a></li>
+    <li><a href="{% url 'logout' %}" class="logout-button">Cerrar Sesión</a></li>
+  </ul>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <h2 for="categoria" class="h2-side">Categoría:</h2>
+    <select id="categoria">
+        <option value="">Elegir Categoria</option> 
+        <option value="carpinteria">Armarios</option>
+        <option value="marroquineria">Escritorios</option>
+        <option value="vidrieria">Sillas</option>
+        <option value="metaleria">Cajoneras</option>
+        <option value="ceramica">Mesas</option>
+        <option value="tapiceria">Utensilios</option>
+    </select>
+
+    <button onclick="aplicarFiltros()">Aplicar filtros</button>
+  </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="main-content-wrapper">
+  <header>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <h1 class="div" style="text-align: center;">
+      <img src="{% static 'core/img/Gemini_Generated_Image_tzay6utzay6utzay.jfif' %}" alt="Logo" width="75" height="75">
+      Carrito de Compras
+    </h1>
+    <p class="subtitulo">Revisa y gestiona los productos que deseas comprar</p>
+  </header>
+
+  <!-- Aquí va tu contenido: artículos, productos, etc. -->
+    <main class="shopping-cart-content">
+        <div id="cart-container">
+            <!-- Los productos se cargarán aquí dinámicamente -->
+        </div>
+
+        <div id="empty-cart-message" style="display: none;">
+            <p>Tu carrito está vacío. ¡Explora nuestros productos y añade tus favoritos!</p>
+            <a href="{% url 'productos' %}" class="btn-add-products">Explorar Productos</a>
+        </div>
+
+        <div id="checkout-section" style="display: none;">
+            <div class="cart-summary">
+                <div class="cart-summary-row">
+                    <span class="cart-summary-label">Subtotal:</span>
+                    <span class="cart-summary-value" id="cart-subtotal">$0.00</span>
+                </div>
+                <div class="cart-summary-row">
+                    <span class="cart-summary-label">Envío:</span>
+                    <span class="cart-summary-value" id="cart-shipping">Gratis</span>
+                </div>
+                <div class="cart-summary-row">
+                    <span class="cart-summary-label">Total:</span>
+                    <span class="cart-summary-value cart-total" id="cart-total">$0.00</span>
+                </div>
+                <button id="checkout-button" class="btn-checkout">
+                    Proceder al Pago
+                </button>
+                <button id="clear-cart-button" class="btn-clear-cart">
+                    Vaciar Carrito
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">📞 Contáctenos</h3>
+                <div class="footer-info">
+                    <i>📞</i>
+                    <span>+57 300 123 4567</span>
+                </div>
+                <div class="footer-info">
+                    <i>✉️</i>
+                    <span>info@gangasca-tirr.com</span>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">📍 Dirección</h3>
+                <div class="footer-info">
+                    <i>📍</i>
+                    <span>Carrera 45 P. 26-85<br>RoyalA, Colombia</span>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">🌐 Síguenos</h3>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/tu_idea_hecha_realidad?igsh=Y3ByM2lyZGcwNHVy" class="social-icon-img" aria-label="Instagram">
+                        <img src="{% static 'core/img/Instagram.webp' %}" alt="Instagram" class="social-logo" width="40" height="40">
+                    </a>
+                    <a href="https://www.facebook.com/share/1ACEVZbZHV/" class="social-icon-img" aria-label="Facebook">
+                        <img src="{% static 'core/img/Facebook.png' %}" alt="Facebook" class="social-logo" width="40" height="40">
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 Tu Idea Herba Realidad - Todos los derechos reservados</p>
+        </div>
+    </footer>
+</div>
+
+    <!-- Modal de Pago -->
+    <div id="payment-modal" class="payment-modal">
+        <div class="payment-modal-content">
+            <div class="payment-modal-header">
+                <h2>Finalizar Pago</h2>
+                <span class="payment-close">&times;</span>
+            </div>
+            <div class="payment-modal-body">
+                <div class="payment-instructions">
+                    <h3>Selecciona tu método de pago:</h3>
+                    <p>Escanea el código QR con tu aplicación de banca móvil para completar el pago.</p>
+                </div>
+                
+                <div class="payment-buttons">
+                    <button class="payment-option-btn" data-payment="nequi">
+                        QR Nequi
+                    </button>
+                    <button class="payment-option-btn" data-payment="bancolombia">
+                        QR Bancolombia
+                    </button>
+                    <button class="payment-option-btn" data-payment="davivienda">
+                        QR Davivienda
+                    </button>
+                </div>
+
+                <div id="qr-nequi" class="qr-display">
+                    <h3>Código QR Nequi</h3>
+                    <div class="qr-placeholder">
+                        <img src="{% static 'core/img/Qr nequi.jpg' %}" alt="Qr Nequi" height="300" width="300">
+                    </div>
+                </div>
+
+                <div id="qr-bancolombia" class="qr-display">
+                    <h3>Código QR Bancolombia</h3>
+                    <div class="qr-placeholder">
+                        <img src="{% static 'core/img/Qr bancolombia.jpg' %}" alt="Qr Bancolombia" height="300" width="300">
+                    </div>
+                </div>
+
+                <div id="qr-davivienda" class="qr-display">
+                    <h3>Código QR Davivienda</h3>
+                    <div class="qr-placeholder">
+                        <img src="{% static 'core/img/Qr davi.jpg' %}" alt="Qr Davivienda" height="300" width="300">
+                    </div>
+                </div>
+
+                <!-- Formulario de datos del cliente -->
+                <div id="customer-data-section" class="customer-data-section" style="display: none;">
+                    <div class="form-instructions">
+                        <h3>Información del Comprador</h3>
+                        <p>Completa tus datos para procesar el pago</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nombre-completo">Nombre Completo *</label>
+                        <input type="text" id="nombre-completo" class="form-input" placeholder="Ingrese su nombre completo" required>
+                        <span class="error-message" id="nombre-error"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cedula">Cédula *</label>
+                        <input type="text" id="cedula" class="form-input" placeholder="Ingrese su número de cédula" required>
+                        <span class="error-message" id="cedula-error"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" class="form-input" value="{{ usuario.email }}" readonly>
+                        <span class="hint-message">Este es el email registrado en tu cuenta</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefono">Teléfono *</label>
+                        <input type="tel" id="telefono" class="form-input" placeholder="Ej: 3001234567" value="{{ usuario.telefono }}" required>
+                        <span class="error-message" id="telefono-error"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="direccion">Dirección *</label>
+                        <input type="text" id="direccion" class="form-input" placeholder="Ej: Calle 123 #45-67" value="{{ usuario.direccion }}" required>
+                        <span class="error-message" id="direccion-error"></span>
+                    </div>
+                </div>
+
+                <!-- Sección para cargar comprobante -->
+                <div id="upload-section" class="upload-section" style="display: none;">
+                    <div class="upload-instructions">
+                        <h3>Cargar Comprobante de Pago</h3>
+                        <p>Por favor, carga una foto o captura de pantalla del pago realizado</p>
+                    </div>
+                    
+                    <div class="upload-area">
+                        <input type="file" id="comprobante-input" accept="image/*" style="display: none;">
+                        <button id="upload-btn" class="btn-upload">
+                            Cargar Comprobante
+                        </button>
+                        <div id="preview-area" class="preview-area" style="display: none;">
+                            <img id="preview-image" src="" alt="Vista previa del comprobante">
+                            <button id="remove-image-btn" class="btn-remove-image">✕ Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-confirmation">
+                    <button id="confirm-payment-btn" class="btn-confirm-payment" disabled>
+                        Confirmar Pago Realizado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Función para obtener la clave del carrito única por usuario
+    function getCarritoKey() {
+        const username = '{{ usuario.usernameCliente|default:"guest" }}';
+        return `carrito_${username}`;
+    }
+
+    // Obtener elementos del DOM
+    const cartContainer = document.getElementById('cart-container');
+    const emptyCartMessage = document.getElementById('empty-cart-message');
+    const checkoutSection = document.getElementById('checkout-section');
+    const checkoutButton = document.getElementById('checkout-button');
+    const clearCartButton = document.getElementById('clear-cart-button');
+
+    // Función para obtener el carrito de sessionStorage
+    function getCart() {
+        return JSON.parse(sessionStorage.getItem(getCarritoKey()) || '[]');
+    }
+
+    // Función para guardar el carrito en sessionStorage
+    function saveCart(cart) {
+        sessionStorage.setItem(getCarritoKey(), JSON.stringify(cart));
+    }
+
+    // Función para calcular el total del carrito
+    function calculateTotal(cart) {
+        return cart.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+    }
+
+    // Función para cambiar la cantidad de un producto
+    async function changeQuantity(index, delta) {
+        let cart = getCart();
+        cart[index].cantidad += delta;
+        
+        if (cart[index].cantidad <= 0) {
+            removeFromCart(index);
+            return;
+        }
+        
+        saveCart(cart);
+        
+        // Sincronizar con el backend
+        try {
+            await fetch('/api/carrito/sincronizar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cart)
+            });
+        } catch (error) {
+            console.error('Error al sincronizar carrito:', error);
+        }
+        
+        renderCart();
+    }
+
+    // Función para eliminar un producto del carrito
+    async function removeFromCart(index) {
+        let cart = getCart();
+        cart.splice(index, 1);
+        saveCart(cart);
+        
+        // Sincronizar con el backend
+        try {
+            await fetch('/api/carrito/sincronizar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cart)
+            });
+        } catch (error) {
+            console.error('Error al sincronizar carrito:', error);
+        }
+        
+        renderCart();
+    }
+
+    // Función para vaciar el carrito
+    async function clearCart() {
+        if (confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
+            sessionStorage.removeItem(getCarritoKey());
+            
+            // Limpiar carrito en el backend
+            try {
+                await fetch('/api/carrito/limpiar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+            } catch (error) {
+                console.error('Error al limpiar carrito en el servidor:', error);
+            }
+            
+            renderCart();
+        }
+    }
+
+    // Función para renderizar el carrito
+    function renderCart() {
+        const cart = getCart();
+        cartContainer.innerHTML = '';
+
+        if (cart.length === 0) {
+            emptyCartMessage.style.display = 'block';
+            checkoutSection.style.display = 'none';
+            return;
+        }
+
+        emptyCartMessage.style.display = 'none';
+        checkoutSection.style.display = 'block';
+
+        cart.forEach((item, index) => {
+            const subtotal = item.precio * item.cantidad;
+            
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.innerHTML = `
+                <img src="${item.imagen}" alt="${item.nombre}" class="cart-item-image">
+                <div class="cart-item-details">
+                    <h3 class="cart-item-name">${item.nombre}</h3>
+                    <p class="cart-item-description">${item.descripcion || 'Sin descripción'}</p>
+                    <p class="cart-item-price">Precio unitario: $${item.precio.toFixed(2)}</p>
+                </div>
+                <div class="cart-item-actions">
+                    <div class="cart-quantity-controls">
+                        <button class="cart-quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                        <span class="cart-quantity-display">${item.cantidad}</span>
+                        <button class="cart-quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                    </div>
+                    <p class="cart-item-subtotal">Subtotal: <span>$${subtotal.toFixed(2)}</span></p>
+                    <button class="cart-remove-btn" onclick="removeFromCart(${index})">
+                        Eliminar
+                    </button>
+                </div>
+            `;
+            
+            cartContainer.appendChild(cartItem);
+        });
+
+        // Actualizar resumen del carrito
+        const total = calculateTotal(cart);
+        document.getElementById('cart-subtotal').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Event listener para el botón de pago - abrir modal
+    checkoutButton.addEventListener('click', () => {
+        const cart = getCart();
+        if (cart.length === 0) {
+            alert('Tu carrito está vacío');
+            return;
+        }
+        
+        // Abrir modal de pago
+        openPaymentModal();
+    });
+
+    // Event listener para vaciar el carrito
+    clearCartButton.addEventListener('click', clearCart);
+
+    // ============================================
+    // FUNCIONALIDAD DEL MODAL DE PAGO
+    // ============================================
+
+    const paymentModal = document.getElementById('payment-modal');
+    const paymentClose = document.querySelector('.payment-close');
+    const paymentOptionButtons = document.querySelectorAll('.payment-option-btn');
+    const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+    const qrDisplays = document.querySelectorAll('.qr-display');
+    const customerDataSection = document.getElementById('customer-data-section');
+    const uploadSection = document.getElementById('upload-section');
+    const uploadBtn = document.getElementById('upload-btn');
+    const comprobanteInput = document.getElementById('comprobante-input');
+    const previewArea = document.getElementById('preview-area');
+    const previewImage = document.getElementById('preview-image');
+    const removeImageBtn = document.getElementById('remove-image-btn');
+    
+    // Campos del formulario
+    const nombreCompletoInput = document.getElementById('nombre-completo');
+    const cedulaInput = document.getElementById('cedula');
+    const emailInput = document.getElementById('email');
+    const telefonoInput = document.getElementById('telefono');
+    const direccionInput = document.getElementById('direccion');
+    
+    let selectedPaymentMethod = null;
+    let comprobanteFile = null;
+
+    // Abrir modal de pago
+    function openPaymentModal() {
+        paymentModal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        document.body.classList.add('modal-open'); // Clase para ocultar botones flotantes
+    }
+
+    // Cerrar modal de pago
+    function closePaymentModal() {
+        paymentModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        document.body.classList.remove('modal-open'); // Remover clase
+        // Resetear selecciones
+        paymentOptionButtons.forEach(btn => btn.classList.remove('active'));
+        qrDisplays.forEach(display => display.classList.remove('active'));
+        customerDataSection.style.display = 'none';
+        uploadSection.style.display = 'none';
+        previewArea.style.display = 'none';
+        confirmPaymentBtn.disabled = true;
+        selectedPaymentMethod = null;
+        comprobanteFile = null;
+        comprobanteInput.value = '';
+        // Limpiar campos del formulario
+        nombreCompletoInput.value = '';
+        cedulaInput.value = '';
+        telefonoInput.value = '';
+        direccionInput.value = '';
+        document.getElementById('nombre-error').textContent = '';
+        document.getElementById('cedula-error').textContent = '';
+        document.getElementById('telefono-error').textContent = '';
+        document.getElementById('direccion-error').textContent = '';
+    }
+
+    // Cerrar modal al hacer clic en X
+    paymentClose.addEventListener('click', closePaymentModal);
+
+    // Cerrar modal al hacer clic fuera del contenido
+    window.addEventListener('click', function(event) {
+        if (event.target === paymentModal) {
+            closePaymentModal();
+        }
+    });
+
+    // Manejar selección de método de pago
+    paymentOptionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const paymentType = this.getAttribute('data-payment');
+            selectedPaymentMethod = paymentType;
+            
+            // Remover clase active de todos los botones y QR displays
+            paymentOptionButtons.forEach(btn => btn.classList.remove('active'));
+            qrDisplays.forEach(display => display.classList.remove('active'));
+            
+            // Activar el botón seleccionado
+            this.classList.add('active');
+            
+            // Mostrar el QR correspondiente
+            const qrDisplay = document.getElementById('qr-' + paymentType);
+            if (qrDisplay) {
+                qrDisplay.classList.add('active');
+            }
+            
+            // Mostrar sección de datos del cliente
+            customerDataSection.style.display = 'block';
+            
+            // Mostrar sección de carga de comprobante
+            uploadSection.style.display = 'block';
+            
+            // Verificar si se debe habilitar el botón de confirmación
+            checkConfirmButtonState();
+        });
+    });
+
+    // Manejar clic en botón de cargar
+    uploadBtn.addEventListener('click', function() {
+        comprobanteInput.click();
+    });
+
+    // Manejar cambio de archivo
+    comprobanteInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            comprobanteFile = file;
+            
+            // Mostrar vista previa
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewArea.style.display = 'block';
+                uploadBtn.style.display = 'none';
+                checkConfirmButtonState();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Por favor, selecciona una imagen válida');
+        }
+    });
+
+    // Manejar eliminación de imagen
+    removeImageBtn.addEventListener('click', function() {
+        comprobanteFile = null;
+        comprobanteInput.value = '';
+        previewArea.style.display = 'none';
+        uploadBtn.style.display = 'inline-block';
+        checkConfirmButtonState();
+    });
+
+    // Verificar estado del botón de confirmación
+    function checkConfirmButtonState() {
+        const nombreCompleto = nombreCompletoInput.value.trim();
+        const cedula = cedulaInput.value.trim();
+        const telefono = telefonoInput.value.trim();
+        const direccion = direccionInput.value.trim();
+        
+        if (selectedPaymentMethod && comprobanteFile && nombreCompleto && cedula && telefono && direccion) {
+            confirmPaymentBtn.disabled = false;
+        } else {
+            confirmPaymentBtn.disabled = true;
+        }
+    }
+    
+    // Validar campos en tiempo real
+    nombreCompletoInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        const errorElement = document.getElementById('nombre-error');
+        
+        if (value.length < 3) {
+            errorElement.textContent = 'El nombre debe tener al menos 3 caracteres';
+        } else {
+            errorElement.textContent = '';
+        }
+        checkConfirmButtonState();
+    });
+    
+    cedulaInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        const errorElement = document.getElementById('cedula-error');
+        
+        // Validar que solo contenga números
+        if (!/^\d*$/.test(value)) {
+            this.value = value.replace(/\D/g, '');
+        }
+        
+        if (value.length < 6 || value.length > 20) {
+            errorElement.textContent = 'La cédula debe tener entre 6 y 20 dígitos';
+        } else if (!/^\d+$/.test(value)) {
+            errorElement.textContent = 'La cédula debe contener solo números';
+        } else {
+            errorElement.textContent = '';
+        }
+        checkConfirmButtonState();
+    });
+    
+    telefonoInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        const errorElement = document.getElementById('telefono-error');
+        
+        // Validar que solo contenga números
+        if (!/^\d*$/.test(value)) {
+            this.value = value.replace(/\D/g, '');
+        }
+        
+        if (value.length < 7 || value.length > 15) {
+            errorElement.textContent = 'El teléfono debe tener entre 7 y 15 dígitos';
+        } else if (!/^\d+$/.test(value)) {
+            errorElement.textContent = 'El teléfono debe contener solo números';
+        } else {
+            errorElement.textContent = '';
+        }
+        checkConfirmButtonState();
+    });
+    
+    direccionInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        const errorElement = document.getElementById('direccion-error');
+        
+        if (value.length < 10) {
+            errorElement.textContent = 'La dirección debe tener al menos 10 caracteres';
+        } else {
+            errorElement.textContent = '';
+        }
+        checkConfirmButtonState();
+    });
+
+    // Confirmar pago realizado
+    confirmPaymentBtn.addEventListener('click', function() {
+        if (!comprobanteFile) {
+            alert('Por favor, carga el comprobante de pago antes de confirmar');
+            return;
+        }
+        
+        // Validar campos del formulario
+        const nombreCompleto = nombreCompletoInput.value.trim();
+        const cedula = cedulaInput.value.trim();
+        const telefono = telefonoInput.value.trim();
+        const direccion = direccionInput.value.trim();
+        
+        if (!nombreCompleto || nombreCompleto.length < 3) {
+            alert('Por favor, ingresa tu nombre completo');
+            nombreCompletoInput.focus();
+            return;
+        }
+        
+        if (!cedula || cedula.length < 6 || cedula.length > 20 || !/^\d+$/.test(cedula)) {
+            alert('Por favor, ingresa una cédula válida (solo números, entre 6 y 20 dígitos)');
+            cedulaInput.focus();
+            return;
+        }
+        
+        if (!telefono || telefono.length < 7 || telefono.length > 15 || !/^\d+$/.test(telefono)) {
+            alert('Por favor, ingresa un teléfono válido (solo números, entre 7 y 15 dígitos)');
+            telefonoInput.focus();
+            return;
+        }
+        
+        if (!direccion || direccion.length < 10) {
+            alert('Por favor, ingresa una dirección válida (mínimo 10 caracteres)');
+            direccionInput.focus();
+            return;
+        }
+
+        if (confirm('¿Confirmas que has realizado el pago y los datos son correctos?')) {
+            // Enviar el pago al servidor
+            enviarPago();
+        }
+    });
+
+    // Función para enviar el pago al servidor
+    function enviarPago() {
+        const cart = getCart();
+        const total = calculateTotal(cart);
+        
+        const formData = new FormData();
+        formData.append('nombre_completo', nombreCompletoInput.value.trim());
+        formData.append('cedula', cedulaInput.value.trim());
+        formData.append('email', emailInput.value);
+        formData.append('telefono', telefonoInput.value.trim());
+        formData.append('direccion', direccionInput.value.trim());
+        formData.append('metodo_pago', selectedPaymentMethod);
+        formData.append('monto_total', total.toFixed(2));
+        formData.append('comprobante', comprobanteFile);
+        formData.append('productos', JSON.stringify(cart));
+        
+        // Obtener el token CSRF
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch('/procesar-pago/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Vaciar el carrito
+                sessionStorage.removeItem(getCarritoKey());
+                
+                // Limpiar carrito en el backend
+                fetch('/api/carrito/limpiar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).catch(error => console.error('Error al limpiar carrito:', error));
+                
+                renderCart();
+                updateCartBadge();
+                
+                // Cerrar modal
+                closePaymentModal();
+                
+                // Mostrar mensaje de éxito
+                alert('¡Gracias por tu compra! Tu pago está siendo verificado y recibirás confirmación pronto.');
+            } else {
+                alert('Error al procesar el pago: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al procesar tu pago. Por favor, intenta de nuevo.');
+        });
+    }
+
+    // Cerrar modal con tecla ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && paymentModal.style.display === 'block') {
+            closePaymentModal();
+        }
+    });
+
+    // Cargar el carrito al iniciar la página
+    document.addEventListener('DOMContentLoaded', () => {
+        renderCart();
+        updateCartBadge();
+    });
+
+    // Función para actualizar el badge del carrito en el menú
+    function updateCartBadge() {
+        const cart = getCart();
+        const badge = document.getElementById('cart-count-badge');
+        const totalItems = cart.reduce((sum, item) => sum + item.cantidad, 0);
+        
+        if (totalItems > 0) {
+            badge.textContent = totalItems;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+</script>
+
+<script src="{% static 'core/javascript/Carrito.js' %}"></script>
+
+<script>
+  function aplicarFiltros() {
+        const categoria = document.getElementById('categoria').value;
+        console.log('Aplicando filtros y redirigiendo...');
+        console.log('Categoría seleccionada:', categoria);
+
+        if (categoria) {
+            const urlRedireccion = '/' + categoria + '/';
+            
+            console.log('Redirigiendo a:', urlRedireccion);
+            window.location.href = urlRedireccion;
+        } else {
+            window.location.href = '/productos/'; 
+        }
+    }
+</script>
+
+<script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+{% include 'core/floating_buttons.html' %}
+{% include 'core/modal_notificaciones.html' %}
+</body>
+</html>
+

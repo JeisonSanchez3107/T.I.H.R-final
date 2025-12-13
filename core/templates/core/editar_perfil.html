@@ -1,0 +1,403 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Edita tu información personal en Tu Idea Hecha Realidad. Actualiza tus datos de contacto, dirección y preferencias.">
+  <meta name="keywords" content="editar perfil, actualizar datos, información personal, configuración usuario">
+  <meta name="author" content="Tu Idea Hecha Realidad">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Editar Perfil - TIHR">
+  <meta property="og:description" content="Actualiza tu información personal.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_CO">
+  
+  <title>Editar Perfil - TIHR</title>
+  <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/responsive.css' %}">
+  <script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+</head>
+<body>
+
+<!-- Overlay para cerrar sidebar en móvil -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- BARRA LATERAL (MENÚ + FILTROS) -->
+<div class="sidebar">
+    <div class="sidebar-user-info">
+        <a href="{% url 'perfilUsuario' %}" class="user-avatar-link">
+            {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F; object-fit: cover;">
+            {% else %}
+                <img src="{% static 'core/img/Perfil.png' %}" alt="Logo" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F;">
+            {% endif %}
+        </a>
+        <span class="username-display">{{ usuario.usernameCliente }}</span>
+    </div>
+    <ul>
+        <li><a href="{% url 'productos' %}">Gangazos</a></li>
+        <li><a href="{% url 'idea' %}">Crear Idea</a></li>
+        <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+        <li><a href="{% url 'contact' %}">Contáctenos</a></li>
+        <li><a href="{% url 'comentarios' %}">Comentarios</a></li>
+        <li><a href="{% url 'logout' %}" class="logout-button">Cerrar Sesión</a></li>
+    </ul>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <h2 for="categoria" class="h2-side">Categoría:</h2>
+    <select id="categoria">
+        <option value="">Elegir Categoria</option> 
+        <option value="carpinteria">Armarios</option>
+        <option value="marroquineria">Escritorios</option>
+        <option value="vidrieria">Sillas</option>
+        <option value="metaleria">Cajoneras</option>
+        <option value="ceramica">Mesas</option>
+        <option value="tapiceria">Utensilios</option>
+    </select>
+    <button onclick="aplicarFiltros()">Aplicar filtros</button>
+  </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="main-content-wrapper">
+  <header>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <h1 class="div" style="text-align: center;">
+      <img src="{% static 'core/img/Gemini_Generated_Image_tzay6utzay6utzay.jfif' %}" alt="Logo" width="75" height="75">
+      Tu Idea Hecha Realidad
+    </h1>
+  </header>
+
+  <section>
+    <div class="perfil-container">
+      {% if messages %}
+      <div class="messages">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+          </div>
+          {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="perfil-card">
+          <div class="perfil-header">
+              <h1>Editar Perfil</h1>
+              <p>Actualiza tu información personal</p>
+          </div>
+
+          <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              
+              <!-- Vista previa de foto de perfil -->
+              <div class="foto-perfil-preview">
+                  {% if usuario.foto_perfil %}
+                      <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" class="foto-preview-img" id="preview-image">
+                  {% else %}
+                      <div class="foto-placeholder" id="preview-placeholder">
+                          {{ usuario.usernameCliente|first|upper }}
+                      </div>
+                  {% endif %}
+              </div>
+
+              <!-- Información básica -->
+              <div class="form-group">
+                  <label for="id_usernameCliente">Nombre de usuario</label>
+                  <input 
+                      type="text" 
+                      name="usernameCliente" 
+                      class="form-control" 
+                      id="id_usernameCliente"
+                      value="{{ form.usernameCliente.value|default:usuario.usernameCliente }}"
+                      required
+                  >
+                  {{ form.usernameCliente.errors }}
+              </div>
+
+              <div class="form-group">
+                  <label for="id_email">Correo electrónico</label>
+                  <input 
+                      type="email" 
+                      name="email" 
+                      class="form-control" 
+                      id="id_email"
+                      value="{{ form.email.value|default:usuario.email }}"
+                      required
+                  >
+                  {{ form.email.errors }}
+              </div>
+
+              <div class="form-group">
+                  <label for="id_foto_perfil">Foto de perfil</label>
+                  <div class="file-input-wrapper">
+                      <input 
+                          type="file" 
+                          name="foto_perfil" 
+                          id="id_foto_perfil" 
+                          accept="image/*"
+                          onchange="previewFoto(event)"
+                      >
+                      <label for="id_foto_perfil" class="file-input-label">
+                          Seleccionar foto de perfil
+                      </label>
+                  </div>
+                  {{ form.foto_perfil.errors }}
+              </div>
+
+              <!-- Información personal -->
+              <div class="personal-info-section">
+                  <h3>Información Personal</h3>
+                  
+                  <div class="form-group">
+                      <label for="id_nombre_completo">Nombre completo</label>
+                      <input 
+                          type="text" 
+                          name="nombre_completo" 
+                          class="form-control" 
+                          id="id_nombre_completo"
+                          value="{{ form.nombre_completo.value|default:usuario.nombre_completo|default:'' }}"
+                          placeholder="Tu nombre completo"
+                      >
+                      {{ form.nombre_completo.errors }}
+                  </div>
+
+                  <div class="form-group">
+                      <label for="id_cedula">Cédula</label>
+                      <input 
+                          type="text" 
+                          name="cedula" 
+                          class="form-control" 
+                          id="id_cedula"
+                          value="{{ form.cedula.value|default:usuario.cedula|default:'' }}"
+                          placeholder="Número de cédula"
+                          maxlength="20"
+                      >
+                      <small class="form-hint">Solo números, entre 6 y 20 dígitos</small>
+                      {{ form.cedula.errors }}
+                  </div>
+
+                  <div class="form-group">
+                      <label for="id_telefono">Teléfono</label>
+                      <input 
+                          type="text" 
+                          name="telefono" 
+                          class="form-control" 
+                          id="id_telefono"
+                          value="{{ form.telefono.value|default:usuario.telefono|default:'' }}"
+                          placeholder="Ej: 3001234567"
+                          maxlength="15"
+                      >
+                      <small class="form-hint">Solo números, entre 7 y 15 dígitos</small>
+                      {{ form.telefono.errors }}
+                  </div>
+
+                  <div class="form-group">
+                      <label for="id_direccion">Dirección</label>
+                      <input 
+                          type="text" 
+                          name="direccion" 
+                          class="form-control" 
+                          id="id_direccion"
+                          value="{{ form.direccion.value|default:usuario.direccion|default:'' }}"
+                          placeholder="Calle 123 #45-67"
+                      >
+                      {{ form.direccion.errors }}
+                  </div>
+
+                  <div class="form-group">
+                      <label for="id_ciudad">Ciudad</label>
+                      <input 
+                          type="text" 
+                          name="ciudad" 
+                          class="form-control" 
+                          id="id_ciudad"
+                          value="{{ form.ciudad.value|default:usuario.ciudad|default:'' }}"
+                          placeholder="Ciudad"
+                      >
+                      {{ form.ciudad.errors }}
+                  </div>
+
+                  <div class="form-group">
+                      <label for="id_departamento">Departamento</label>
+                      <input 
+                          type="text" 
+                          name="departamento" 
+                          class="form-control" 
+                          id="id_departamento"
+                          value="{{ form.departamento.value|default:usuario.departamento|default:'' }}"
+                          placeholder="Departamento"
+                      >
+                      {{ form.departamento.errors }}
+                  </div>
+              </div>
+
+              <!-- Sección de cambio de contraseña -->
+              <div class="password-section">
+                  <h3>Cambiar Contraseña (opcional)</h3>
+                  
+                  <div class="form-group">
+                      <label for="id_passwordCliente_actual">Contraseña actual</label>
+                      <input 
+                          type="password" 
+                          name="passwordCliente_actual" 
+                          class="form-control" 
+                          id="id_passwordCliente_actual"
+                          placeholder="Contraseña actual"
+                      >
+                      {{ form.passwordCliente_actual.errors }}
+                  </div>
+
+                  <div class="form-group">
+                      <label for="id_passwordCliente_nueva">Nueva contraseña</label>
+                      <input 
+                          type="password" 
+                          name="passwordCliente_nueva" 
+                          class="form-control" 
+                          id="id_passwordCliente_nueva"
+                          placeholder="Nueva contraseña (mínimo 6 caracteres)"
+                      >
+                      {{ form.passwordCliente_nueva.errors }}
+                  </div>
+
+                  <div class="form-group">
+                      <label for="id_passwordCliente_confirmar">Confirmar nueva contraseña</label>
+                      <input 
+                          type="password" 
+                          name="passwordCliente_confirmar" 
+                          class="form-control" 
+                          id="id_passwordCliente_confirmar"
+                          placeholder="Confirmar nueva contraseña"
+                      >
+                      {{ form.passwordCliente_confirmar.errors }}
+                  </div>
+              </div>
+
+              {% if form.non_field_errors %}
+                  <div class="alert alert-error">
+                      {{ form.non_field_errors }}
+                  </div>
+              {% endif %}
+
+              <div class="form-actions">
+                  <a href="{% url 'perfilUsuario' %}" class="btn btn-secondary">Cancelar</a>
+                  <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              </div>
+          </form>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3 class="footer-title">📞 Contáctenos</h3>
+            <div class="footer-info">
+                <i>📞</i>
+                <span>+57 300 123 4567</span>
+            </div>
+            <div class="footer-info">
+                <i>✉️</i>
+                <span>info@gangasca-tirr.com</span>
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <h3 class="footer-title">📍 Dirección</h3>
+            <div class="footer-info">
+                <i>📍</i>
+                <span>Carrera 45 P. 26-85<br>RoyalA, Colombia</span>
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <h3 class="footer-title">🌐 Síguenos</h3>
+            <div class="footer-social">
+                <a href="https://www.instagram.com/tu_idea_hecha_realidad?igsh=Y3ByM2lyZGcwNHVy" class="social-icon-img" aria-label="Instagram">
+                        <img src="{% static 'core/img/Instagram.webp' %}" alt="Instagram" class="social-logo" width="40" height="40">
+                    </a>
+                    <a href="https://www.facebook.com/share/1ACEVZbZHV/" class="social-icon-img" aria-label="Facebook">
+                        <img src="{% static 'core/img/Facebook.png' %}" alt="Facebook" class="social-logo" width="40" height="40">
+                    </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>© 2025 Tu Idea Herba Realidad - Todos los derechos reservados</p>
+    </div>
+  </footer>
+</div>
+
+
+
+<script>
+    function previewFoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('preview-image');
+                const placeholder = document.getElementById('preview-placeholder');
+                
+                if (preview) {
+                    preview.src = e.target.result;
+                } else if (placeholder) {
+                    // Crear nuevo elemento de imagen
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'foto-preview-img';
+                    img.id = 'preview-image';
+                    placeholder.parentNode.replaceChild(img, placeholder);
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    // Validación de cédula - solo números
+    const cedulaInput = document.getElementById('id_cedula');
+    if (cedulaInput) {
+        cedulaInput.addEventListener('input', function(e) {
+            // Remover cualquier carácter que no sea número
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
+    
+    // Validación de teléfono - solo números
+    const telefonoInput = document.getElementById('id_telefono');
+    if (telefonoInput) {
+        telefonoInput.addEventListener('input', function(e) {
+            // Remover cualquier carácter que no sea número
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
+</script>
+<script>
+  function aplicarFiltros() {
+        const categoria = document.getElementById('categoria').value;
+        console.log('Aplicando filtros y redirigiendo...');
+        console.log('Categoría seleccionada:', categoria);
+
+        if (categoria) {
+            const urlRedireccion = '/' + categoria + '/';
+            
+            console.log('Redirigiendo a:', urlRedireccion);
+            window.location.href = urlRedireccion;
+        } else {
+            window.location.href = '/productos/'; 
+        }
+    }
+</script>
+
+<script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+{% include 'core/floating_buttons.html' %}
+{% include 'core/modal_notificaciones.html' %}
+</body>
+</html>
+

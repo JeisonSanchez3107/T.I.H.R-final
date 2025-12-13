@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Configura la autenticación de dos factores para mayor seguridad en tu cuenta empresarial.">
+    <meta name="keywords" content="2FA, autenticación dos factores, seguridad cuenta, configurar 2FA">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Configurar 2FA - Empresa">
+    <meta property="og:description" content="Configura la autenticación de dos factores.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Configurar 2FA - Empresa</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/StylesLogin.css' %}">
+    <style>
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <form class="form" method="POST">
+            {% csrf_token %}
+            <h1>Configurar 2FA</h1>
+            
+            <div class="alert-info">
+                <strong>⚠️ Configuración Obligatoria</strong>
+                <p style="margin: 5px 0 0 0; font-size: 14px;">
+                    La autenticación de dos factores es obligatoria para todas las cuentas de empresa. 
+                    Por favor, configura tu 2FA para continuar.
+                </p>
+            </div>
+            
+            <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                Verifica tu identidad ingresando tu correo electrónico y contraseña.
+            </p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="input-group">
+                <label for="email">Correo Electrónico:</label>
+                <input type="email"
+                       name="email"
+                       id="email"
+                       placeholder="tu.email@ejemplo.com"
+                       required
+                       value="{{ empresa.email }}">
+            </div>
+
+            <div class="input-group">
+                <label for="passwordEmpresa">Contraseña:</label>
+                <input type="password"
+                       name="passwordEmpresa"
+                       id="passwordEmpresa"
+                       placeholder="Tu contraseña"
+                       required>
+            </div>
+            
+            <button type="submit" class="btn">
+                Continuar
+            </button>
+        </form>
+    </div>
+</body>
+</html>
+

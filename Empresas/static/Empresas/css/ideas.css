@@ -1,0 +1,328 @@
+/* Estilos para Gestión de Ideas */
+
+.tabla-usuarios {
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tabla-usuarios table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-usuarios thead {
+    background: linear-gradient(135deg, #6B4E3D, #4A3428);
+    color: white;
+}
+
+.tabla-usuarios th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.tabla-usuarios td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tabla-usuarios tbody tr:hover {
+    background: #f9fafb;
+}
+
+.btn-ver-ideas {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-ver-ideas:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 30px auto;
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 1200px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #6B4E3D, #4A3428);
+    color: white;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2,
+.modal-header h3 {
+    color: white;
+    margin: 0;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.close:hover {
+    opacity: 0.8;
+}
+
+.idea-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.idea-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.idea-header h3 {
+    margin: 0;
+    color: #7A3E0E;
+}
+
+.badge-estado {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.badge-pendiente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-en_proceso {
+    background: #f5e6d3;
+    color: #7A3E0E;
+}
+
+.badge-completada {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-finalizada {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-rechazada {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.idea-info {
+    margin: 15px 0;
+    color: #666;
+}
+
+.idea-info p {
+    margin: 5px 0;
+}
+
+.idea-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.75rem;
+    transition: all 0.3s;
+}
+
+.btn-aceptar {
+    background: #10b981;
+    color: white;
+}
+
+.btn-aceptar:hover {
+    background: #059669;
+}
+
+.btn-rechazar {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-rechazar:hover {
+    background: #dc2626;
+}
+
+.btn-completar {
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+}
+
+.btn-completar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+.btn-finalizar {
+    background: linear-gradient(135deg, #C9A882, #A0662F);
+    color: white;
+}
+
+.btn-finalizar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+.btn-ver-imagen, .btn-ver-3d {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-ver-imagen:hover, .btn-ver-3d:hover {
+    background: #d97706;
+}
+
+.btn-contactar {
+    background: linear-gradient(135deg, #C9A882, #A0662F);
+    color: white;
+}
+
+.btn-contactar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.3);
+}
+
+.btn-solicitar-permiso {
+    background: linear-gradient(135deg, #C9A882, #A0662F);
+    color: white;
+}
+
+.btn-solicitar-permiso:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+.btn-publicar {
+    background: #10b981;
+    color: white;
+}
+
+.btn-publicar:hover {
+    background: #059669;
+}
+
+.no-datos {
+    text-align: center;
+    padding: 40px;
+    color: #9ca3af;
+    font-size: 1.1rem;
+}
+
+/* Modal de rechazo */
+.modal-rechazo {
+    max-width: 600px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #7A3E0E;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-modal-cancelar {
+    background: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-modal-enviar {
+    background: #ef4444;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-modal-enviar:hover {
+    background: #dc2626;
+}

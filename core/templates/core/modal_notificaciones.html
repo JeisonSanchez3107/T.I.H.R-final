@@ -1,0 +1,800 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Modal de Notificaciones -->
+<div id="notificacionesModal" class="notif-modal">
+    <div class="notif-modal-content">
+        <!-- Header del Modal -->
+        <div class="notif-modal-header">
+            <h3>Notificaciones</h3>
+            <button class="notif-close" onclick="cerrarNotificaciones()">&times;</button>
+        </div>
+        
+        <!-- Lista de Conversaciones -->
+        <div id="conversacionesLista" class="conversaciones-lista">
+            <!-- Se cargará dinámicamente -->
+        </div>
+        
+        <!-- Vista de Chat Individual -->
+        <div id="chatContainer" class="chat-container">
+            <div class="chat-header">
+                <button class="chat-back-btn" onclick="volverAConversaciones()">←</button>
+                <div class="chat-info">
+                    <h4 id="chatTitulo"></h4>
+                    <p id="chatEstado"></p>
+                </div>
+            </div>
+            
+            <div id="chatMensajes" class="chat-mensajes">
+                <!-- Mensajes se cargarán aquí -->
+            </div>
+            
+            <div class="chat-input-container">
+                <form id="chatForm" class="chat-input-form" onsubmit="enviarMensaje(event)">
+                    <div style="display: flex; align-items: flex-end; gap: 8px; flex: 1;">
+                        <textarea 
+                            id="chatInput" 
+                            class="chat-input" 
+                            placeholder="Escribe tu mensaje..."
+                            rows="1"
+                        ></textarea>
+                        <label for="chatImagenInput" class="chat-file-btn" title="Adjuntar imagen">
+                            📎
+                            <input type="file" id="chatImagenInput" accept="image/*" style="display: none;" onchange="previsualizarImagen(event)">
+                        </label>
+                    </div>
+                    <button type="submit" class="chat-send-btn">
+                        ➤
+                    </button>
+                </form>
+                <div id="chatImagenPreview" style="margin-top: 8px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let ideasConMensajes = [];
+let ideaActualChat = null;
+let usernameEmpresa = '{{ request.session.usernameEmpresa|default:"" }}';
+let usernameCliente = '{{ request.session.usernameCliente|default:"" }}';
+let tipoUsuario = usernameEmpresa && usernameEmpresa !== '' ? 'empresa' : 'cliente';
+let nombreUsuario = usernameEmpresa || usernameCliente;
+
+console.log('Username Empresa:', usernameEmpresa);
+console.log('Username Cliente:', usernameCliente);
+console.log('Tipo de usuario:', tipoUsuario);
+console.log('Nombre usuario:', nombreUsuario);
+
+// Abrir modal de notificaciones
+function abrirNotificaciones() {
+    console.log('\n🔔 ABRIENDO MODAL DE NOTIFICACIONES');
+    console.log('Tipo usuario:', tipoUsuario);
+    console.log('Username:', nombreUsuario);
+    document.getElementById('notificacionesModal').style.display = 'block';
+    cargarConversaciones();
+}
+
+// Cerrar modal
+function cerrarNotificaciones() {
+    document.getElementById('notificacionesModal').style.display = 'none';
+    document.getElementById('conversacionesLista').style.display = 'block';
+    document.getElementById('chatContainer').style.display = 'none';
+}
+
+// Cerrar al hacer clic fuera del modal
+window.onclick = function(event) {
+    const modal = document.getElementById('notificacionesModal');
+    if (event.target === modal) {
+        cerrarNotificaciones();
+    }
+}
+
+// Cargar lista de conversaciones (ideas con mensajes)
+function cargarConversaciones() {
+    console.log('Cargando conversaciones...');
+    
+    // Cargar conversaciones de ideas y pagos
+    const promises = [
+        fetch('/api/conversaciones/', { credentials: 'same-origin' }).then(r => r.json())
+    ];
+    
+    // Tanto clientes como empresas pueden ver chats de pagos
+    promises.push(
+        fetch('/api/conversaciones-pagos/', { credentials: 'same-origin' })
+            .then(r => {
+                console.log('📡 Response de conversaciones-pagos:', r.status);
+                return r.json();
+            })
+            .then(json => {
+                console.log('📦 JSON de conversaciones-pagos:', json);
+                return json;
+            })
+            .catch(err => {
+                console.error('❌ Error en conversaciones-pagos:', err);
+                return { success: false, conversaciones: [] };
+            })
+    );
+    
+    Promise.all(promises)
+        .then(results => {
+            const [dataIdeas, dataPagos] = results;
+            
+            console.log('\n' + '='.repeat(70));
+            console.log('📊 DATA RECIBIDA DE APIS');
+            console.log('='.repeat(70));
+            console.log('Ideas:', dataIdeas);
+            console.log('  - Success:', dataIdeas?.success);
+            console.log('  - Count:', dataIdeas?.conversaciones?.length);
+            console.log('Pagos:', dataPagos);
+            console.log('  - Success:', dataPagos?.success);
+            console.log('  - Count:', dataPagos?.conversaciones?.length);
+            console.log('='.repeat(70));
+            
+            let todasConversaciones = [];
+            
+            // Agregar conversaciones de ideas
+            if (dataIdeas.success && dataIdeas.conversaciones) {
+                const conversacionesIdeas = dataIdeas.conversaciones.map(conv => ({
+                    ...conv,
+                    tipo: 'idea'
+                }));
+                todasConversaciones = todasConversaciones.concat(conversacionesIdeas);
+            }
+            
+            // Agregar conversaciones de pagos
+            if (dataPagos && dataPagos.success && dataPagos.conversaciones) {
+                console.log('📦 Procesando conversaciones de pagos:', dataPagos.conversaciones.length);
+                const conversacionesPagos = dataPagos.conversaciones.map(conv => {
+                    console.log('  - Pago #' + conv.id + ' mapeado con tipo: pago');
+                    return {
+                        ...conv,
+                        tipo: 'pago'
+                    };
+                });
+                todasConversaciones = todasConversaciones.concat(conversacionesPagos);
+                console.log('✅ Conversaciones de pagos agregadas:', conversacionesPagos.length);
+            } else {
+                console.warn('⚠️ No se pudieron cargar conversaciones de pagos');
+                console.log('dataPagos:', dataPagos);
+            }
+            
+            ideasConMensajes = todasConversaciones;
+            console.log('✅ Total conversaciones finales:', ideasConMensajes.length);
+            console.log('ideasConMensajes:', ideasConMensajes);
+            
+            mostrarConversaciones();
+        })
+        .catch(error => {
+            console.error('Error al cargar conversaciones:', error);
+            ideasConMensajes = [];
+            mostrarConversaciones();
+        });
+}
+
+// Mostrar lista de conversaciones
+function mostrarConversaciones() {
+    console.log('=== MOSTRAR CONVERSACIONES ===');
+    console.log('ideasConMensajes:', ideasConMensajes);
+    console.log('Length:', ideasConMensajes.length);
+    
+    const lista = document.getElementById('conversacionesLista');
+    
+    if (ideasConMensajes.length === 0) {
+        console.log('⚠️ Mostrando mensaje "No tienes conversaciones"');
+        lista.innerHTML = `
+            <div class="no-conversaciones">
+                <div class="no-conversaciones-icono">📭</div>
+                <p>No tienes conversaciones</p>
+            </div>
+        `;
+        return;
+    }
+    
+    console.log('✅ Renderizando', ideasConMensajes.length, 'conversaciones');
+    lista.innerHTML = ideasConMensajes.map(conv => {
+        const tieneNoLeidos = conv.mensajes_no_leidos > 0;
+        const ultimoMensaje = conv.ultimo_mensaje || 'Sin mensajes';
+        const nombreOtro = conv.otro_participante || 'Desconocido';
+        
+        // Determinar si es idea o pago
+        const esPago = conv.tipo === 'pago';
+        
+        if (esPago) {
+            console.log('📋 Renderizando pago #' + conv.id + ' (tipo: ' + conv.tipo + ')');
+            const estadoColor = conv.estado === 'rechazado' ? 'rechazado' : conv.estado === 'confirmado' ? 'completada' : 'pendiente';
+            const html = `
+                <div class="conversacion-item ${tieneNoLeidos ? 'no-leido' : ''}" 
+                     onclick="console.log('Click en pago #${conv.id}'); abrirChatPago(${conv.id});">
+                    <div class="conversacion-titulo">
+                        <strong>💳 Pago #${conv.id}</strong>
+                        <span class="conversacion-estado ${estadoColor}">
+                            ${conv.estado}
+                        </span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #666; margin: 3px 0;">
+                        ${tipoUsuario === 'empresa' ? 'Cliente' : 'Empresa'}: <strong>${nombreOtro}</strong>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #666; margin: 3px 0;">
+                        Monto: <strong>$${conv.monto_total}</strong>
+                    </div>
+                    <div class="conversacion-ultimo-mensaje">${ultimoMensaje}</div>
+                    <div class="conversacion-fecha">${conv.ultima_actualizacion}</div>
+                </div>
+            `;
+            console.log('✅ HTML generado para pago #' + conv.id);
+            return html;
+        } else {
+            const estadoColor = conv.estado === 'finalizada' ? 'completada' : 'pendiente';
+            const tieneSolicitudPermiso = conv.tiene_solicitud_permiso && !conv.permiso_otorgado;
+            return `
+                <div class="conversacion-item ${tieneNoLeidos ? 'no-leido' : ''}" 
+                     onclick="abrirChat(${conv.id})">
+                    <div class="conversacion-titulo">
+                        <strong>${conv.titulo}</strong>
+                        <span class="conversacion-estado ${estadoColor}">
+                            ${conv.estado}
+                        </span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #666; margin: 3px 0;">
+                        ${tipoUsuario === 'cliente' ? 'Empresa' : 'Cliente'}: <strong>${nombreOtro}</strong>
+                    </div>
+                    <div class="conversacion-ultimo-mensaje">${ultimoMensaje}</div>
+                    <div class="conversacion-fecha">${conv.ultima_actualizacion}</div>
+                    ${tieneSolicitudPermiso ? '<div class="badge-permiso">Solicitud de permiso pendiente</div>' : ''}
+                </div>
+            `;
+        }
+    }).join('');
+}
+
+// Abrir chat individual
+function abrirChat(ideaId) {
+    console.log('\n' + '='.repeat(70));
+    console.log('💬 ABRIR CHAT IDEA');
+    console.log('='.repeat(70));
+    console.log('IdeaId:', ideaId);
+    console.log('ideasConMensajes:', ideasConMensajes);
+    
+    ideaActualChat = ideaId;
+    const idea = ideasConMensajes.find(i => i.id === ideaId && i.tipo === 'idea');
+    
+    console.log('Idea encontrada:', idea);
+    
+    if (!idea) {
+        console.error('❌ Idea no encontrada');
+        return;
+    }
+    
+    document.getElementById('conversacionesLista').style.display = 'none';
+    document.getElementById('chatContainer').style.display = 'flex';
+    document.getElementById('chatTitulo').textContent = idea.titulo;
+    
+    const nombreOtro = idea.otro_participante || 'Desconocido';
+    const tipoOtro = tipoUsuario === 'cliente' ? 'Empresa' : 'Cliente';
+    document.getElementById('chatEstado').textContent = `${tipoOtro}: ${nombreOtro} | Estado: ${idea.estado}`;
+    
+    console.log('✅ Cargando mensajes de idea...');
+    cargarMensajes(ideaId);
+    marcarMensajesComoLeidos(ideaId);
+}
+
+// Volver a la lista de conversaciones
+function volverAConversaciones() {
+    document.getElementById('conversacionesLista').style.display = 'block';
+    document.getElementById('chatContainer').style.display = 'none';
+    ideaActualChat = null;
+    cargarConversaciones(); // Recargar para actualizar contadores
+}
+
+// Cargar mensajes de una idea
+function cargarMensajes(ideaId) {
+    console.log('📨 Fetching mensajes de idea:', ideaId);
+    console.log('URL:', `/api/mensajes-idea/${ideaId}/`);
+    
+    fetch(`/api/mensajes-idea/${ideaId}/`, {
+        credentials: 'same-origin'
+    })
+        .then(response => {
+            console.log('📡 Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('📦 Data recibida:', data);
+            console.log('  - Success:', data.success);
+            console.log('  - Mensajes count:', data.mensajes?.length);
+            mostrarMensajes(data.mensajes, data.idea);
+        })
+        .catch(error => {
+            console.error('❌ Error al cargar mensajes de idea:', error);
+        });
+}
+
+// Mostrar mensajes en el chat
+function mostrarMensajes(mensajes, idea) {
+    const chatMensajes = document.getElementById('chatMensajes');
+    
+    console.log('=== MOSTRAR MENSAJES ===');
+    console.log('Total mensajes:', mensajes.length);
+    console.log('Idea:', idea);
+    console.log('Permiso otorgado:', idea.permiso_otorgado);
+    console.log('Tipo usuario:', tipoUsuario);
+    
+    if (mensajes.length === 0) {
+        chatMensajes.innerHTML = `
+            <div class="no-conversaciones">
+                <p>No hay mensajes aún. ¡Inicia la conversación!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    chatMensajes.innerHTML = mensajes.map(msg => {
+        const esPermiso = msg.es_solicitud_permiso;
+        const permisoOtorgado = idea.permiso_otorgado;
+        
+        console.log('Mensaje:', {
+            es_solicitud_permiso: esPermiso,
+            permiso_otorgado: permisoOtorgado,
+            tipo_usuario: tipoUsuario,
+            mostrar_botones: !permisoOtorgado && tipoUsuario === 'cliente'
+        });
+        
+        if (esPermiso) {
+            const mostrarBotones = !permisoOtorgado && tipoUsuario === 'cliente';
+            console.log('🔍 PERMISO DETECTADO:');
+            console.log('  - permisoOtorgado:', permisoOtorgado);
+            console.log('  - tipoUsuario:', tipoUsuario);
+            console.log('  - mostrarBotones:', mostrarBotones);
+            
+            return `
+                <div class="mensaje solicitud-permiso-container">
+                    <div class="mensaje-bubble mensaje-permiso ${permisoOtorgado ? 'permiso-otorgado' : ''}">
+                        <div class="permiso-header">
+                            <div class="permiso-titulo">Solicitud de Permiso de Publicación</div>
+                        </div>
+                        <div class="mensaje-texto permiso-descripcion">${msg.mensaje}</div>
+                        <div class="mensaje-fecha">${msg.fecha_envio}</div>
+                        <div class="permiso-botones">
+                            <button class="btn-aceptar-permiso" onclick="aceptarPermiso(${idea.id})" ${permisoOtorgado ? 'disabled' : ''}>
+                                Aceptar
+                            </button>
+                            <button class="btn-rechazar-permiso" onclick="rechazarPermiso(${idea.id})" ${permisoOtorgado ? 'disabled' : ''}>
+                                Rechazar
+                            </button>
+                        </div>
+                        ${permisoOtorgado ? `
+                            <div class="permiso-otorgado-badge">
+                                Permiso otorgado${idea.fecha_permiso ? ' el ' + idea.fecha_permiso : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        return `
+            <div class="mensaje ${msg.remitente_tipo}">
+                <div class="mensaje-bubble">
+                    <div class="mensaje-autor">${msg.remitente_nombre}</div>
+                    <div class="mensaje-texto">${msg.mensaje}</div>
+                    <div class="mensaje-fecha">${msg.fecha_envio}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    // Scroll al final después de renderizar
+    setTimeout(() => {
+        chatMensajes.scrollTop = chatMensajes.scrollHeight;
+        console.log('Scroll realizado. Altura:', chatMensajes.scrollHeight);
+    }, 100);
+}
+
+// Enviar mensaje
+function enviarMensaje(event) {
+    event.preventDefault();
+    
+    const input = document.getElementById('chatInput');
+    const mensaje = input.value.trim();
+    
+    if (!mensaje || !ideaActualChat) return;
+    
+    const formData = new FormData();
+    formData.append('mensaje', mensaje);
+    
+    fetch(`/api/enviar-mensaje/${ideaActualChat}/`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            input.value = '';
+            cargarMensajes(ideaActualChat);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al enviar el mensaje');
+    });
+}
+
+// Aceptar permiso de publicación
+function aceptarPermiso(ideaId) {
+    if (!confirm('¿Estás seguro de otorgar permiso a la empresa para publicar tu idea como producto?')) {
+        return;
+    }
+    
+    fetch(`/idea/otorgar-permiso/${ideaId}/`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✓ Permiso otorgado exitosamente');
+            cargarMensajes(ideaId);
+            cargarConversaciones(); // Actualizar la lista
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al otorgar el permiso');
+    });
+}
+
+// Rechazar permiso de publicación
+function rechazarPermiso(ideaId) {
+    if (!confirm('¿Estás seguro de rechazar la solicitud de permiso?')) {
+        return;
+    }
+    
+    // Enviar mensaje indicando el rechazo
+    const formData = new FormData();
+    formData.append('mensaje', '❌ He rechazado la solicitud de permiso de publicación.');
+    
+    fetch(`/api/enviar-mensaje/${ideaId}/`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Solicitud rechazada');
+            cargarMensajes(ideaId);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al rechazar el permiso');
+    });
+}
+
+// MANTENER COMPATIBILIDAD: Alias de aceptarPermiso
+function otorgarPermisoChat(ideaId) {
+    aceptarPermiso(ideaId);
+}
+
+// Marcar mensajes como leídos
+function marcarMensajesComoLeidos(ideaId) {
+    fetch(`/api/marcar-leidos/${ideaId}/`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .catch(error => console.error('Error al marcar como leídos:', error));
+}
+
+// ========== FUNCIONES PARA CHAT DE PAGOS ==========
+
+let pagoActualChat = null;
+let chatTipo = 'idea'; // 'idea' o 'pago'
+
+// Abrir chat de pago
+function abrirChatPago(pagoId) {
+    console.log('\n' + '='.repeat(70));
+    console.log('🔵 ABRIR CHAT PAGO - FUNCIÓN LLAMADA');
+    console.log('='.repeat(70));
+    console.log('PagoId:', pagoId);
+    console.log('Tipo usuario:', tipoUsuario);
+    console.log('ideasConMensajes:', ideasConMensajes);
+    
+    pagoActualChat = pagoId;
+    chatTipo = 'pago';
+    const pago = ideasConMensajes.find(p => p.id === pagoId && p.tipo === 'pago');
+    console.log('Buscando pago con id:', pagoId, 'y tipo: pago');
+    
+    console.log('Pago encontrado:', pago);
+    
+    if (!pago) {
+        console.error('Pago no encontrado en ideasConMensajes');
+        return;
+    }
+    
+    // Cambiar vistas
+    const conversacionesLista = document.getElementById('conversacionesLista');
+    const chatContainer = document.getElementById('chatContainer');
+    const chatMensajes = document.getElementById('chatMensajes');
+    
+    console.log('Elementos DOM:');
+    console.log('- conversacionesLista:', conversacionesLista);
+    console.log('- chatContainer:', chatContainer);
+    console.log('- chatMensajes:', chatMensajes);
+    
+    conversacionesLista.style.display = 'none';
+    chatContainer.style.display = 'flex';
+    
+    document.getElementById('chatTitulo').textContent = `Pago #${pago.id}`;
+    
+    const nombreOtro = pago.otro_participante || 'Desconocido';
+    const tipoOtro = tipoUsuario === 'empresa' ? 'Cliente' : 'Empresa';
+    document.getElementById('chatEstado').textContent = `${tipoOtro}: ${nombreOtro} | Monto: $${pago.monto_total} | Estado: ${pago.estado}`;
+    
+    // Limpiar área de mensajes antes de cargar
+    chatMensajes.innerHTML = '<div style="padding: 20px; text-align: center;">Cargando mensajes...</div>';
+    
+    console.log('Iniciando carga de mensajes...');
+    cargarMensajesPago(pagoId);
+    marcarMensajesPagoComoLeidos(pagoId);
+}
+
+// Cargar mensajes de un pago
+function cargarMensajesPago(pagoId) {
+    console.log('=== CARGAR MENSAJES PAGO ===');
+    console.log('PagoId:', pagoId);
+    console.log('TipoUsuario:', tipoUsuario);
+    console.log('URL a llamar:', `/api/mensajes-pago/${pagoId}/`);
+    
+    fetch(`/api/mensajes-pago/${pagoId}/`, {
+        credentials: 'same-origin'
+    })
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            return response.json();
+        })
+        .then(data => {
+            console.log('=== DATA RECIBIDA ===');
+            console.log('Success:', data.success);
+            console.log('Mensajes count:', data.mensajes ? data.mensajes.length : 0);
+            console.log('Mensajes:', data.mensajes);
+            console.log('Pago:', data.pago);
+            
+            if (data.success) {
+                if (!data.mensajes || data.mensajes.length === 0) {
+                    console.warn('⚠️ No hay mensajes en la respuesta');
+                }
+                mostrarMensajesPago(data.mensajes, data.pago);
+            } else {
+                console.error('Error en respuesta:', data.error);
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error al cargar mensajes:', error);
+            alert('Error al cargar los mensajes del pago');
+        });
+}
+
+// Mostrar mensajes de pago en el chat
+function mostrarMensajesPago(mensajes, pago) {
+    console.log('=== MOSTRAR MENSAJES PAGO ===');
+    
+    const chatMensajes = document.getElementById('chatMensajes');
+    
+    if (!chatMensajes) {
+        console.error('ERROR: No se encontró el elemento chatMensajes');
+        return;
+    }
+    
+    console.log('Elemento chatMensajes encontrado:', chatMensajes);
+    console.log('Total mensajes a mostrar:', mensajes.length);
+    console.log('Mensajes recibidos:', mensajes);
+    console.log('Info del pago:', pago);
+    
+    if (!mensajes || mensajes.length === 0) {
+        console.log('No hay mensajes, mostrando mensaje vacío');
+        chatMensajes.innerHTML = `
+            <div class="no-conversaciones">
+                <p>No hay mensajes aún. ¡Inicia la conversación!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    console.log('Generando HTML para', mensajes.length, 'mensajes');
+    
+    const mensajesHtml = mensajes.map((msg, index) => {
+        console.log(`[${index}] Procesando mensaje:`, {
+            id: msg.id,
+            remitente_tipo: msg.remitente_tipo,
+            remitente_nombre: msg.remitente_nombre,
+            mensaje: msg.mensaje,
+            fecha: msg.fecha_envio
+        });
+        
+        return `
+            <div class="mensaje ${msg.remitente_tipo}" data-mensaje-id="${msg.id}">
+                <div class="mensaje-bubble">
+                    <div class="mensaje-autor">${msg.remitente_nombre}</div>
+                    <div class="mensaje-texto">${msg.mensaje}</div>
+                    ${msg.imagen ? `
+                        <div class="mensaje-imagen">
+                            <img src="${msg.imagen}" alt="Imagen" onclick="window.open('${msg.imagen}', '_blank')" 
+                                 style="max-width: 200px; border-radius: 4px; cursor: pointer; margin-top: 8px;">
+                        </div>
+                    ` : ''}
+                    <div class="mensaje-fecha">${msg.fecha_envio}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    console.log('HTML generado (primeros 500 chars):', mensajesHtml.substring(0, 500));
+    console.log('Longitud total del HTML:', mensajesHtml.length);
+    
+    chatMensajes.innerHTML = mensajesHtml;
+    
+    console.log('HTML aplicado al DOM');
+    console.log('Contenido actual del chatMensajes (primeros 500 chars):', chatMensajes.innerHTML.substring(0, 500));
+    console.log('Número de elementos .mensaje encontrados:', chatMensajes.querySelectorAll('.mensaje').length);
+    
+    // Scroll al final
+    setTimeout(() => {
+        chatMensajes.scrollTop = chatMensajes.scrollHeight;
+        console.log('✅ Scroll aplicado - ScrollTop:', chatMensajes.scrollTop, 'ScrollHeight:', chatMensajes.scrollHeight);
+    }, 100);
+}
+
+// Modificar la función volverAConversaciones para resetear tipo de chat
+const volverAConversacionesOriginal = volverAConversaciones;
+volverAConversaciones = function() {
+    chatTipo = 'idea';
+    pagoActualChat = null;
+    volverAConversacionesOriginal();
+}
+
+// Previsualizar imagen antes de enviar
+function previsualizarImagen(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('chatImagenPreview');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <div style="position: relative; display: inline-block;">
+                    <img src="${e.target.result}" style="max-width: 150px; border-radius: 4px; border: 1px solid #ddd;">
+                    <button onclick="cancelarImagen()" style="position: absolute; top: -8px; right: -8px; background: red; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">✕</button>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Cancelar imagen seleccionada
+function cancelarImagen() {
+    document.getElementById('chatImagenInput').value = '';
+    document.getElementById('chatImagenPreview').innerHTML = '';
+}
+
+// Modificar enviarMensaje para soportar ambos tipos e imágenes
+const enviarMensajeOriginal = enviarMensaje;
+enviarMensaje = function(event) {
+    event.preventDefault();
+    
+    const input = document.getElementById('chatInput');
+    const imagenInput = document.getElementById('chatImagenInput');
+    const mensaje = input.value.trim();
+    const tieneImagen = imagenInput && imagenInput.files.length > 0;
+    
+    // Validar que haya mensaje o imagen
+    if (!mensaje && !tieneImagen) {
+        if (chatTipo === 'pago') {
+            alert('Debes escribir un mensaje o adjuntar una imagen');
+        }
+        return;
+    }
+    
+    if (chatTipo === 'pago' && pagoActualChat) {
+        const formData = new FormData();
+        if (mensaje) {
+            formData.append('mensaje', mensaje);
+        }
+        if (tieneImagen) {
+            formData.append('imagen', imagenInput.files[0]);
+        }
+        
+        fetch(`/api/enviar-mensaje-pago/${pagoActualChat}/`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                input.value = '';
+                if (imagenInput) {
+                    imagenInput.value = '';
+                }
+                document.getElementById('chatImagenPreview').innerHTML = '';
+                cargarMensajesPago(pagoActualChat);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al enviar el mensaje');
+        });
+    } else {
+        enviarMensajeOriginal(event);
+    }
+}
+
+// Marcar mensajes de pago como leídos
+function marcarMensajesPagoComoLeidos(pagoId) {
+    fetch(`/api/marcar-leidos-pago/${pagoId}/`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .catch(error => console.error('Error al marcar como leídos:', error));
+}
+
+// Obtener cookie CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Auto-resize del textarea
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+    }
+});
+</script>
+

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activar Autenticación de Dos Factores</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/StylesLogin.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <form class="form" method="POST">
+            {% csrf_token %}
+            <h1>Activar 2FA</h1>
+            
+            <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                Para activar la autenticación de dos factores, verifica tu identidad ingresando tu correo electrónico y contraseña.
+            </p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="input-group">
+                <label for="email">Correo Electrónico:</label>
+                <input type="email"
+                       name="email"
+                       id="email"
+                       placeholder="tu.email@ejemplo.com"
+                       required
+                       value="{{ usuario.email }}">
+            </div>
+
+            <div class="input-group">
+                <label for="passwordCliente">Contraseña:</label>
+                <input type="password"
+                       name="passwordCliente"
+                       id="passwordCliente"
+                       placeholder="Tu contraseña"
+                       required>
+            </div>
+            
+            <button type="submit" class="btn">
+                Continuar
+            </button>
+        </form>
+
+        <div class="register-link">
+            <a href="{% url 'perfilUsuario' %}">Volver al perfil</a>
+        </div>
+    </div>
+</body>
+</html>
+

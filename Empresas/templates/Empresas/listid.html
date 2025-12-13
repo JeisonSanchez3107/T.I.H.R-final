@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Lista de ideas publicadas como productos. Visualiza todas las ideas convertidas en muebles artesanales.">
+  <meta name="keywords" content="ideas publicadas, productos ideas, catálogo ideas, muebles personalizados">
+  <meta name="author" content="Tu Idea Hecha Realidad">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Ideas Publicadas">
+  <meta property="og:description" content="Ideas convertidas en productos reales.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_CO">
+  
+  <title>Ideas Publicadas</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
+</head>
+<body>
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside>
+  <h2>Dashboard de Empresa</h2>
+  <nav>
+    <ul>
+        <li><a href="{% url 'dashboardEmpresa' %}">Inicio</a></li>
+        <li><a href="{% url 'GestiProductos' %}">Gestión de productos</a></li> 
+        <li><a href="{% url 'listid' %}">Lista de ideas</a></li>
+        <li><a href="{% url 'empresa_comentarios' %}">Gestión de comentarios</a></li>
+    </ul>
+  </nav>
+  <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+</aside>
+
+
+  <!-- Main content -->
+  <main>
+    <header>
+      <h1>Ideas Publicadas</h1>
+    </header>
+
+    <section class="seccion-at">
+        <h2>Ideas Publicadas</h2>
+        {% if ideas %}
+          <div class="contenedor-articulos">
+            {% for idea in ideas %}
+              <div class="articulo">
+                <div class="contenido-articulo">
+                  <h3>{{ idea.titulo }}</h3>
+                  <p>{{ idea.descripcion }}</p>
+                  <p><strong>Autor:</strong> {{ idea.autor }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>Aún no hay ideas publicadas. ¡Sé el primero en compartir la tuya!</p>
+        {% endif %}
+      </section>
+  </main>
+</div>
+
+{% load static %}
+<!-- Incluir estilos para el botón flotante de notificaciones empresa -->
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Botón flotante de notificaciones para empresa -->
+<a id="floating-notif-btn-empresa" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+    <span class="fb-icon">🔔</span>
+    <span id="floating-notif-badge-empresa" class="fb-badge" style="display:none">0</span>
+</a>
+
+{% include 'core/modal_notificaciones.html' %}
+
+<script>
+// Actualizar notificaciones cada 30 segundos para empresa
+function actualizarNotificacionesEmpresa() {
+    fetch('/api/conversaciones/')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('floating-notif-btn-empresa');
+            const badge = document.getElementById('floating-notif-badge-empresa');
+            
+            if (data.success && data.conversaciones) {
+                const tieneNoLeidos = data.conversaciones.some(c => c.mensajes_no_leidos > 0);
+                
+                if (tieneNoLeidos) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'inline-block';
+                } else if (data.conversaciones.length > 0) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'none';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.warn('Error al verificar notificaciones empresa:', err));
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(actualizarNotificacionesEmpresa, 30000);
+});
+</script>
+
+</body>
+</html>

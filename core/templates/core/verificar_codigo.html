@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Verifica tu correo electrónico con el código de confirmación enviado.">
+    <meta name="keywords" content="verificar código, confirmación email, validar cuenta">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Verificar Código">
+    <meta property="og:description" content="Verifica tu correo electrónico.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Verificar Código</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/StylesRegistro.css' %}">
+</head>
+<body class="landing-page">
+
+    <div class="container">
+        <form class="form-glass" method="POST">
+            {% csrf_token %}
+            <h2>Verificar Código</h2>
+
+            <p style="text-align: center; color: #666; margin-bottom: 20px; line-height: 1.6;">
+                Hemos enviado un código de 4 dígitos a:<br>
+                <strong style="color: #A0662F;">{{ email }}</strong>
+            </p>
+
+            <p style="text-align: center; color: #888; font-size: 0.9rem; margin-bottom: 25px;">
+                Por favor, revisa tu bandeja de entrada (y spam) e ingresa el código para completar tu registro.
+            </p>
+
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="input-group">
+                <input type="text"
+                       name="codigo"
+                       id="codigo"
+                       placeholder="Ingresa el código de 4 dígitos"
+                       required
+                       maxlength="4"
+                       pattern="[0-9]{4}"
+                       title="Ingresa un código de 4 dígitos"
+                       style="text-align: center; font-size: 24px; letter-spacing: 10px;"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+            </div>
+
+            <button type="submit" class="btn">
+                Verificar Código
+            </button>
+
+            <div class="login-link">
+                ¿No recibiste el código? <a href="{% url 'registro' %}">Registrarse nuevamente</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Prevenir pegado de contenido no numérico
+        document.getElementById('codigo').addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const numericText = pastedText.replace(/[^0-9]/g, '');
+            this.value = numericText.substring(0, 4);
+        });
+    </script>
+
+</body>
+</html>
+

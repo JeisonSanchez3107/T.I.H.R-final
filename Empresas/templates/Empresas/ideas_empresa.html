@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Gestión de ideas de clientes. Revisa, acepta y convierte ideas creativas en productos artesanales reales.">
+    <meta name="keywords" content="gestión ideas, ideas clientes, proyectos personalizados, diseños a medida">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Gestión de Ideas - Dashboard Empresa">
+    <meta property="og:description" content="Administra las ideas enviadas por los clientes.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Gestión de Ideas | Dashboard Empresa</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/ideas.css' %}">
+    
+    <!-- Model Viewer para modelos 3D -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+        
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside>
+            <h2>Dashboard de Empresa</h2>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'dashboardEmpresa' %}">Inicio</a></li>
+                    <li><a href="{% url 'usuarios' %}">Gestión de usuarios</a></li>
+                    <li><a href="{% url 'GestiProductos' %}">Gestión de productos</a></li>
+                    <li><a href="{% url 'inventario' %}">Inventario</a></li>
+                    <li><a href="{% url 'empresa_ideas' %}">Gestión de ideas</a></li>
+                    <li><a href="{% url 'empresa_comentarios' %}">Gestión de comentarios</a></li>
+                    <li><a href="{% url 'gestion_pagos' %}">Gestión de pagos</a></li>
+                    <li><a href="{% url 'gestion_pedidos' %}">Gestión de pedidos</a></li>
+                    <li><a href="{% url 'estadisticas' %}">Estadísticas</a></li>
+                </ul>
+            </nav>
+            <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+        </aside>
+
+        <main>
+            <header>
+                <h1>Gestión de Ideas</h1>
+            </header>
+
+            <div class="tabla-usuarios">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Cantidad de Ideas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if usuarios_con_ideas %}
+                            {% for usuario in usuarios_con_ideas %}
+                            <tr>
+                                <td><strong>{{ usuario.usernameCliente }}</strong></td>
+                                <td>{{ usuario.cantidad_ideas }}</td>
+                                <td>
+                                    <button class="btn-ver-ideas" onclick="verIdeasUsuario({{ usuario.id }}, '{{ usuario.usernameCliente }}')">
+                                        Ver Ideas
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="no-datos">
+                                    No hay usuarios con ideas registradas
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+    <!-- Modal para ver ideas de un usuario -->
+    <div id="modalIdeasUsuario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ideas de <span id="nombreUsuario"></span></h2>
+                <button class="close" onclick="cerrarModalIdeas()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="listaIdeas"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para rechazar idea -->
+    <div id="modalRechazoIdea" class="modal">
+        <div class="modal-content modal-rechazo">
+            <div class="modal-header">
+                <h2>Rechazar Idea</h2>
+                <button class="close" onclick="cerrarModalRechazo()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formRechazoIdea">
+                    <div class="form-group">
+                        <label for="motivoRechazo">Motivo del rechazo *</label>
+                        <textarea 
+                            id="motivoRechazo" 
+                            placeholder="Explica al usuario por qué su idea es rechazada..."
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-modal-cancelar" onclick="cerrarModalRechazo()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-modal-enviar">
+                            Enviar y Rechazar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalles de Idea -->
+    <div id="modalDetallesIdea" class="modal">
+        <div class="modal-content modal-detalles">
+            <div class="modal-header">
+                <h2>Detalles de la Idea</h2>
+                <button class="close" onclick="cerrarModalDetalles()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detalle-item">
+                    <h3 id="detallesTitulo"></h3>
+                </div>
+                <div class="detalle-item">
+                    <label><strong>Descripción:</strong></label>
+                    <p id="detallesDescripcion"></p>
+                </div>
+                <div class="detalle-dimensiones">
+                    <div class="detalle-item">
+                        <label><strong>Ancho:</strong></label>
+                        <p><span id="detallesAncho"></span> cm</p>
+                    </div>
+                    <div class="detalle-item">
+                        <label><strong>Altura:</strong></label>
+                        <p><span id="detallesAltura"></span> cm</p>
+                    </div>
+                </div>
+                <!-- Contenedor para imagen o modelo 3D -->
+                <div id="detallesMediaContainer" style="display: none; margin-top: 20px;">
+                    <div id="detallesImagenContainer" style="display: none; text-align: center;">
+                        <label><strong>Imagen de referencia:</strong></label>
+                        <img id="detallesImagen" style="max-width: 100%; max-height: 400px; margin-top: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Imagen de la idea">
+                    </div>
+                    <div id="detallesModelo3DContainer" style="display: none; text-align: center;">
+                        <label><strong>Modelo 3D:</strong></label>
+                        <div style="margin-top: 10px; background: #f9f9f9; padding: 20px; border-radius: 8px;">
+                            <model-viewer id="detallesModelo3D" 
+                                style="width: 100%; height: 400px;"
+                                camera-controls 
+                                auto-rotate 
+                                shadow-intensity="1"
+                                camera-orbit="45deg 55deg 2.5m"
+                                interaction-prompt="auto">
+                            </model-viewer>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal-cancelar" onclick="cerrarModalDetalles()">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% csrf_token %}
+
+    <script>
+        let ideaIdParaRechazar = null;
+        let usuarioIdActual = null;
+
+        // Ver ideas de un usuario
+        function verIdeasUsuario(usuarioId, nombreUsuario) {
+            usuarioIdActual = usuarioId;
+            document.getElementById('nombreUsuario').textContent = nombreUsuario;
+            
+            fetch(`/obtener-ideas-usuario/${usuarioId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        mostrarIdeas(data.ideas);
+                        document.getElementById('modalIdeasUsuario').style.display = 'block';
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al cargar las ideas');
+                });
+        }
+
+        // Mostrar ideas en el modal
+        function mostrarIdeas(ideas) {
+            const lista = document.getElementById('listaIdeas');
+            
+            if (ideas.length === 0) {
+                lista.innerHTML = '<div class="no-datos">Este usuario no tiene ideas registradas.</div>';
+                return;
+            }
+            
+            lista.innerHTML = ideas.map(idea => {
+                let botones = '';
+                
+                // Botones según el estado
+                if (idea.estado === 'pendiente') {
+                    botones = `
+                        <button class="btn-small btn-aceptar" onclick="aceptarIdea(${idea.id})">
+                            Aceptar
+                        </button>
+                        <button class="btn-small btn-rechazar" onclick="abrirModalRechazo(${idea.id})">
+                            Rechazar
+                        </button>
+                        <button class="btn-small btn-info" onclick='verDetallesIdea(${idea.id}, "${idea.titulo.replace(/"/g, '&quot;')}", "${(idea.descripcion || "Sin descripción").replace(/"/g, "&quot;")}", ${idea.ancho || 0}, ${idea.altura || 0}, ${idea.tiene_imagen}, ${idea.tiene_modelo_3d})'>
+                            Ver Detalles
+                        </button>
+                    `;
+                } else if (idea.estado === 'en_proceso') {
+                    botones = `
+                        <button class="btn-small btn-completar" onclick="completarIdea(${idea.id})">
+                            Completar
+                        </button>
+                        <button class="btn-small btn-contactar" onclick="contactarUsuario(${idea.id})">
+                            Contactar Usuario
+                        </button>
+                        <button class="btn-small btn-info" onclick="verDetallesIdea(${idea.id}, '${idea.titulo}', '${(idea.descripcion || 'Sin descripción').replace(/'/g, "\\'")}', ${idea.ancho || 0}, ${idea.altura || 0})">
+                            Ver Detalles
+                        </button>
+                    `;
+                } else if (idea.estado === 'completada') {
+                    botones = `
+                        <button class="btn-small btn-finalizar" onclick="finalizarIdea(${idea.id})">
+                            Finalizar
+                        </button>
+                        <button class="btn-small btn-contactar" onclick="contactarUsuario(${idea.id})">
+                            Contactar Usuario
+                        </button>
+                        <button class="btn-small btn-info" onclick="verDetallesIdea(${idea.id}, '${idea.titulo}', '${(idea.descripcion || 'Sin descripción').replace(/'/g, "\\'")}', ${idea.ancho || 0}, ${idea.altura || 0})">
+                            Ver Detalles
+                        </button>
+                    `;
+                } else if (idea.estado === 'finalizada') {
+                    if (!idea.permiso_publicacion) {
+                        botones = `
+                            <button class="btn-small btn-solicitar-permiso" onclick="solicitarPermiso(${idea.id})">
+                                Solicitar Permiso
+                            </button>
+                        `;
+                    } else if (!idea.publicada_como_producto) {
+                        botones = `
+                            <button class="btn-small btn-publicar" onclick="publicarComoProducto(${idea.id})">
+                                Publicar como Producto
+                            </button>
+                        `;
+                    } else {
+                        botones = '<p style="color: #10b981; font-weight: 600;">✓ Ya publicada como producto</p>';
+                    }
+                    botones += `
+                        <button class="btn-small btn-contactar" onclick="contactarUsuario(${idea.id})">
+                            Contactar Usuario
+                        </button>
+                        <button class="btn-small btn-info" onclick="verDetallesIdea(${idea.id}, '${idea.titulo}', '${(idea.descripcion || 'Sin descripción').replace(/'/g, "\\'")}', ${idea.ancho || 0}, ${idea.altura || 0})">
+                            Ver Detalles
+                        </button>
+                    `;
+                } else if (idea.estado === 'rechazada') {
+                    botones = `
+                        <button class="btn-small btn-contactar" onclick="contactarUsuario(${idea.id})">
+                            Contactar Usuario
+                        </button>
+                        <button class="btn-small btn-info" onclick="verDetallesIdea(${idea.id}, '${idea.titulo}', '${(idea.descripcion || 'Sin descripción').replace(/'/g, "\\'")}', ${idea.ancho || 0}, ${idea.altura || 0})">
+                            Ver Detalles
+                        </button>
+                        <p style="color: #ef4444; font-weight: 600; margin-top: 10px;">✗ Idea rechazada</p>
+                    `;
+                }
+                
+                const estadoClass = 'badge-' + idea.estado;
+                const estadoTexto = idea.estado.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                return `
+                    <div class="idea-card">
+                        <div class="idea-header">
+                            <h3>${idea.titulo}</h3>
+                            <span class="badge-estado ${estadoClass}">${estadoTexto}</span>
+                        </div>
+                        <div class="idea-info">
+                            <p><strong>Fecha:</strong> ${idea.fecha_creacion}</p>
+                            ${idea.empresa_asignada ? `<p><strong>Empresa asignada:</strong> ${idea.empresa_asignada}</p>` : ''}
+                            ${idea.permiso_publicacion ? '<p style="color: #10b981;">✓ Permiso de publicación otorgado</p>' : ''}
+                        </div>
+                        <div class="idea-actions">
+                            ${botones}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Abrir modal de rechazo
+        function abrirModalRechazo(ideaId) {
+            ideaIdParaRechazar = ideaId;
+            document.getElementById('motivoRechazo').value = '';
+            document.getElementById('modalRechazoIdea').style.display = 'block';
+        }
+
+        // Cerrar modal de rechazo
+        function cerrarModalRechazo() {
+            ideaIdParaRechazar = null;
+            document.getElementById('modalRechazoIdea').style.display = 'none';
+        }
+
+        // Enviar rechazo
+        document.getElementById('formRechazoIdea').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!ideaIdParaRechazar) return;
+            
+            const motivo = document.getElementById('motivoRechazo').value.trim();
+            
+            if (!motivo) {
+                alert('Debes escribir un motivo de rechazo');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('motivo', motivo);
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            fetch(`/rechazar-idea/${ideaIdParaRechazar}/`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Idea rechazada y notificación enviada al usuario');
+                    cerrarModalRechazo();
+                    // Recargar las ideas del usuario actual
+                    if (usuarioIdActual) {
+                        const nombreUsuario = document.getElementById('nombreUsuario').textContent;
+                        verIdeasUsuario(usuarioIdActual, nombreUsuario);
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al rechazar la idea');
+            });
+        });
+
+        // Aceptar idea
+        function aceptarIdea(ideaId) {
+            if (!confirm('¿Estás seguro de aceptar esta idea?')) return;
+            
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            fetch(`/aceptar-idea/${ideaId}/`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Idea aceptada exitosamente');
+                    // Recargar las ideas del usuario actual
+                    if (usuarioIdActual) {
+                        const nombreUsuario = document.getElementById('nombreUsuario').textContent;
+                        verIdeasUsuario(usuarioIdActual, nombreUsuario);
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al aceptar la idea');
+            });
+        }
+
+        // Completar idea
+        function completarIdea(ideaId) {
+            if (!confirm('¿Marcar esta idea como completada?')) return;
+            
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            fetch(`/completar-idea/${ideaId}/`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Idea completada exitosamente');
+                    // Recargar las ideas del usuario actual
+                    if (usuarioIdActual) {
+                        const nombreUsuario = document.getElementById('nombreUsuario').textContent;
+                        verIdeasUsuario(usuarioIdActual, nombreUsuario);
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al completar la idea');
+            });
+        }
+
+        // Finalizar idea
+        function finalizarIdea(ideaId) {
+            if (!confirm('¿Finalizar esta idea?')) return;
+            
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            fetch(`/finalizar-idea/${ideaId}/`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Idea finalizada exitosamente');
+                    // Recargar las ideas del usuario actual
+                    if (usuarioIdActual) {
+                        const nombreUsuario = document.getElementById('nombreUsuario').textContent;
+                        verIdeasUsuario(usuarioIdActual, nombreUsuario);
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al finalizar la idea');
+            });
+        }
+
+        // Ver detalles de la idea
+        function verDetallesIdea(ideaId, titulo, descripcion, ancho, altura, tieneImagen, tieneModelo3D) {
+            document.getElementById('detallesTitulo').textContent = titulo;
+            document.getElementById('detallesDescripcion').textContent = descripcion;
+            document.getElementById('detallesAncho').textContent = ancho;
+            document.getElementById('detallesAltura').textContent = altura;
+            
+            // Contenedores de media
+            const mediaContainer = document.getElementById('detallesMediaContainer');
+            const imagenContainer = document.getElementById('detallesImagenContainer');
+            const modelo3DContainer = document.getElementById('detallesModelo3DContainer');
+            
+            // Resetear displays
+            mediaContainer.style.display = 'none';
+            imagenContainer.style.display = 'none';
+            modelo3DContainer.style.display = 'none';
+            
+            // Cargar datos de la idea para obtener las URLs de archivos
+            fetch(`/obtener-detalle-idea/${ideaId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mostrar imagen si existe
+                        if (tieneImagen && data.imagen_url) {
+                            const imgElement = document.getElementById('detallesImagen');
+                            imgElement.src = data.imagen_url;
+                            imagenContainer.style.display = 'block';
+                            mediaContainer.style.display = 'block';
+                        }
+                        
+                        // Mostrar modelo 3D si existe
+                        if (tieneModelo3D && data.modelo_3d_url) {
+                            const modelViewer = document.getElementById('detallesModelo3D');
+                            modelViewer.src = data.modelo_3d_url;
+                            modelo3DContainer.style.display = 'block';
+                            mediaContainer.style.display = 'block';
+                        }
+                    }
+                })
+                .catch(error => console.error('Error al cargar detalles:', error));
+            
+            document.getElementById('modalDetallesIdea').style.display = 'block';
+        }
+
+        // Cerrar modal de detalles
+        function cerrarModalDetalles() {
+            document.getElementById('modalDetallesIdea').style.display = 'none';
+            // Limpiar el src del modelo 3D para detener la carga
+            const modelViewer = document.getElementById('detallesModelo3D');
+            if (modelViewer) {
+                modelViewer.src = '';
+            }
+        }
+
+        // Contactar usuario (abre el sistema de notificaciones)
+        function contactarUsuario(ideaId) {
+            // Verificar si existe la función abrirNotificaciones
+            if (typeof abrirNotificaciones === 'function') {
+                abrirNotificaciones();
+            } else {
+                alert('Para contactar al usuario, usa el sistema de notificaciones en la barra superior');
+            }
+        }
+
+        // Solicitar permiso de publicación
+        function solicitarPermiso(ideaId) {
+            const mensaje = prompt('Escribe tu solicitud de permiso al usuario:');
+            if (!mensaje) return;
+            
+            const formData = new FormData();
+            formData.append('mensaje', mensaje);
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            fetch(`/solicitar-permiso-publicacion/${ideaId}/`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Solicitud enviada al usuario');
+                    // Recargar las ideas del usuario actual
+                    if (usuarioIdActual) {
+                        const nombreUsuario = document.getElementById('nombreUsuario').textContent;
+                        verIdeasUsuario(usuarioIdActual, nombreUsuario);
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al enviar solicitud');
+            });
+        }
+
+        // Publicar como producto
+        function publicarComoProducto(ideaId) {
+            window.location.href = `/publicar-idea-producto/${ideaId}/`;
+        }
+
+        // Cerrar modal de ideas
+        function cerrarModalIdeas() {
+            document.getElementById('modalIdeasUsuario').style.display = 'none';
+        }
+
+        // Cerrar modales al hacer clic fuera
+        window.onclick = function(event) {
+            const modalIdeas = document.getElementById('modalIdeasUsuario');
+            const modalRechazo = document.getElementById('modalRechazoIdea');
+            
+            if (event.target === modalIdeas) {
+                cerrarModalIdeas();
+            }
+            if (event.target === modalRechazo) {
+                cerrarModalRechazo();
+            }
+        }
+    </script>
+        </main>
+    </div>
+
+{% load static %}
+<!-- Incluir estilos para el botón flotante de notificaciones empresa -->
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Botón flotante de notificaciones para empresa -->
+<a id="floating-notif-btn-empresa" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+    <span class="fb-icon">🔔</span>
+    <span id="floating-notif-badge-empresa" class="fb-badge" style="display:none">0</span>
+</a>
+
+{% include 'core/modal_notificaciones.html' %}
+
+<script>
+// Actualizar notificaciones cada 30 segundos para empresa
+function actualizarNotificacionesEmpresa() {
+    fetch('/api/conversaciones/')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('floating-notif-btn-empresa');
+            const badge = document.getElementById('floating-notif-badge-empresa');
+            
+            if (data.success && data.conversaciones) {
+                const tieneNoLeidos = data.conversaciones.some(c => c.mensajes_no_leidos > 0);
+                
+                if (tieneNoLeidos) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'inline-block';
+                } else if (data.conversaciones.length > 0) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'none';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.warn('Error al verificar notificaciones empresa:', err));
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarNotificacionesEmpresa();
+    setInterval(actualizarNotificacionesEmpresa, 30000);
+});
+</script>
+
+<style>
+    /* Estilos para el modal de detalles */
+    .modal-detalles {
+        max-width: 800px;
+    }
+
+    .detalle-item {
+        margin-bottom: 20px;
+    }
+
+    .detalle-item h3 {
+        color: #A0662F;
+        margin-bottom: 10px;
+        font-size: 24px;
+    }
+
+    .detalle-item label {
+        display: block;
+        color: #555;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .detalle-item p {
+        color: #333;
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .detalle-dimensiones {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+    }
+
+    .detalle-dimensiones .detalle-item {
+        margin-bottom: 0;
+    }
+
+    .detalle-dimensiones p {
+        font-size: 18px;
+        font-weight: 600;
+        color: #A0662F;
+    }
+
+    #detallesMediaContainer {
+        border-top: 2px solid #f0f0f0;
+        padding-top: 20px;
+    }
+
+    #detallesImagenContainer img {
+        border: 1px solid #e0e0e0;
+    }
+
+    #detallesModelo3DContainer {
+        background: linear-gradient(135deg, #f9f9f9 0%, #e9e9e9 100%);
+    }
+
+    .btn-info {
+        background: #3b82f6 !important;
+        color: white !important;
+    }
+
+    .btn-info:hover {
+        background: #2563eb !important;
+    }
+</style>
+        background: #2563eb !important;
+    }
+</style>
+
+</body>
+</html>

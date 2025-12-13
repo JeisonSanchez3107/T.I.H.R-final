@@ -1,0 +1,316 @@
+/* Estilos para la página de comentarios */
+.comentarios-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.comentario-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.comentario-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.comentario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.comentario-usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.usuario-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    overflow: hidden;
+}
+
+.usuario-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.usuario-info h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.comentario-fecha {
+    font-size: 12px;
+    color: #999;
+}
+
+.comentario-contenido {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    margin: 15px 0;
+}
+
+.comentario-acciones {
+    display: flex;
+    gap: 10px;
+}
+
+.comentario-acciones form {
+    margin: 0;
+}
+
+.btn-eliminar {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.3s;
+}
+
+.btn-eliminar:hover {
+    background: #c0392b;
+}
+
+.nuevo-comentario-section {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.nuevo-comentario-section h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #A0662F;
+}
+
+.btn-primary {
+    background: #A0662F;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #7A3E0E;
+    transform: translateY(-2px);
+}
+
+.no-comentarios {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 16px;
+}
+
+.messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+/* ============================================
+   MEDIA QUERIES RESPONSIVAS PARA COMENTARIOS
+   ============================================ */
+
+/* Tablets */
+@media screen and (max-width: 1366px) and (min-width: 768px) {
+    .comentarios-container {
+        max-width: 100%;
+        padding: 20px 15px;
+    }
+
+    .comentario-card {
+        padding: 18px;
+    }
+
+    .nuevo-comentario-section {
+        padding: 22px;
+    }
+}
+
+/* Móviles */
+@media screen and (max-width: 767px) {
+    .comentarios-container {
+        max-width: 100%;
+        padding: 15px 10px;
+    }
+
+    .comentario-card {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .comentario-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .comentario-usuario {
+        width: 100%;
+    }
+
+    .usuario-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .usuario-info h4 {
+        font-size: 15px;
+    }
+
+    .comentario-fecha {
+        font-size: 11px;
+    }
+
+    .comentario-contenido {
+        font-size: 14px;
+        text-align: left;
+    }
+
+    .comentario-acciones {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .nuevo-comentario-section {
+        padding: 20px 15px;
+        border-radius: 8px;
+    }
+
+    .nuevo-comentario-section h3 {
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .form-control {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .no-comentarios {
+        padding: 30px 15px;
+        font-size: 15px;
+    }
+}
+
+/* Móviles pequeños */
+@media screen and (max-width: 480px) {
+    .comentarios-container {
+        padding: 10px 5px;
+    }
+
+    .comentario-card {
+        padding: 12px;
+    }
+
+    .usuario-avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+
+    .usuario-info h4 {
+        font-size: 14px;
+    }
+
+    .comentario-contenido {
+        font-size: 13px;
+    }
+
+    .btn-eliminar {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .nuevo-comentario-section {
+        padding: 15px 10px;
+    }
+
+    .nuevo-comentario-section h3 {
+        font-size: 16px;
+    }
+}
+
+/* Pantallas grandes */
+@media screen and (min-width: 1367px) {
+    .comentarios-container {
+        max-width: 1000px;
+    }
+}

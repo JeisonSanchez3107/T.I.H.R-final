@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Gestión de pedidos empresarial. Administra, procesa y envía pedidos de muebles artesanales de forma eficiente.">
+    <meta name="keywords" content="gestión pedidos, administrar pedidos, envíos, tracking pedidos">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Gestión de Pedidos - Dashboard Empresa">
+    <meta property="og:description" content="Administra todos los pedidos de tu negocio.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Gestión de Pedidos | Dashboard Empresa</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/pedidos.css' %}">
+
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside>
+            <h2>Dashboard de Empresa</h2>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'dashboardEmpresa' %}">Inicio</a></li>
+                    <li><a href="{% url 'usuarios' %}">Gestión de usuarios</a></li>
+                    <li><a href="{% url 'GestiProductos' %}">Gestión de productos</a></li>
+                    <li><a href="{% url 'inventario' %}">Inventario</a></li>
+                    <li><a href="{% url 'empresa_ideas' %}">Gestión de ideas</a></li>
+                    <li><a href="{% url 'empresa_comentarios' %}">Gestión de comentarios</a></li>
+                    <li><a href="{% url 'gestion_pagos' %}">Gestión de pagos</a></li>
+                    <li><a href="{% url 'gestion_pedidos' %}">Gestión de pedidos</a></li>
+                    <li><a href="{% url 'estadisticas' %}">Estadísticas</a></li>
+                </ul>
+            </nav>
+            <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+        </aside>
+
+        <main>
+            <header>
+                <h1>Gestión de Pedidos</h1>
+            </header>
+
+            {% if clientes_con_pedidos %}
+                <div class="tabla-clientes">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Cantidad de Pedidos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in clientes_con_pedidos %}
+                            <tr>
+                                <td>{{ cliente.usernameCliente }}</td>
+                                <td>{{ cliente.email }}</td>
+                                <td><strong>{{ cliente.cantidad_pedidos }}</strong></td>
+                                <td>
+                                    <button class="btn-ver-pedidos" onclick="verPedidosCliente({{ cliente.id }}, '{{ cliente.usernameCliente }}')">
+                                        Ver Pedidos
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="no-datos">
+                    No hay pedidos registrados aún.
+                </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <!-- Modal Ver Pedidos del Cliente -->
+    <div id="modalPedidosCliente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Pedidos de <span id="nombreCliente"></span></h2>
+                <button class="close" onclick="cerrarModalPedidos()">&times;</button>
+            </div>
+            <div class="modal-body" id="listaPedidos">
+                <!-- Se cargará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Detalles del Pedido -->
+    <div id="modalDetallesPedido" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles del Pedido #<span id="numeroPedido"></span></h2>
+                <button class="close" onclick="cerrarModalDetalles()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="detallesPedidoContenido"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Actualizar Estado -->
+    <div id="modalActualizarEstado" class="modal">
+        <div class="modal-content modal-actualizar">
+            <div class="modal-header">
+                <h2>Actualizar Estado</h2>
+                <button class="close" onclick="cerrarModalActualizar()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formActualizarEstado">
+                    <div class="form-group">
+                        <label for="nuevoEstado">Nuevo Estado:</label>
+                        <select id="nuevoEstado" name="estado" required>
+                            <option value="procesando">Procesando</option>
+                            <option value="empacado">Empacado</option>
+                            <option value="enviado">Enviado</option>
+                            <option value="en_transito">En Tránsito</option>
+                            <option value="entregado">Entregado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="numeroSeguimiento">Número de Seguimiento (Opcional):</label>
+                        <input type="text" id="numeroSeguimiento" name="numero_seguimiento" placeholder="Ej: 123456789">
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaEnvio">Empresa de Envío (Opcional):</label>
+                        <input type="text" id="empresaEnvio" name="empresa_envio" placeholder="Ej: Servientrega">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-modal btn-modal-cancelar" onclick="cerrarModalActualizar()">Cancelar</button>
+                        <button type="submit" class="btn-modal btn-modal-confirmar">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% csrf_token %}
+
+    <script>
+        let pedidoIdActual = null;
+
+        // Ver pedidos de un cliente
+        function verPedidosCliente(clienteId, nombreCliente) {
+            document.getElementById('nombreCliente').textContent = nombreCliente;
+            
+            fetch(`/obtener-pedidos-cliente/${clienteId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarPedidos(data.pedidos);
+                    document.getElementById('modalPedidosCliente').style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cargar los pedidos');
+            });
+        }
+
+        // Mostrar lista de pedidos
+        function mostrarPedidos(pedidos) {
+            const lista = document.getElementById('listaPedidos');
+            
+            if (pedidos.length === 0) {
+                lista.innerHTML = '<div class="no-datos">Este cliente no tiene pedidos aún.</div>';
+                return;
+            }
+            
+            lista.innerHTML = pedidos.map(pedido => `
+                <div class="pedido-card">
+                    <div class="pedido-header">
+                        <h3>Pedido #${pedido.id}</h3>
+                        <span class="badge-estado badge-${pedido.estado}">
+                            ${obtenerNombreEstado(pedido.estado)}
+                        </span>
+                    </div>
+                    <div class="pedido-info">
+                        <div class="info-item">
+                            <span class="info-label">Fecha</span>
+                            <span class="info-value">${pedido.fecha_creacion}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Total</span>
+                            <span class="info-value">$${pedido.monto_total}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Productos</span>
+                            <span class="info-value">${pedido.cantidad_productos} items</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Dirección</span>
+                            <span class="info-value">${pedido.direccion}</span>
+                        </div>
+                    </div>
+                    ${pedido.numero_seguimiento ? `
+                        <div style="margin-top: 10px; padding: 10px; background: #f0f9ff; border-radius: 4px;">
+                            <strong>Seguimiento:</strong> ${pedido.numero_seguimiento} - ${pedido.empresa_envio}
+                        </div>
+                    ` : ''}
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn-small btn-ver-detalles-pedido" onclick='verDetallesPedido(${JSON.stringify(pedido)})'>
+                            Ver Detalles
+                        </button>
+                        <button class="btn-small btn-actualizar-estado" onclick="abrirActualizarEstado(${pedido.id})">
+                            Actualizar Estado
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Ver detalles de un pedido
+        function verDetallesPedido(pedido) {
+            document.getElementById('numeroPedido').textContent = pedido.id;
+            
+            const productos = pedido.productos.map(p => {
+                const imagenSrc = p.imagen || '/static/core/img/no-image.png';
+                return `
+                    <div class="producto-item-detalle">
+                        <img src="${imagenSrc}" alt="${p.nombre}" class="producto-imagen-detalle">
+                        <div class="producto-info-detalle">
+                            <span><strong>${p.nombre}</strong> (x${p.cantidad})</span>
+                            <span style="font-weight: 600; color: #059669;">$${p.precio}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('detallesPedidoContenido').innerHTML = `
+                <div class="pedido-info">
+                    <div class="info-item">
+                        <span class="info-label">Estado</span>
+                        <span class="badge-estado badge-${pedido.estado}">
+                            ${obtenerNombreEstado(pedido.estado)}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Fecha</span>
+                        <span class="info-value">${pedido.fecha_creacion}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total</span>
+                        <span class="info-value">$${pedido.monto_total}</span>
+                    </div>
+                </div>
+                <hr style="margin: 20px 0;">
+                <h3>Productos Comprados</h3>
+                <div class="productos-lista-detalle">
+                    ${productos}
+                </div>
+                ${pedido.numero_seguimiento ? `
+                    <hr style="margin: 20px 0;">
+                    <h3>Información de Envío</h3>
+                    <p><strong>Número de seguimiento:</strong> ${pedido.numero_seguimiento}</p>
+                    <p><strong>Empresa de envío:</strong> ${pedido.empresa_envio}</p>
+                ` : ''}
+                <hr style="margin: 20px 0;">
+                <h3>Dirección de Entrega</h3>
+                <p>${pedido.direccion}</p>
+                <p>${pedido.ciudad}, ${pedido.departamento}</p>
+                <hr style="margin: 20px 0;">
+                <div style="text-align: center;">
+                    <button onclick="window.open('/factura/${pedido.pago_id}/', '_blank')" class="btn-small btn-ver-pedido" style="background: #059669; color: white; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 16px; font-weight: 600;">
+                        <i class="fas fa-file-invoice" style="margin-right: 8px;"></i>Ver Factura
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('modalDetallesPedido').style.display = 'block';
+        }
+
+        // Abrir modal actualizar estado
+        function abrirActualizarEstado(pedidoId) {
+            pedidoIdActual = pedidoId;
+            document.getElementById('modalActualizarEstado').style.display = 'block';
+        }
+
+        // Actualizar estado del pedido
+        document.getElementById('formActualizarEstado').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            fetch(`/actualizar-estado-pedido/${pedidoIdActual}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.mensaje);
+                    cerrarModalActualizar();
+                    // Recargar los pedidos del cliente actual
+                    const nombreCliente = document.getElementById('nombreCliente').textContent;
+                    const clienteId = pedidoIdActual; // Necesitarás guardar el clienteId
+                    location.reload(); // Por simplicidad, recargamos la página
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar el estado');
+            });
+        });
+
+        // Funciones para cerrar modales
+        function cerrarModalPedidos() {
+            document.getElementById('modalPedidosCliente').style.display = 'none';
+        }
+
+        function cerrarModalDetalles() {
+            document.getElementById('modalDetallesPedido').style.display = 'none';
+        }
+
+        function cerrarModalActualizar() {
+            document.getElementById('modalActualizarEstado').style.display = 'none';
+            document.getElementById('formActualizarEstado').reset();
+        }
+
+        // Cerrar modales al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Función auxiliar para obtener nombre del estado
+        function obtenerNombreEstado(estado) {
+            const estados = {
+                'procesando': 'Procesando',
+                'empacado': 'Empacado',
+                'enviado': 'Enviado',
+                'en_transito': 'En Tránsito',
+                'entregado': 'Entregado',
+                'cancelado': 'Cancelado'
+            };
+            return estados[estado] || estado;
+        }
+    </script>
+
+{% load static %}
+<!-- Incluir estilos para el botón flotante de notificaciones empresa -->
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Botón flotante de notificaciones para empresa -->
+<a id="floating-notif-btn-empresa" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+    <span class="fb-icon">🔔</span>
+    <span id="floating-notif-badge-empresa" class="fb-badge" style="display:none">0</span>
+</a>
+
+{% include 'core/modal_notificaciones.html' %}
+
+<script>
+// Actualizar notificaciones cada 30 segundos para empresa
+function actualizarNotificacionesEmpresa() {
+    fetch('/api/conversaciones/')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('floating-notif-btn-empresa');
+            const badge = document.getElementById('floating-notif-badge-empresa');
+            
+            if (data.success && data.conversaciones) {
+                const tieneNoLeidos = data.conversaciones.some(c => c.mensajes_no_leidos > 0);
+                
+                if (tieneNoLeidos) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'inline-block';
+                } else if (data.conversaciones.length > 0) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'none';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.warn('Error al verificar notificaciones empresa:', err));
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(actualizarNotificacionesEmpresa, 30000);
+});
+</script>
+
+</body>
+</html>

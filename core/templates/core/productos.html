@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Explora nuestra colección de gangazos en muebles artesanales. Armarios, escritorios, sillas, cajoneras, mesas y utensilios de madera de alta calidad hechos en Colombia.">
+    <meta name="keywords" content="gangazos muebles, comprar muebles artesanales, armarios madera, escritorios artesanales, sillas madera, cajoneras, mesas artesanales, muebles economicos colombia">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Gangazos - Muebles Artesanales de Calidad">
+    <meta property="og:description" content="Descubre nuestra colección de muebles artesanales: armarios, escritorios, sillas, mesas y más.">
+    <meta property="og:type" content="website">
+    
+    <title>{% block title %} {% endblock %} | ¡Oferta Exclusiva!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/responsive.css' %}">
+    <script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+</head>
+<body>
+
+<!-- Overlay para cerrar sidebar en móvil -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- BARRA LATERAL (MENÚ + FILTROS) -->
+<div class="sidebar">
+    <div class="sidebar-user-info">
+        <a href="{% url 'perfilUsuario' %}" class="user-avatar-link">
+            {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F; object-fit: cover;">
+            {% else %}
+                <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #A0662F; background: linear-gradient(135deg, #A0662F, #7A3E0E); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">👤</div>
+            {% endif %}
+        </a>
+        <span class="username-display">{{ usuario.usernameCliente }}</span>
+    </div>
+    <ul>
+        <li><a href="{% url 'productos' %}">Gangazos</a></li>
+        <li><a href="{% url 'idea' %}">Crear Idea</a></li>
+        <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+        <li><a href="{% url 'contact' %}">Contáctenos</a></li>
+        <li><a href="{% url 'comentarios' %}">Comentarios</a></li>
+        <li><a href="{% url 'logout' %}" class="logout-button">Cerrar Sesión</a></li>
+    </ul>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <h2 class="h2-side">Categoría:</h2>
+    <select id="categoria">
+        <option value="">Elegir Categoria</option> 
+        <option value="carpinteria">Armarios</option>
+        <option value="marroquineria">Escritorios</option>
+        <option value="vidrieria">Sillas</option>
+        <option value="metaleria">Cajoneras</option>
+        <option value="ceramica">Mesas</option>
+        <option value="tapiceria">Utensilios</option>
+    </select>
+
+    <button onclick="aplicarFiltros()">Aplicar filtros</button>
+  </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="main-content-wrapper">
+  <header>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <h1>
+      <img src="{% static 'core/img/Gemini_Generated_Image_tzay6utzay6utzay.jfif' %}" alt="Logo" class="header-logo">
+      Tu Idea Hecha Realidad
+    </h1>
+    <p class="subtitulo">Gangazos Exclusivos</p>
+  </header>
+
+    <section>
+        <div>
+            <h2>CARPINTERIA</h2>
+            <br>
+        </div>
+        
+        <!-- Mesas -->
+        {% if mesas %}
+        <section class="seccion-at">
+            <div>
+                <h3>Mesas:</h3>
+                <div class="carousel-productos-container" data-categoria="mesas">
+                    <button class="carousel-btn prev-btn" onclick="moveProductosCarousel('mesas', -1)">❮</button>
+                    
+                    <div class="carousel-productos-wrapper">
+                        <div class="carousel-productos-track" id="mesasTrack">
+                            {% for mesa in mesas %}
+                            <div class="articulo carousel-item">
+                                <div>
+                                    <div>
+                                        <div class="contenido-articulo">
+                                            <p><b>{{ mesa.nombre1 }}</b></p>
+                                            <p>{{ mesa.descripcion1|truncatewords:15 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if mesa.imagen1 %}
+                                <img src="{{ mesa.imagen1.url }}" alt="{{ mesa.nombre1 }}">
+                                {% else %}
+                                <img src="{% static 'core/img/Mesa.jpg' %}" alt="{{ mesa.nombre1 }}">
+                                {% endif %}
+                                <div class="contenido-articulo">
+                                    <p class="precio-destacado">${{ mesa.precio1|floatformat:0 }}</p>
+                                    <button class="btn-ver-detalles" onclick="mostrarDetalles('mesa', {{ mesa.id }}, '{{ mesa.nombre1|escapejs }}', '{{ mesa.descripcion1|escapejs }}', '{{ mesa.precio1 }}', '{% if mesa.imagen1 %}{{ mesa.imagen1.url }}{% else %}{% static 'core/img/Mesa.jpg' %}{% endif %}')">Ver Detalles</button>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="articulo carousel-item">
+                                <div class="contenido-articulo">
+                                    <p>No hay productos disponibles</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-btn next-btn" onclick="moveProductosCarousel('mesas', 1)">❯</button>
+                </div>
+                <div class="carousel-indicators" id="mesasIndicators"></div>
+                <br>
+                <button><a href="{% url 'ceramica' %}">Conocer más</a></button>
+            </div>
+        </section>
+        <br>
+        <br>
+        {% endif %}
+        
+        <!-- Sillas -->
+        {% if sillas %}
+        <section class="seccion-at">
+            <div>
+                <h3>Sillas:</h3>
+                <div class="carousel-productos-container" data-categoria="sillas">
+                    <button class="carousel-btn prev-btn" onclick="moveProductosCarousel('sillas', -1)">❮</button>
+                    
+                    <div class="carousel-productos-wrapper">
+                        <div class="carousel-productos-track" id="sillasTrack">
+                            {% for silla in sillas %}
+                            <div class="articulo carousel-item">
+                                <div>
+                                    <div>
+                                        <div class="contenido-articulo">
+                                            <p><b>{{ silla.nombre2 }}</b></p>
+                                            <p>{{ silla.descripcion2|truncatewords:15 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if silla.imagen2 %}
+                                <img src="{{ silla.imagen2.url }}" alt="{{ silla.nombre2 }}">
+                                {% else %}
+                                <img src="{% static 'core/img/Sillas.jpg' %}" alt="{{ silla.nombre2 }}">
+                                {% endif %}
+                                <div class="contenido-articulo">
+                                    <p class="precio-destacado">${{ silla.precio2|floatformat:0 }}</p>
+                                    <button class="btn-ver-detalles" onclick="mostrarDetalles('silla', {{ silla.id }}, '{{ silla.nombre2|escapejs }}', '{{ silla.descripcion2|escapejs }}', '{{ silla.precio2 }}', '{% if silla.imagen2 %}{{ silla.imagen2.url }}{% else %}{% static 'core/img/Sillas.jpg' %}{% endif %}')">Ver Detalles</button>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="articulo carousel-item">
+                                <div class="contenido-articulo">
+                                    <p>No hay productos disponibles</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-btn next-btn" onclick="moveProductosCarousel('sillas', 1)">❯</button>
+                </div>
+                <div class="carousel-indicators" id="sillasIndicators"></div>
+                <br>
+                <button><a href="{% url 'vidrieria' %}">Conocer más</a></button>
+            </div>
+        </section>
+        <br>
+        <br>
+        {% endif %}
+        
+        <!-- Armarios -->
+        {% if armarios %}
+        <section class="seccion-at">
+            <div>
+                <h3>Armarios:</h3>
+                <div class="carousel-productos-container" data-categoria="armarios">
+                    <button class="carousel-btn prev-btn" onclick="moveProductosCarousel('armarios', -1)">❮</button>
+                    
+                    <div class="carousel-productos-wrapper">
+                        <div class="carousel-productos-track" id="armariosTrack">
+                            {% for armario in armarios %}
+                            <div class="articulo carousel-item">
+                                <div>
+                                    <div>
+                                        <div class="contenido-articulo">
+                                            <p><b>{{ armario.nombre3 }}</b></p>
+                                            <p>{{ armario.descripcion3|truncatewords:15 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if armario.imagen3 %}
+                                <img src="{{ armario.imagen3.url }}" alt="{{ armario.nombre3 }}">
+                                {% else %}
+                                <img src="{% static 'core/img/Armario.jpg' %}" alt="{{ armario.nombre3 }}">
+                                {% endif %}
+                                <div class="contenido-articulo">
+                                    <p class="precio-destacado">${{ armario.precio3|floatformat:0 }}</p>
+                                    <button class="btn-ver-detalles" onclick="mostrarDetalles('armario', {{ armario.id }}, '{{ armario.nombre3|escapejs }}', '{{ armario.descripcion3|escapejs }}', '{{ armario.precio3 }}', '{% if armario.imagen3 %}{{ armario.imagen3.url }}{% else %}{% static 'core/img/Armario.jpg' %}{% endif %}')">Ver Detalles</button>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="articulo carousel-item">
+                                <div class="contenido-articulo">
+                                    <p>No hay productos disponibles</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-btn next-btn" onclick="moveProductosCarousel('armarios', 1)">❯</button>
+                </div>
+                <div class="carousel-indicators" id="armariosIndicators"></div>
+                <br>
+                <button><a href="{% url 'carpinteria' %}">Conocer más</a></button>
+            </div>
+        </section>
+        <br>
+        <br>
+        {% endif %}
+        
+        <!-- Cajoneras -->
+        {% if cajoneras %}
+        <section class="seccion-at">
+            <div>
+                <h3>Cajoneras:</h3>
+                <div class="carousel-productos-container" data-categoria="cajoneras">
+                    <button class="carousel-btn prev-btn" onclick="moveProductosCarousel('cajoneras', -1)">❮</button>
+                    
+                    <div class="carousel-productos-wrapper">
+                        <div class="carousel-productos-track" id="cajonerasTrack">
+                            {% for cajonera in cajoneras %}
+                            <div class="articulo carousel-item">
+                                <div>
+                                    <div>
+                                        <div class="contenido-articulo">
+                                            <p><b>{{ cajonera.nombre4 }}</b></p>
+                                            <p>{{ cajonera.descripcion4|truncatewords:15 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if cajonera.imagen4 %}
+                                <img src="{{ cajonera.imagen4.url }}" alt="{{ cajonera.nombre4 }}">
+                                {% else %}
+                                <img src="{% static 'core/img/Cajonera1.webp' %}" alt="{{ cajonera.nombre4 }}">
+                                {% endif %}
+                                <div class="contenido-articulo">
+                                    <p class="precio-destacado">${{ cajonera.precio4|floatformat:0 }}</p>
+                                    <button class="btn-ver-detalles" onclick="mostrarDetalles('cajonera', {{ cajonera.id }}, '{{ cajonera.nombre4|escapejs }}', '{{ cajonera.descripcion4|escapejs }}', '{{ cajonera.precio4 }}', '{% if cajonera.imagen4 %}{{ cajonera.imagen4.url }}{% else %}{% static 'core/img/Cajonera1.webp' %}{% endif %}')">Ver Detalles</button>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="articulo carousel-item">
+                                <div class="contenido-articulo">
+                                    <p>No hay productos disponibles</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-btn next-btn" onclick="moveProductosCarousel('cajoneras', 1)">❯</button>
+                </div>
+                <div class="carousel-indicators" id="cajonerasIndicators"></div>
+                <br>
+                <button><a href="{% url 'metaleria' %}">Conocer más</a></button>
+            </div>
+        </section>
+        <br>
+        <br>
+        {% endif %}
+        
+        <!-- Escritorios -->
+        {% if escritorios %}
+        <section class="seccion-at">
+            <div>
+                <h3>Escritorios:</h3>
+                <div class="carousel-productos-container" data-categoria="escritorios">
+                    <button class="carousel-btn prev-btn" onclick="moveProductosCarousel('escritorios', -1)">❮</button>
+                    
+                    <div class="carousel-productos-wrapper">
+                        <div class="carousel-productos-track" id="escritoriosTrack">
+                            {% for escritorio in escritorios %}
+                            <div class="articulo carousel-item">
+                                <div>
+                                    <div>
+                                        <div class="contenido-articulo">
+                                            <p><b>{{ escritorio.nombre5 }}</b></p>
+                                            <p>{{ escritorio.descripcion5|truncatewords:15 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if escritorio.imagen5 %}
+                                <img src="{{ escritorio.imagen5.url }}" alt="{{ escritorio.nombre5 }}">
+                                {% else %}
+                                <img src="{% static 'core/img/Escritorio.jpg' %}" alt="{{ escritorio.nombre5 }}">
+                                {% endif %}
+                                <div class="contenido-articulo">
+                                    <p class="precio-destacado">${{ escritorio.precio5|floatformat:0 }}</p>
+                                    <button class="btn-ver-detalles" onclick="mostrarDetalles('escritorio', {{ escritorio.id }}, '{{ escritorio.nombre5|escapejs }}', '{{ escritorio.descripcion5|escapejs }}', '{{ escritorio.precio5 }}', '{% if escritorio.imagen5 %}{{ escritorio.imagen5.url }}{% else %}{% static 'core/img/Escritorio.jpg' %}{% endif %}')">Ver Detalles</button>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="articulo carousel-item">
+                                <div class="contenido-articulo">
+                                    <p>No hay productos disponibles</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-btn next-btn" onclick="moveProductosCarousel('escritorios', 1)">❯</button>
+                </div>
+                <div class="carousel-indicators" id="escritoriosIndicators"></div>
+                <br>
+                <button><a href="{% url 'marroquineria' %}">Conocer más</a></button>
+            </div>
+        </section>
+        <br>
+        <br>
+        {% endif %}
+        
+        <!-- Utensilios -->
+        {% if utensilios %}
+        <section class="seccion-at">
+            <div>
+                <h3>Utensilios:</h3>
+                <div class="carousel-productos-container" data-categoria="utensilios">
+                    <button class="carousel-btn prev-btn" onclick="moveProductosCarousel('utensilios', -1)">❮</button>
+                    
+                    <div class="carousel-productos-wrapper">
+                        <div class="carousel-productos-track" id="utensiliosTrack">
+                            {% for utensilio in utensilios %}
+                            <div class="articulo carousel-item">
+                                <div>
+                                    <div>
+                                        <div class="contenido-articulo">
+                                            <p><b>{{ utensilio.nombre6 }}</b></p>
+                                            <p>{{ utensilio.descripcion6|truncatewords:15 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if utensilio.imagen6 %}
+                                <img src="{{ utensilio.imagen6.url }}" alt="{{ utensilio.nombre6 }}">
+                                {% else %}
+                                <img src="{% static 'core/img/Cucharas.jpg' %}" alt="{{ utensilio.nombre6 }}">
+                                {% endif %}
+                                <div class="contenido-articulo">
+                                    <p class="precio-destacado">${{ utensilio.precio6|floatformat:0 }}</p>
+                                    <button class="btn-ver-detalles" onclick="mostrarDetalles('utensilio', {{ utensilio.id }}, '{{ utensilio.nombre6|escapejs }}', '{{ utensilio.descripcion6|escapejs }}', '{{ utensilio.precio6 }}', '{% if utensilio.imagen6 %}{{ utensilio.imagen6.url }}{% else %}{% static 'core/img/Cucharas.jpg' %}{% endif %}')">Ver Detalles</button>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="articulo carousel-item">
+                                <div class="contenido-articulo">
+                                    <p>No hay productos disponibles</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-btn next-btn" onclick="moveProductosCarousel('utensilios', 1)">❯</button>
+                </div>
+                <div class="carousel-indicators" id="utensiliosIndicators"></div>
+                <br>
+                <button><a href="{% url 'tapiceria' %}">Conocer más</a></button>
+            </div>
+        </section>
+        {% endif %}
+    </section>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">📞 Contáctenos</h3>
+                <div class="footer-info">
+                    <i>📞</i>
+                    <span>+57 300 123 4567</span>
+                </div>
+                <div class="footer-info">
+                    <i>✉️</i>
+                    <span>info@gangasca-tirr.com</span>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">📍 Dirección</h3>
+                <div class="footer-info">
+                    <i>📍</i>
+                    <span>Carrera 45 P. 26-85<br>RoyalA, Colombia</span>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">🌐 Síguenos</h3>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/tu_idea_hecha_realidad?igsh=Y3ByM2lyZGcwNHVy" class="social-icon-img" aria-label="Instagram">
+                        <img src="{% static 'core/img/Instagram.webp' %}" alt="Instagram" class="social-logo" width="40" height="40">
+                    </a>
+                    <a href="https://www.facebook.com/share/1ACEVZbZHV/" class="social-icon-img" aria-label="Facebook">
+                        <img src="{% static 'core/img/Facebook.png' %}" alt="Facebook" class="social-logo" width="40" height="40">
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 Tu Idea Herba Realidad - Todos los derechos reservados</p>
+        </div>
+    </footer>
+</div>
+
+<!-- Modal de Detalles del Producto -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="cerrarModal()">&times;</span>
+        <div class="modal-header">
+            <h2 id="modalTitle">Detalles del Producto</h2>
+        </div>
+        <div class="modal-body">
+            <img id="modalImage" class="modal-product-image" src="" alt="Producto">
+            <div class="modal-product-info">
+                <h3 id="modalProductName"></h3>
+                <p id="modalProductDescription"></p>
+                <p class="precio-destacado">Precio: $<span id="modalProductPrice"></span></p>
+                <p id="disponibilidadText" style="color: #28a745; font-weight: bold; margin: 10px 0;"></p>
+                
+                <div class="quantity-selector">
+                    <label for="quantity">Cantidad:</label>
+                    <button onclick="cambiarCantidad(-1)">-</button>
+                    <input type="number" id="quantity" value="1" min="1" max="99" readonly>
+                    <button onclick="cambiarCantidad(1)">+</button>
+                </div>
+                
+                <p><strong>Total: $<span id="totalPrice"></span></strong></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-comprar" onclick="agregarAlCarrito()">Agregar al Carrito</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Función para formatear números con separador de miles
+    function formatNumber(num) {
+        return Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    
+    // Función para obtener la clave del carrito única por usuario
+    function getCarritoKey() {
+        const username = '{{ usuario.usernameCliente|default:"guest" }}';
+        return `carrito_${username}`;
+    }
+    
+    let currentProduct = {};
+
+    async function mostrarDetalles(tipo, id, nombre, descripcion, precio, imagen) {
+        console.log('Mostrando detalles:', tipo, id, nombre);
+        
+        currentProduct = {
+            tipo: tipo,
+            id: id,
+            nombre: nombre,
+            descripcion: descripcion,
+            precio: parseFloat(precio),
+            imagen: imagen,
+            cantidad_disponible: 0,
+            cantidad_restante: 0
+        };
+        
+        // Obtener cantidad disponible del servidor
+        try {
+            const url = `/api/producto/cantidad-disponible/?tipo=${tipo}&id=${id}`;
+            console.log('Fetching:', url);
+            
+            const response = await fetch(url);
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                let errorMsg = `Error HTTP ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.error || errorMsg;
+                } catch (e) {
+                    console.error('Error parsing error response:', e);
+                }
+                alert('Error al obtener disponibilidad: ' + errorMsg);
+                return;
+            }
+            
+            const data = await response.json();
+            console.log('Data received:', data);
+            
+            currentProduct.cantidad_disponible = data.cantidad_disponible || 0;
+            
+            // Obtener cantidad ya en el carrito
+            let carrito = JSON.parse(sessionStorage.getItem(getCarritoKey()) || '[]');
+            let existente = carrito.find(item => item.tipo === tipo && item.id === id);
+            let cantidadEnCarrito = existente ? existente.cantidad : 0;
+            
+            currentProduct.cantidad_restante = currentProduct.cantidad_disponible - cantidadEnCarrito;
+            
+            if (currentProduct.cantidad_disponible === 0) {
+                alert('Este producto no está disponible en inventario.');
+                return;
+            }
+            
+            if (currentProduct.cantidad_restante <= 0) {
+                alert(`Ya tienes todas las unidades disponibles (${currentProduct.cantidad_disponible}) de este producto en tu carrito.`);
+                return;
+            }
+            
+            // Actualizar elementos del modal
+            document.getElementById('modalProductName').textContent = nombre;
+            document.getElementById('modalProductDescription').textContent = descripcion;
+            document.getElementById('modalProductPrice').textContent = formatNumber(precio);
+            document.getElementById('modalImage').src = imagen;
+            document.getElementById('quantity').value = 1;
+            document.getElementById('quantity').max = currentProduct.cantidad_restante;
+            
+            // Actualizar texto de disponibilidad
+            const dispText = document.getElementById('disponibilidadText');
+            if (cantidadEnCarrito > 0) {
+                dispText.textContent = `Disponibles: ${currentProduct.cantidad_restante} unidades (${cantidadEnCarrito} ya en tu carrito)`;
+                dispText.style.color = currentProduct.cantidad_restante < 5 ? '#ff9800' : '#28a745';
+            } else {
+                dispText.textContent = `Disponibles: ${currentProduct.cantidad_disponible} unidades`;
+                dispText.style.color = currentProduct.cantidad_disponible < 5 ? '#ff9800' : '#28a745';
+            }
+            
+            actualizarTotal();
+            document.getElementById('productModal').style.display = 'block';
+            
+        } catch (error) {
+            console.error('Error completo:', error);
+            console.error('Error stack:', error.stack);
+            alert('Error al cargar la información del producto: ' + error.message);
+        }
+    }
+    
+    function cerrarModal() {
+        document.getElementById('productModal').style.display = 'none';
+    }
+    
+    function cambiarCantidad(delta) {
+        let input = document.getElementById('quantity');
+        let newValue = parseInt(input.value) + delta;
+        let maxCantidad = currentProduct.cantidad_restante || 1;
+        
+        if (newValue < 1) {
+            return;
+        }
+        
+        if (newValue > maxCantidad) {
+            alert(`Solo puedes agregar ${maxCantidad} unidades más de este producto.`);
+            return;
+        }
+        
+        input.value = newValue;
+        actualizarTotal();
+    }
+    
+    function actualizarTotal() {
+        let cantidad = parseInt(document.getElementById('quantity').value);
+        let total = currentProduct.precio * cantidad;
+        document.getElementById('totalPrice').textContent = formatNumber(total);
+    }
+    
+    async function agregarAlCarrito() {
+        let cantidad = parseInt(document.getElementById('quantity').value);
+        
+        // Validación previa
+        if (!currentProduct.tipo || !currentProduct.id) {
+            alert('Error: Información del producto no disponible');
+            return;
+        }
+        
+        // Verificar cantidad disponible en el inventario
+        try {
+            const response = await fetch(`/api/producto/cantidad-disponible/?tipo=${currentProduct.tipo}&id=${currentProduct.id}`);
+            
+            if (!response.ok) {
+                alert('Error al verificar disponibilidad del producto. Código: ' + response.status);
+                return;
+            }
+            
+            const data = await response.json();
+            
+            // Obtener cantidad ya en el carrito
+            let carrito = JSON.parse(sessionStorage.getItem(getCarritoKey()) || '[]');
+            let existente = carrito.find(item => item.tipo === currentProduct.tipo && item.id === currentProduct.id);
+            let cantidadEnCarrito = existente ? existente.cantidad : 0;
+            let cantidadTotal = cantidadEnCarrito + cantidad;
+            
+            // Validar que no exceda el inventario
+            if (data.cantidad_disponible === 0) {
+                alert('Este producto no está disponible en inventario en este momento.');
+                return;
+            }
+            
+            if (cantidadTotal > data.cantidad_disponible) {
+                alert(`Solo hay ${data.cantidad_disponible} unidades disponibles en inventario. Ya tienes ${cantidadEnCarrito} en tu carrito.`);
+                return;
+            }
+            
+            // Agregar al carrito
+            if (existente) {
+                existente.cantidad += cantidad;
+            } else {
+                carrito.push({
+                    tipo: currentProduct.tipo,
+                    id: currentProduct.id,
+                    nombre: currentProduct.nombre,
+                    precio: currentProduct.precio,
+                    cantidad: cantidad,
+                    imagen: currentProduct.imagen,
+                    descripcion: currentProduct.descripcion
+                });
+            }
+            
+            sessionStorage.setItem(getCarritoKey(), JSON.stringify(carrito));
+            
+            // Sincronizar carrito con el backend
+            await sincronizarCarritoConBackend(carrito);
+            
+            // Actualizar el badge del carrito (tanto en menú como botón flotante)
+            updateCartBadge();
+            
+            alert('¡Producto agregado al carrito!');
+            cerrarModal();
+            
+            // Preguntar si desea ir al carrito
+            if (confirm('¿Desea ir al carrito ahora?')) {
+                window.location.href = '{% url "carrito" %}';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al agregar el producto al carrito');
+        }
+    }
+    
+    // Función para sincronizar carrito con el backend
+    async function sincronizarCarritoConBackend(carrito) {
+        try {
+            const response = await fetch('/api/carrito/sincronizar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(carrito)
+            });
+            
+            if (!response.ok) {
+                console.error('Error al sincronizar carrito con el servidor');
+            }
+        } catch (error) {
+            console.error('Error en sincronización:', error);
+        }
+    }
+    
+    // Función para actualizar el badge del carrito
+    function updateCartBadge() {
+        const carrito = JSON.parse(sessionStorage.getItem(getCarritoKey()) || '[]');
+        const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+        
+        // Actualizar botón flotante si existe la función global
+        if (typeof updateFloatingCartButton === 'function') {
+            updateFloatingCartButton();
+        }
+    }
+    
+    // Actualizar badge al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartBadge();
+        
+        // Inicializar solo los carruseles que existen en el DOM
+        const categorias = ['mesas', 'sillas', 'armarios', 'cajoneras', 'escritorios', 'utensilios'];
+        categorias.forEach(categoria => {
+            const track = document.getElementById(categoria + 'Track');
+            if (track && track.querySelectorAll('.carousel-item').length > 0) {
+                initProductosCarousel(categoria);
+            }
+        });
+    });
+    
+    // Cerrar el modal si se hace clic fuera de él
+    window.onclick = function(event) {
+        let modal = document.getElementById('productModal');
+        if (event.target == modal) {
+            cerrarModal();
+        }
+    }
+
+  function aplicarFiltros() {
+        const categoria = document.getElementById('categoria').value;
+        console.log('Aplicando filtros y redirigiendo...');
+        console.log('Categoría seleccionada:', categoria);
+
+        if (categoria) {
+            const urlRedireccion = '/' + categoria + '/';
+            
+            console.log('Redirigiendo a:', urlRedireccion);
+            window.location.href = urlRedireccion;
+        } else {
+            window.location.href = '/productos/'; 
+        }
+    }
+
+    // Carruseles de Productos
+    const productosCarousels = {};
+    const PRODUCTOS_AUTOPLAY_DELAY = 1500;
+    const PRODUCTOS_RESUME_DELAY = 3000;
+
+    function initProductosCarousel(categoria) {
+        if (!productosCarousels[categoria]) {
+            productosCarousels[categoria] = {
+                currentIndex: 0,
+                autoplayInterval: null,
+                lastInteraction: Date.now(),
+                isAutoplay: false
+            };
+        }
+
+        const track = document.getElementById(categoria + 'Track');
+        if (!track) return;
+
+        const items = track.querySelectorAll('.carousel-item');
+        const indicatorsContainer = document.getElementById(categoria + 'Indicators');
+        
+        if (indicatorsContainer && indicatorsContainer.children.length === 0) {
+            // Calcular cuántos "grupos" de items hay según el viewport
+            const itemsPerView = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+            const maxIndex = Math.max(0, items.length - itemsPerView);
+            
+            // Crear indicadores solo para los grupos necesarios
+            for (let i = 0; i <= maxIndex; i++) {
+                const indicator = document.createElement('span');
+                indicator.className = 'indicator';
+                indicator.onclick = () => goToProducto(categoria, i);
+                indicatorsContainer.appendChild(indicator);
+            }
+        }
+        
+        updateProductosCarousel(categoria);
+        startProductosAutoplay(categoria);
+        
+        // Event listeners para pausar en hover
+        const container = document.querySelector(`.carousel-productos-container[data-categoria="${categoria}"]`);
+        if (container) {
+            container.addEventListener('mouseenter', () => pauseProductosAutoplay(categoria));
+            container.addEventListener('mouseleave', () => scheduleProductosResume(categoria));
+            container.addEventListener('click', () => handleProductosInteraction(categoria));
+        }
+    }
+
+    function updateProductosCarousel(categoria) {
+        const track = document.getElementById(categoria + 'Track');
+        if (!track) return;
+
+        const items = track.querySelectorAll('.carousel-item');
+        const indicators = document.querySelectorAll(`#${categoria}Indicators .indicator`);
+        
+        if (items.length === 0) return;
+        
+        const carousel = productosCarousels[categoria];
+        const itemsPerView = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+        const maxIndex = Math.max(0, items.length - itemsPerView);
+        
+        if (carousel.currentIndex > maxIndex) {
+            carousel.currentIndex = maxIndex;
+        }
+        
+        const offset = -(carousel.currentIndex * (100 / itemsPerView));
+        track.style.transform = `translateX(${offset}%)`;
+        
+        // Actualizar indicadores
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === carousel.currentIndex);
+        });
+    }
+
+    function moveProductosCarousel(categoria, direction) {
+        const track = document.getElementById(categoria + 'Track');
+        if (!track) return;
+
+        const items = track.querySelectorAll('.carousel-item');
+        const carousel = productosCarousels[categoria];
+        const itemsPerView = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+        const maxIndex = Math.max(0, items.length - itemsPerView);
+        
+        carousel.currentIndex += direction;
+        
+        if (carousel.currentIndex < 0) {
+            carousel.currentIndex = maxIndex;
+        } else if (carousel.currentIndex > maxIndex) {
+            carousel.currentIndex = 0;
+        }
+        
+        updateProductosCarousel(categoria);
+        handleProductosInteraction(categoria);
+    }
+
+    function goToProducto(categoria, index) {
+        const carousel = productosCarousels[categoria];
+        carousel.currentIndex = index;
+        updateProductosCarousel(categoria);
+        handleProductosInteraction(categoria);
+    }
+
+    function startProductosAutoplay(categoria) {
+        const carousel = productosCarousels[categoria];
+        if (carousel.autoplayInterval) {
+            clearInterval(carousel.autoplayInterval);
+        }
+        carousel.isAutoplay = true;
+        carousel.autoplayInterval = setInterval(() => {
+            moveProductosCarousel(categoria, 1);
+        }, PRODUCTOS_AUTOPLAY_DELAY);
+    }
+
+    function pauseProductosAutoplay(categoria) {
+        const carousel = productosCarousels[categoria];
+        if (carousel.autoplayInterval) {
+            clearInterval(carousel.autoplayInterval);
+            carousel.autoplayInterval = null;
+        }
+        carousel.isAutoplay = false;
+    }
+
+    function handleProductosInteraction(categoria) {
+        const carousel = productosCarousels[categoria];
+        carousel.lastInteraction = Date.now();
+        pauseProductosAutoplay(categoria);
+        scheduleProductosResume(categoria);
+    }
+
+    function scheduleProductosResume(categoria) {
+        const carousel = productosCarousels[categoria];
+        setTimeout(() => {
+            const timeSinceLastInteraction = Date.now() - carousel.lastInteraction;
+            if (timeSinceLastInteraction >= PRODUCTOS_RESUME_DELAY && !carousel.isAutoplay) {
+                startProductosAutoplay(categoria);
+            }
+        }, PRODUCTOS_RESUME_DELAY);
+    }
+    
+    // Actualizar en resize
+    window.addEventListener('resize', function() {
+        const categorias = ['mesas', 'sillas', 'armarios', 'cajoneras', 'escritorios', 'utensilios'];
+        categorias.forEach(categoria => {
+            updateProductosCarousel(categoria);
+        });
+    });
+</script>
+
+<script src="{% static 'core/javascript/Carrito.js' %}"></script>
+<script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+
+{% include 'core/floating_buttons.html' %}
+{% include 'core/modal_notificaciones.html' %}
+</body>
+</html>
+

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Escanea el código QR para configurar la autenticación de dos factores en tu cuenta.">
+    <meta name="keywords" content="QR 2FA, configurar 2FA, autenticación dos factores, escanear QR">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Configurar Autenticación de Dos Factores">
+    <meta property="og:description" content="Configura 2FA escaneando el código QR.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Configurar Autenticación de Dos Factores</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/StylesLogin.css' %}">
+    <style>
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-container img {
+            max-width: 250px;
+            border: 2px solid #A0662F;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+        .secret-key {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+            border: 1px solid #ddd;
+        }
+        .instructions {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #A0662F;
+        }
+        .instructions ol {
+            margin: 10px 0 10px 20px;
+            text-align: left;
+        }
+        .instructions li {
+            margin: 8px 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" style="max-width: 500px;">
+        <h1>Configurar 2FA</h1>
+        
+        <div class="instructions">
+            <strong>Sigue estos pasos:</strong>
+            <ol>
+                <li>Descarga una app de autenticación (Google Authenticator, Microsoft Authenticator, Authy, etc.)</li>
+                <li>Escanea el código QR con la app</li>
+                <li>O ingresa manualmente la clave secreta</li>
+                <li>Ingresa el código de 6 dígitos que genera la app</li>
+            </ol>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="qr-container">
+            <h3 style="color: #7A3E0E; margin-bottom: 15px;">Escanea este código QR</h3>
+            <img src="data:image/png;base64,{{ qr_code }}" alt="Código QR para 2FA">
+        </div>
+
+        <div class="secret-key">
+            <strong>Clave Secreta (manual):</strong><br>
+            {{ secret_key }}
+        </div>
+
+        <form class="form" method="POST" action="{% url 'verificar_2fa_setup' %}">
+            {% csrf_token %}
+            
+            <div class="input-group">
+                <label for="codigo">Código de Verificación:</label>
+                <input type="text"
+                       name="codigo"
+                       id="codigo"
+                       placeholder="000000"
+                       required
+                       maxlength="6"
+                       pattern="[0-9]{6}"
+                       style="text-align: center; font-size: 24px; letter-spacing: 5px;">
+            </div>
+            
+            <button type="submit" class="btn">
+                Verificar y Activar
+            </button>
+        </form>
+
+        <div class="register-link">
+            <a href="{% url 'perfilUsuario' %}">Cancelar</a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-enviar cuando se ingresan 6 dígitos
+        document.getElementById('codigo').addEventListener('input', function(e) {
+            if (this.value.length === 6) {
+                this.form.submit();
+            }
+        });
+    </script>
+</body>
+</html>
+

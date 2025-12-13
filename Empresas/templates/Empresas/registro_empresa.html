@@ -1,0 +1,310 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Registro completo de empresa en Tu Idea Hecha Realidad. Ingresa toda la información de tu negocio para comenzar a vender.">
+    <meta name="keywords" content="registro empresa completo, alta empresa, registrar negocio, vender muebles">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Registro de Empresa - TIHR">
+    <meta property="og:description" content="Registra tu empresa completa para vender muebles artesanales.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Registro de Empresa - TIHR</title>
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <style>
+        .registro-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .registro-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .registro-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section h3 {
+            color: #555;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        .form-control {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .btn-submit {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-submit:hover {
+            background: #45a049;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .errorlist {
+            color: red;
+            list-style: none;
+            padding: 0;
+            margin: 5px 0;
+        }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="registro-container">
+        <div class="registro-header">
+            <h1>Registro de Empresa</h1>
+            <p>Complete el formulario para registrar su empresa en nuestra plataforma</p>
+        </div>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Información de la Empresa -->
+            <div class="form-section">
+                <h3>Información de la Empresa</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.nombre_empresa.label }}</label>
+                        {{ form.nombre_empresa }}
+                        {{ form.nombre_empresa.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.nit.label }}</label>
+                        {{ form.nit }}
+                        {{ form.nit.errors }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.razon_social.label }}</label>
+                        {{ form.razon_social }}
+                        {{ form.razon_social.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.email.label }}</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Datos de Contacto -->
+            <div class="form-section">
+                <h3>Datos de Contacto</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.telefono.label }}</label>
+                        {{ form.telefono }}
+                        {{ form.telefono.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.telefono_alternativo.label }}</label>
+                        {{ form.telefono_alternativo }}
+                        {{ form.telefono_alternativo.errors }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.direccion.label }}</label>
+                        {{ form.direccion }}
+                        {{ form.direccion.errors }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.ciudad.label }}</label>
+                        {{ form.ciudad }}
+                        {{ form.ciudad.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.departamento.label }}</label>
+                        {{ form.departamento }}
+                        {{ form.departamento.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.codigo_postal.label }}</label>
+                        {{ form.codigo_postal }}
+                        {{ form.codigo_postal.errors }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Representante Legal -->
+            <div class="form-section">
+                <h3>Representante Legal</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.nombre_representante.label }}</label>
+                        {{ form.nombre_representante }}
+                        {{ form.nombre_representante.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.cedula_representante.label }}</label>
+                        {{ form.cedula_representante }}
+                        {{ form.cedula_representante.errors }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.email_representante.label }}</label>
+                        {{ form.email_representante }}
+                        {{ form.email_representante.errors }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Credenciales de Acceso -->
+            <div class="form-section">
+                <h3>Credenciales de Acceso</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.username.label }}</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.password.label }}</label>
+                        {{ form.password }}
+                        {{ form.password.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.password_confirm.label }}</label>
+                        {{ form.password_confirm }}
+                        {{ form.password_confirm.errors }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información Adicional -->
+            <div class="form-section">
+                <h3>Información Adicional (Opcional)</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.descripcion.label }}</label>
+                        {{ form.descripcion }}
+                        {{ form.descripcion.errors }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ form.sitio_web.label }}</label>
+                        {{ form.sitio_web }}
+                        {{ form.sitio_web.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.logo.label }}</label>
+                        {{ form.logo }}
+                        {{ form.logo.errors }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Términos y Condiciones -->
+            <div class="form-group">
+                <label>
+                    {{ form.terminos_condiciones }}
+                    {{ form.terminos_condiciones.label }}
+                </label>
+                {{ form.terminos_condiciones.errors }}
+            </div>
+            
+            <button type="submit" class="btn-submit">Registrar Empresa</button>
+        </form>
+        
+        <div class="login-link">
+            <p>¿Ya tienes una cuenta? <a href="{% url 'login_empresa' %}">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+</body>
+</html>

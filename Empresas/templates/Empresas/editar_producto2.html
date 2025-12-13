@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Edita la información de tus productos. Actualiza precios, descripciones, fotos y disponibilidad.">
+    <meta name="keywords" content="editar producto, actualizar producto, modificar producto, gestionar catálogo">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Editar Producto - Dashboard Empresa">
+    <meta property="og:description" content="Actualiza la información de tus productos.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Editar Producto - Dashboard de Empresa</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/forms.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside>
+            <h2>Dashboard de Empresa</h2>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'dashboardEmpresa' %}">Inicio</a></li>
+                    <li><a href="{% url 'usuarios' %}">Gestión de usuarios</a></li>
+                    <li><a href="{% url 'GestiProductos' %}">Gestión de productos</a></li> 
+                    <li><a href="{% url 'inventario' %}">Inventario</a></li>
+                    <li><a href="{% url 'empresa_ideas' %}">Gestión de ideas</a></li>
+                    <li><a href="{% url 'empresa_comentarios' %}">Gestión de comentarios</a></li>
+                    <li><a href="{% url 'gestion_pagos' %}">Gestión de pagos</a></li>
+                    <li><a href="{% url 'gestion_pedidos' %}">Gestión de pedidos</a></li>
+                    <li><a href="{% url 'estadisticas' %}">Estadísticas</a></li>
+                </ul>
+            </nav>
+            <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+        </aside>
+
+        <main>
+            <div class="form-container">
+                <h1>Editar Producto</h1>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_nombre">Nombre:</label>
+                        <input type="text" name="nombre" id="id_nombre" 
+                        value="{% if categoria == 'mesas' %}{{ producto.nombre1 }}{% elif categoria == 'sillas' %}{{ producto.nombre2 }}{% elif categoria == 'armarios' %}{{ producto.nombre3 }}{% elif categoria == 'cajoneras' %}{{ producto.nombre4 }}{% elif categoria == 'escritorios' %}{{ producto.nombre5 }}{% elif categoria == 'utensilios' %}{{ producto.nombre6 }}{% endif %}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_descripcion">Descripción:</label>
+                        <textarea name="descripcion" id="id_descripcion" rows="4">{% if categoria == 'mesas' %}{{ producto.descripcion1 }}{% elif categoria == 'sillas' %}{{ producto.descripcion2 }}{% elif categoria == 'armarios' %}{{ producto.descripcion3 }}{% elif categoria == 'cajoneras' %}{{ producto.descripcion4 }}{% elif categoria == 'escritorios' %}{{ producto.descripcion5 }}{% elif categoria == 'utensilios' %}{{ producto.descripcion6 }}{% endif %}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_precio">Precio:</label>
+                        <input type="number" name="precio" id="id_precio" 
+                        value="{% if categoria == 'mesas' %}{{ producto.precio1 }}{% elif categoria == 'sillas' %}{{ producto.precio2 }}{% elif categoria == 'armarios' %}{{ producto.precio3 }}{% elif categoria == 'cajoneras' %}{{ producto.precio4 }}{% elif categoria == 'escritorios' %}{{ producto.precio5 }}{% elif categoria == 'utensilios' %}{{ producto.precio6 }}{% endif %}" step="0.01" required
+                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+                    </div>
+
+                    <div class="form-group">
+                        {% if categoria == 'mesas' and producto.imagen1 %}
+                        <label>Imagen actual:</label>
+                        <img src="{{ producto.imagen1.url }}" alt="{{ producto.nombre1 }}" width="200" class="current-image">
+                        <br><br>
+                        {% elif categoria == 'sillas' and producto.imagen2 %}
+                        <label>Imagen actual:</label>
+                        <img src="{{ producto.imagen2.url }}" alt="{{ producto.nombre2 }}" width="200" class="current-image">
+                        <br><br>
+                        {% elif categoria == 'armarios' and producto.imagen3 %}
+                        <label>Imagen actual:</label>
+                        <img src="{{ producto.imagen3.url }}" alt="{{ producto.nombre3 }}" width="200" class="current-image">
+                        <br><br>
+                        {% elif categoria == 'cajoneras' and producto.imagen4 %}
+                        <label>Imagen actual:</label>
+                        <img src="{{ producto.imagen4.url }}" alt="{{ producto.nombre4 }}" width="200" class="current-image">
+                        <br><br>
+                        {% elif categoria == 'escritorios' and producto.imagen5 %}
+                        <label>Imagen actual:</label>
+                        <img src="{{ producto.imagen5.url }}" alt="{{ producto.nombre5 }}" width="200" class="current-image">
+                        <br><br>
+                        {% elif categoria == 'utensilios' and producto.imagen6 %}
+                        <label>Imagen actual:</label>
+                        <img src="{{ producto.imagen6.url }}" alt="{{ producto.nombre6 }}" width="200" class="current-image">
+                        <br><br>
+                        {% endif %}
+                        <label for="id_imagen">Subir nueva imagen (opcional):</label>
+                        <input type="file" name="imagen" id="id_imagen" accept="image/*">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Actualizar Producto</button>
+                        <a href="{% url 'GestiProductos' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+{% load static %}
+<!-- Incluir estilos para el botón flotante de notificaciones empresa -->
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Botón flotante de notificaciones para empresa -->
+<a id="floating-notif-btn-empresa" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+    <span class="fb-icon">🔔</span>
+    <span id="floating-notif-badge-empresa" class="fb-badge" style="display:none">0</span>
+</a>
+
+{% include 'core/modal_notificaciones.html' %}
+
+<script>
+// Actualizar notificaciones cada 30 segundos para empresa
+function actualizarNotificacionesEmpresa() {
+    fetch('/api/conversaciones/')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('floating-notif-btn-empresa');
+            const badge = document.getElementById('floating-notif-badge-empresa');
+            
+            if (data.success && data.conversaciones) {
+                const tieneNoLeidos = data.conversaciones.some(c => c.mensajes_no_leidos > 0);
+                
+                if (tieneNoLeidos) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'inline-block';
+                } else if (data.conversaciones.length > 0) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'none';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.warn('Error al verificar notificaciones empresa:', err));
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(actualizarNotificacionesEmpresa, 30000);
+});
+</script>
+
+</body>
+</html>

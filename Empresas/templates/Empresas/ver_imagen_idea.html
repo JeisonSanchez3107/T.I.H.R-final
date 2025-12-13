@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Visualiza la imagen de la idea enviada por el cliente para crear muebles artesanales personalizados.">
+    <meta name="keywords" content="imagen idea, visualizar idea, diseño mueble, idea cliente">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Imagen - {{ idea.titulo }}">
+    <meta property="og:description" content="Visualiza la imagen de la idea del cliente.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Imagen - {{ idea.titulo }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/ver_media.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside>
+            <h2>Dashboard de Empresa</h2>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'dashboardEmpresa' %}">Inicio</a></li>
+                    <li><a href="{% url 'usuarios' %}">Gestión de usuarios</a></li>
+                    <li><a href="{% url 'GestiProductos' %}">Gestión de productos</a></li> 
+                    <li><a href="{% url 'inventario' %}">Inventario</a></li>
+                    <li><a href="{% url 'empresa_ideas' %}">Gestión de ideas</a></li>
+                    <li><a href="{% url 'empresa_comentarios' %}">Gestión de comentarios</a></li>
+                    <li><a href="{% url 'gestion_pagos' %}">Gestión de pagos</a></li>
+                    <li><a href="{% url 'gestion_pedidos' %}">Gestión de pedidos</a></li>
+                    <li><a href="{% url 'estadisticas' %}">Estadísticas</a></li>
+                </ul>
+            </nav>
+            <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+        </aside>
+
+        <main>
+            <header>
+                <h1>Imagen - {{ idea.titulo }}</h1>
+            </header>
+
+            <div class="media-content-card">
+                <div class="idea-info-box">
+                    <h2>{{ idea.titulo }}</h2>
+                    <div class="info-grid">
+                        <p><strong>Autor:</strong> {{ idea.autor }}</p>
+                        <p><strong>Estado:</strong> {{ idea.get_estado_display }}</p>
+                        <p><strong>Fecha:</strong> {{ idea.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    <p class="descripcion-completa"><strong>Descripción:</strong> {{ idea.descripcion }}</p>
+                </div>
+
+                {% if idea.imagen %}
+                <div class="image-viewer-box">
+                    <img src="{{ idea.imagen.url }}" alt="{{ idea.titulo }}">
+                </div>
+                {% else %}
+                <div class="no-media-box">
+                    <p>Esta idea no tiene una imagen asociada.</p>
+                </div>
+                {% endif %}
+
+                <div class="media-actions-box">
+                    {% if idea.modelo_3d %}
+                    <a href="{% url 'ver_modelo_3d_idea' idea.id %}" class="btn btn-info">Ver Modelo 3D</a>
+                    {% endif %}
+                    <a href="{% url 'empresa_ideas' %}" class="btn btn-secondary">Volver a Ideas</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+{% load static %}
+<!-- Incluir estilos para el botón flotante de notificaciones empresa -->
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Botón flotante de notificaciones para empresa -->
+<a id="floating-notif-btn-empresa" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+    <span class="fb-icon">🔔</span>
+    <span id="floating-notif-badge-empresa" class="fb-badge" style="display:none">0</span>
+</a>
+
+{% include 'core/modal_notificaciones.html' %}
+
+<script>
+// Actualizar notificaciones cada 30 segundos para empresa
+function actualizarNotificacionesEmpresa() {
+    fetch('/api/conversaciones/')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('floating-notif-btn-empresa');
+            const badge = document.getElementById('floating-notif-badge-empresa');
+            
+            if (data.success && data.conversaciones) {
+                const tieneNoLeidos = data.conversaciones.some(c => c.mensajes_no_leidos > 0);
+                
+                if (tieneNoLeidos) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'inline-block';
+                } else if (data.conversaciones.length > 0) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'none';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.warn('Error al verificar notificaciones empresa:', err));
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(actualizarNotificacionesEmpresa, 30000);
+});
+</script>
+
+</body>
+</html>

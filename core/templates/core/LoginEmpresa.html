@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión Empresa</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/StylesLogin.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <form class="form" method="POST">
+            {% csrf_token %}
+            <h1>Iniciar Sesión Empresa</h1>
+            
+            {% if error_message %}
+                <div class="message error">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+
+            <div class="input-group">
+                <label for="id_usernameEmpresa" style="display: block; margin-bottom: 8px; color: #7A3E0E; font-weight: 600;">Usuario:</label>
+                {{ form.usernameEmpresa }}
+            </div>
+
+            <div class="input-group">
+                <label for="id_passwordEmpresa" style="display: block; margin-bottom: 8px; color: #7A3E0E; font-weight: 600;">Contraseña:</label>
+                {{ form.passwordEmpresa }}
+            </div>
+            
+            <button type="submit" class="btn">
+                Iniciar Sesión
+            </button>
+        </form>
+    </div>
+</body>
+</html>

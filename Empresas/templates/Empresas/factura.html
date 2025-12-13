@@ -1,0 +1,327 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura {{ factura.numero_factura }}</title>
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                margin: 0;
+                padding: 20px;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            border-bottom: 3px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .header .company-info {
+            text-align: right;
+        }
+        
+        .header .company-info h2 {
+            color: #666;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header .company-info p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .invoice-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .info-section h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .info-section p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+        
+        .info-section .label {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        
+        thead {
+            background-color: #333;
+            color: white;
+        }
+        
+        thead th {
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tbody tr:last-child {
+            border-bottom: 2px solid #333;
+        }
+        
+        tbody td {
+            padding: 12px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        tbody td.right {
+            text-align: right;
+        }
+        
+        .totals {
+            margin-top: 20px;
+            text-align: right;
+        }
+        
+        .totals-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .totals-row.total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            border-top: 2px solid #333;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        .totals-label {
+            width: 150px;
+            text-align: right;
+            padding-right: 20px;
+            color: #666;
+        }
+        
+        .totals-row.total .totals-label {
+            color: #333;
+        }
+        
+        .totals-value {
+            width: 150px;
+            text-align: right;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 0 10px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #555;
+        }
+        
+        .btn-secondary {
+            background-color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #777;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>FACTURA</h1>
+                <p style="color: #666; margin-top: 10px;">{{ factura.numero_factura }}</p>
+            </div>
+            <div class="company-info">
+                <h2>Gangazos</h2>
+                <p>Muebles y Diseño</p>
+                <p>NIT: 900.123.456-7</p>
+            </div>
+        </div>
+        
+        <!-- Invoice Information -->
+        <div class="invoice-info">
+            <div class="info-section">
+                <h3>Información del Cliente</h3>
+                <p><span class="label">Nombre:</span> {{ factura.nombre_cliente }}</p>
+                {% if factura.email_cliente %}
+                <p><span class="label">Email:</span> {{ factura.email_cliente }}</p>
+                {% endif %}
+                {% if factura.telefono_cliente %}
+                <p><span class="label">Teléfono:</span> {{ factura.telefono_cliente }}</p>
+                {% endif %}
+                {% if factura.direccion_cliente %}
+                <p><span class="label">Dirección:</span> {{ factura.direccion_cliente }}</p>
+                {% endif %}
+                {% if factura.ciudad_cliente %}
+                <p><span class="label">Ciudad:</span> {{ factura.ciudad_cliente }}</p>
+                {% endif %}
+                {% if factura.departamento_cliente %}
+                <p><span class="label">Departamento:</span> {{ factura.departamento_cliente }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="info-section">
+                <h3>Detalles de la Factura</h3>
+                <p><span class="label">Fecha de Emisión:</span> {{ factura.fecha_emision|date:"d/m/Y H:i" }}</p>
+                <p><span class="label">Estado del Pago:</span> <span class="status">{{ pago.get_estado_display }}</span></p>
+                {% if pago.fecha_confirmacion %}
+                <p><span class="label">Fecha de Confirmación:</span> {{ pago.fecha_confirmacion|date:"d/m/Y H:i" }}</p>
+                {% endif %}
+                <p><span class="label">Método de Pago:</span> {{ pago.get_metodo_pago_display }}</p>
+            </div>
+        </div>
+        
+        <!-- Products Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th class="right">Cantidad</th>
+                    <th class="right">Precio Unitario</th>
+                    <th class="right">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td style="text-transform: capitalize;">{{ producto.categoria }}</td>
+                    <td class="right">{{ producto.cantidad }}</td>
+                    <td class="right">${{ producto.precio_unitario|floatformat:2 }}</td>
+                    <td class="right">${{ producto.subtotal|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Totals -->
+        <div class="totals">
+            <div class="totals-row">
+                <div class="totals-label">Subtotal:</div>
+                <div class="totals-value">${{ factura.subtotal|floatformat:2 }}</div>
+            </div>
+            {% if factura.impuestos > 0 %}
+            <div class="totals-row">
+                <div class="totals-label">Impuestos:</div>
+                <div class="totals-value">${{ factura.impuestos|floatformat:2 }}</div>
+            </div>
+            {% endif %}
+            <div class="totals-row total">
+                <div class="totals-label">TOTAL:</div>
+                <div class="totals-value">${{ factura.total|floatformat:2 }}</div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Gracias por su compra</p>
+            <p>Esta es una factura generada electrónicamente</p>
+            <p>Para cualquier consulta, contáctenos a través de nuestros canales de atención</p>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="buttons no-print">
+        <button class="btn" onclick="window.print()">Imprimir Factura</button>
+        <a href="{% url 'gestion_pagos' %}" class="btn btn-secondary">Volver a Gestión de Pagos</a>
+    </div>
+</body>
+</html>

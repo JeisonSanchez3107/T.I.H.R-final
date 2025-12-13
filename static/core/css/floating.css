@@ -1,0 +1,64 @@
+#floating-buttons-wrapper {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.floating-btn {
+  pointer-events: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: fixed !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  background: #A0662F !important;
+  color: white !important;
+  text-decoration: none !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2) !important;
+  transition: transform .15s ease, opacity .15s ease !important;
+}
+
+.floating-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.floating-btn .fb-icon { font-size: 22px; }
+
+.floating-cart {
+  position: fixed !important;
+  bottom: 90px !important;
+  right: 16px !important;
+  z-index: 10001 !important;
+  display: flex !important;
+}
+
+.floating-notif {
+  position: fixed !important;
+  bottom: 16px !important;
+  right: 16px !important;
+  background: #ff5722 !important;
+  z-index: 10002 !important;
+  display: flex !important;
+}
+
+.fb-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #dc3545;
+  color: white;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1;
+}

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Contáctanos en Tu Idea Hecha Realidad. Estamos aquí para ayudarte con tus compras de muebles artesanales, ideas personalizadas y más.">
+    <meta name="keywords" content="contacto, atención al cliente, soporte, muebles artesanales, ayuda">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Contacto - Tu Idea Hecha Realidad">
+    <meta property="og:description" content="Contáctanos para cualquier consulta sobre muebles artesanales.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>{% block title %} {% endblock %} | ¡Oferta Exclusiva!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/responsive.css' %}">
+    <script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+</head>
+<body>
+
+<!-- Overlay para cerrar sidebar en móvil -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+ 
+<!-- BARRA LATERAL (MENÚ + FILTROS) -->
+<div class="sidebar">
+    <div class="sidebar-user-info">
+        <a href="{% url 'perfilUsuario' %}" class="user-avatar-link">
+            {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F; object-fit: cover;">
+            {% else %}
+                <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #A0662F; background: linear-gradient(135deg, #A0662F, #7A3E0E); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">👤</div>
+            {% endif %}
+        </a>
+        <span class="username-display">{{ usuario.usernameCliente }}</span>
+    </div>
+    <ul>
+        <li><a href="{% url 'productos' %}">Gangazos</a></li>
+        <li><a href="{% url 'idea' %}">Crear Idea</a></li>
+        <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+        <li><a href="{% url 'contact' %}">Contáctenos</a></li>
+        <li><a href="{% url 'comentarios' %}">Comentarios</a></li>
+        <li><a href="{% url 'logout' %}" class="logout-button">Cerrar Sesión</a></li>
+    </ul>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <h2 for="categoria" class="h2-side">Categoría:</h2>
+    <select id="categoria">
+        <option value="">Elegir Categoria</option> 
+        <option value="carpinteria">Armarios</option>
+        <option value="marroquineria">Escritorios</option>
+        <option value="vidrieria">Sillas</option>
+        <option value="metaleria">Cajoneras</option>
+        <option value="ceramica">Mesas</option>
+        <option value="tapiceria">Utensilios</option>
+    </select>
+
+    <button onclick="aplicarFiltros()">Aplicar filtros</button>
+  </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="main-content-wrapper">
+  <header>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <h1 class="div" style="text-align: center;">
+      <img src="{% static 'core/img/Gemini_Generated_Image_tzay6utzay6utzay.jfif' %}" alt="Logo" width="75" height="75">
+      Tu Idea Hecha Realidad
+    </h1>
+  </header>
+
+    <section>
+        <h2 style="color: #7A3E0E; text-align: center; margin-bottom: 40px; font-size: 2.2em;">Contáctenos</h2>
+
+        <div class="contacto-fila-container">
+            
+            <div class="contacto-tarjeta-estilo"> 
+                <main>
+                    <h3>Formulario de Contacto</h3>
+                    
+                    {% if mensaje_enviado %}
+                    <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                        ✓ Tu mensaje ha sido enviado exitosamente. Te responderemos pronto.
+                    </div>
+                    {% endif %}
+                    
+                    {% if error_mensaje %}
+                    <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                        ✗ {{ error_mensaje }}
+                    </div>
+                    {% endif %}
+                    
+                    <form class="formulario-cuerpo" method="POST" action="{% url 'contact' %}">
+                        {% csrf_token %}
+                        <div class="grupo-campo-custom">
+                            <label for="nombre">Nombre:</label>
+                            <input
+                                type="text"
+                                id="nombre"
+                                name="nombre"
+                                placeholder="Tu Nombre Completo"
+                                aria-label="Nombre"
+                                required>
+                        </div>
+                        
+                        <div class="grupo-campo-custom">
+                            <label for="email" >Email:</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="tu.email@ejemplo.com"
+                                aria-label="Email"
+                                required>
+                        </div>
+                        
+                        <div class="grupo-campo-custom">
+                            <label for="mensaje" >Mensaje:</label>
+                            <textarea
+                                id="mensaje"
+                                name="mensaje"
+                                rows="5"
+                                placeholder="Escribe tu mensaje aquí..."
+                                aria-label="Mensaje"
+                                required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-enviar-contacto">Enviar Mensaje</button>
+                        <br>
+                        <h3>Información de Contacto</h3>
+                    
+                        <div class="info-contacto-detalles">
+                            <p>📞 <span class="font-semibold">Teléfono:</span> +57 321 289 2950</p>
+                            <p>🏢 <span class="font-semibold">Oficina:</span> Sena Centro de Industria y Construcción</p>
+                            <p>📍 <span class="font-semibold">Dirección:</span> Carrera: 50B sur N° 143C 06, Ibagué-Tolima, Colombia</p>
+                        </div>
+                    </form>
+                </main>
+            </div>
+            
+            <div class="contacto-tarjeta-estilo">
+                <main>
+                    <section class="seccion-at map-container">
+                        <div class="mt-6">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1672.5634065279357!2d-75.14789084920932!3d4.40200811199637!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sco!4v1748759398333!5m2!1ses!2sco"
+                                width="100%"
+                                height="350"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                class="rounded-lg shadow-md"></iframe>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </section>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3 class="footer-title">📞 Contáctenos</h3>
+            <div class="footer-info">
+                <i>📞</i>
+                <span>+57 300 123 4567</span>
+            </div>
+            <div class="footer-info">
+                <i>✉️</i>
+                <span>info@gangasca-tirr.com</span>
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <h3 class="footer-title">📍 Dirección</h3>
+            <div class="footer-info">
+                <i>📍</i>
+                <span>Carrera 45 P. 26-85<br>RoyalA, Colombia</span>
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <h3 class="footer-title">🌐 Síguenos</h3>
+            <div class="footer-social">
+                <a href="https://www.instagram.com/tu_idea_hecha_realidad?igsh=Y3ByM2lyZGcwNHVy" class="social-icon-img" aria-label="Instagram">
+                        <img src="{% static 'core/img/Instagram.webp' %}" alt="Instagram" class="social-logo" width="40" height="40">
+                    </a>
+                    <a href="https://www.facebook.com/share/1ACEVZbZHV/" class="social-icon-img" aria-label="Facebook">
+                        <img src="{% static 'core/img/Facebook.png' %}" alt="Facebook" class="social-logo" width="40" height="40">
+                    </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>© 2025 Tu Idea Herba Realidad - Todos los derechos reservados</p>
+    </div>
+</footer>
+</div>
+<script src="{% static 'core/javascript/Carrito.js' %}"></script>
+<script>
+  function aplicarFiltros() {
+        const categoria = document.getElementById('categoria').value;
+        console.log('Aplicando filtros y redirigiendo...');
+        console.log('Categoría seleccionada:', categoria);
+
+        if (categoria) {
+            const urlRedireccion = '/' + categoria + '/';
+            
+            console.log('Redirigiendo a:', urlRedireccion);
+            window.location.href = urlRedireccion;
+        } else {
+            window.location.href = '/productos/'; 
+        }
+    }
+</script>
+<script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+{% include 'core/floating_buttons.html' %}
+{% include 'core/modal_notificaciones.html' %}
+</body>
+</html>

@@ -1,0 +1,115 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+
+<!-- Botón flotante de carrito (arriba derecha) y notificaciones (abajo derecha) -->
+<div id="floating-buttons-wrapper">
+    <a id="floating-cart-btn" href="{% url 'carrito' %}" class="floating-btn floating-cart" style="display: none;" title="Ver carrito">
+        <span class="fb-icon">🛒</span>
+        <span id="floating-cart-badge" class="fb-badge" style="display:none">0</span>
+    </a>
+
+    <a id="floating-notif-btn" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+        <span class="fb-icon">🔔</span>
+        <span id="floating-notif-badge" class="fb-badge" style="display:none">0</span>
+    </a>
+</div>
+
+<script>
+// Función para obtener la clave del carrito única por usuario
+function getCarritoKey() {
+    const username = '{{ usuario.usernameCliente|default:"guest" }}';
+    return `carrito_${username}`;
+}
+
+// Mostrar/ocultar botón de carrito según sessionStorage 'carrito'
+function updateFloatingCartButton() {
+    try {
+        const raw = sessionStorage.getItem(getCarritoKey()) || '[]';
+        const carrito = JSON.parse(raw);
+        const count = Array.isArray(carrito) ? carrito.reduce((s, it) => s + (it.cantidad || 0), 0) : 0;
+        const btn = document.getElementById('floating-cart-btn');
+        const badge = document.getElementById('floating-cart-badge');
+        if (!btn) return;
+        if (count > 0) {
+            btn.style.display = 'flex';
+            badge.style.display = 'inline-block';
+            badge.textContent = count;
+        } else {
+            btn.style.display = 'none';
+            badge.style.display = 'none';
+        }
+    } catch (e) {
+        console.warn('No se pudo actualizar el botón flotante del carrito', e);
+    }
+}
+
+// Verificar notificaciones de ideas mediante API
+function updateFloatingNotifButton() {
+    try {
+        fetch('/api/conversaciones/')
+            .then(response => response.json())
+            .then(data => {
+                const btn = document.getElementById('floating-notif-btn');
+                const badge = document.getElementById('floating-notif-badge');
+                if (!btn) return;
+                
+                if (data.success && data.conversaciones && data.conversaciones.length > 0) {
+                    // Contar mensajes no leídos
+                    const totalNoLeidos = data.conversaciones.reduce((sum, conv) => sum + conv.mensajes_no_leidos, 0);
+                    
+                    btn.style.display = 'flex';
+                    if (totalNoLeidos > 0) {
+                        badge.style.display = 'inline-block';
+                        badge.textContent = totalNoLeidos;
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                } else {
+                    btn.style.display = 'none';
+                }
+            })
+            .catch(err => {
+                console.warn('No se pudo verificar notificaciones', err);
+            });
+    } catch (e) {
+        console.warn('Error al verificar notificaciones', e);
+    }
+}
+
+// Si las páginas usan un indicador de cart en DOM, lo sincronizamos también
+function updateCartBadgeInMenus() {
+    try {
+        const raw = sessionStorage.getItem(getCarritoKey()) || '[]';
+        const carrito = JSON.parse(raw);
+        const count = Array.isArray(carrito) ? carrito.reduce((s, it) => s + (it.cantidad || 0), 0) : 0;
+        const desktopBadge = document.getElementById('cart-count-badge');
+        if (desktopBadge) {
+            if (count > 0) {
+                desktopBadge.style.display = 'inline-block';
+                desktopBadge.textContent = count;
+            } else {
+                desktopBadge.style.display = 'none';
+            }
+        }
+    } catch(e){}
+}
+
+// Inicializar en carga
+document.addEventListener('DOMContentLoaded', function() {
+    updateFloatingCartButton();
+    updateCartBadgeInMenus();
+    updateFloatingNotifButton();
+    
+    // Verificar notificaciones cada 30 segundos
+    setInterval(updateFloatingNotifButton, 30000);
+
+    // Escuchar cambios de storage (pestañas diferentes)
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'carrito') {
+            updateFloatingCartButton();
+            updateCartBadgeInMenus();
+        }
+    });
+});
+</script>
+

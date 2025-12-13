@@ -1,0 +1,554 @@
+/* Estilos para Gestión de Pedidos */
+.tabla-clientes {
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.tabla-clientes table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-clientes thead {
+    background: linear-gradient(135deg, #6B4E3D, #4A3428);
+    color: white;
+}
+
+.tabla-clientes th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.tabla-clientes td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tabla-clientes tbody tr:hover {
+    background: #f9fafb;
+}
+
+.btn-ver-pedidos {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-ver-pedidos:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 30px auto;
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 1200px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #6B4E3D, #4A3428);
+    color: white;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2,
+.modal-header h3 {
+    color: white;
+    margin: 0;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.close:hover {
+    opacity: 0.8;
+}
+
+.pedido-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.pedido-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.badge-estado {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.badge-procesando { background: #fef3c7; color: #92400e; }
+.badge-empacado { background: #f5e6d3; color: #7A3E0E; }
+.badge-enviado { background: #ddd6fe; color: #5b21b6; }
+.badge-en_transito { background: #e6d5c3; color: #7A3E0E; }
+.badge-entregado { background: #d1fae5; color: #065f46; }
+.badge-cancelado { background: #fee2e2; color: #991b1b; }
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 2px;
+    transition: all 0.3s;
+}
+
+.btn-ver-detalles-pedido {
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+}
+
+.btn-ver-detalles-pedido:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+.btn-actualizar-estado {
+    background: #10b981;
+    color: white;
+}
+
+.btn-actualizar-estado:hover {
+    background: #059669;
+}
+
+.pedido-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.productos-lista-detalle {
+    margin-top: 15px;
+}
+
+.producto-item-detalle {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 12px;
+}
+
+.producto-imagen-detalle {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+}
+
+.producto-info-detalle {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-actualizar {
+    max-width: 500px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group select,
+.form-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #A0662F;
+    box-shadow: 0 0 0 3px rgba(160, 102, 47, 0.1);
+}
+
+.btn-actualizar-pedido {
+    background: #10b981;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+}
+
+.btn-actualizar-pedido:hover {
+    background: #059669;
+}
+
+.no-datos {
+    text-align: center;
+    padding: 40px;
+    color: #9ca3af;
+}
+
+.main-content-wrapper {
+            margin-left: 270px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        /* Comentado para usar el estilo estándar del header
+        header {
+            background: linear-gradient(135deg, #A0662F 0%, #7A3E0E 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        */
+        
+        .subtitulo {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .tabla-pedidos {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .tabla-pedidos table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .tabla-pedidos thead {
+            background: linear-gradient(135deg, #A0662F, #7A3E0E);
+            color: white;
+        }
+        
+        .tabla-pedidos th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .tabla-pedidos td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .tabla-pedidos tbody tr:hover {
+            background: #f9fafb;
+        }
+        
+        .badge-estado {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-procesando {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-empacado {
+            background: #f5e6d3;
+            color: #7A3E0E;
+        }
+        
+        .badge-enviado {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+        
+        .badge-en_transito {
+            background: #ddd6fe;
+            color: #6d28d9;
+        }
+        
+        .badge-entregado {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-cancelado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .btn-ver-detalles {
+            background: linear-gradient(135deg, #A0662F, #7A3E0E);
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            min-width: 110px;
+        }
+        
+        .btn-ver-detalles:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+        }
+        
+        .no-pedidos {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .no-pedidos i {
+            font-size: 4rem;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 0;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #6B4E3D, #4A3428);
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: white;
+        }
+        
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .close:hover {
+            opacity: 0.8;
+        }
+        
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .detalle-seccion {
+            margin-bottom: 25px;
+        }
+        
+        .detalle-seccion h3 {
+            color: #A0662F;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            font-size: 1rem;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .productos-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .producto-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .producto-imagen {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .producto-info {
+            flex: 1;
+        }
+        
+        .producto-nombre {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .producto-detalles {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .producto-precio {
+            font-weight: 600;
+            color: #A0662F;
+            font-size: 1.1rem;
+        }
+        
+        .total-pedido {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #A0662F, #7A3E0E);
+            color: white;
+            border-radius: 8px;
+            text-align: right;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }

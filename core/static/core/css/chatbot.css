@@ -1,0 +1,209 @@
+.chat-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 300px; /* Ancho reducido para "ventana pequeña" */
+            height: 400px; /* Alto reducido para "ventana pequeña" */
+            padding: 15px; /* Padding ajustado */
+            box-sizing: border-box;
+            text-align: center;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            display: flex; /* Siempre visible */
+            flex-direction: column;
+            
+            position: fixed; /* Fija la ventana del chat */
+            bottom: 30px; /* Posicionado en la parte inferior */
+            right: 30px; /* Posicionado a la derecha */
+            z-index: 999;
+            
+            /* No se necesitan transiciones ni estados 'is-open' ya que siempre está visible */
+            opacity: 1; /* Asegura que esté completamente visible */
+            transform: translateY(0); /* Asegura que no tenga desplazamiento inicial */
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 15px; /* Margen ajustado */
+            font-size: 1.5em; /* Tamaño de fuente ajustado */
+            font-weight: bold;
+        }
+        .chat-box {
+            background-color: #e9ebee;
+            border-radius: 8px;
+            padding: 10px; /* Padding ajustado */
+            min-height: 100px;
+            max-height: 250px; /* Alto ajustado para la ventana pequeña */
+            overflow-y: auto;
+            text-align: left;
+            margin-bottom: 15px; /* Margen ajustado */
+            border: 1px solid #d0d0d0;
+            line-height: 1.4; /* Espaciado de línea ajustado */
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Espacio entre mensajes ajustado */
+            flex-grow: 1;
+        }
+        .message-row {
+            display: flex;
+            width: 100%;
+            align-items: flex-start;
+        }
+        .user-message {
+            background-color: #a7d9e7;
+            color: #333;
+            padding: 7px 10px; /* Padding ajustado */
+            border-radius: 12px 12px 0 12px; /* Bordes redondeados ajustados */
+            display: inline-block;
+            max-width: 85%; /* Ancho máximo ajustado */
+            word-wrap: break-word;
+            margin-left: auto;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Sombra ajustada */
+        }
+        .bot-response {
+            background-color: #e6e6fa;
+            color: #333;
+            padding: 7px 10px; /* Padding ajustado */
+            border-radius: 12px 12px 12px 0; /* Bordes redondeados ajustados */
+            display: inline-block;
+            max-width: 85%; /* Ancho máximo ajustado */
+            word-wrap: break-word;
+            margin-right: auto;
+            border: 1px solid #d0d0e0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Sombra ajustada */
+        }
+        .message-row strong {
+            margin-right: 4px; /* Espacio ajustado */
+            white-space: nowrap;
+        }
+        form {
+            display: flex;
+            gap: 8px; /* Espacio ajustado */
+            margin-top: auto;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 10px 12px; /* Padding ajustado */
+            border: 1px solid #ccc;
+            border-radius: 20px; /* Bordes redondeados ajustados */
+            font-size: 0.9em; /* Tamaño de fuente ajustado */
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #6a1b9a;
+        }
+        button {
+            padding: 10px 15px; /* Padding ajustado */
+            background-color: #6a1b9a;
+            color: white;
+            border: none;
+            border-radius: 20px; /* Bordes redondeados ajustados */
+            cursor: pointer;
+            font-size: 0.9em; /* Tamaño de fuente ajustado */
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(106, 27, 154, 0.2); /* Sombra ajustada */
+        }
+        button:hover {
+            background-color: #4a148c;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .loading-message {
+            margin-top: 10px; /* Margen ajustado */
+            font-style: italic;
+            color: #666;
+            display: none;
+            font-size: 0.8em; /* Tamaño de fuente ajustado */
+            text-align: left;
+        }
+
+/* ============================================
+   MEDIA QUERIES RESPONSIVAS PARA CHATBOT
+   ============================================ */
+
+/* Tablets */
+@media screen and (max-width: 1366px) and (min-width: 768px) {
+    .chat-container {
+        max-width: 280px;
+        height: 380px;
+        bottom: 25px;
+        right: 25px;
+    }
+}
+
+/* Móviles */
+@media screen and (max-width: 767px) {
+    .chat-container {
+        max-width: calc(100vw - 40px);
+        width: 100%;
+        height: 350px;
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 1.3em;
+        margin-bottom: 12px;
+    }
+
+    .chat-box {
+        max-height: 200px;
+        padding: 8px;
+    }
+
+    .user-message,
+    .bot-response {
+        max-width: 90%;
+        padding: 6px 9px;
+        font-size: 0.9em;
+    }
+
+    input[type="text"] {
+        padding: 9px 11px;
+        font-size: 0.85em;
+    }
+
+    button {
+        padding: 9px 13px;
+        font-size: 0.85em;
+    }
+}
+
+/* Móviles pequeños */
+@media screen and (max-width: 480px) {
+    .chat-container {
+        max-width: calc(100vw - 20px);
+        height: 320px;
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.2em;
+    }
+
+    .chat-box {
+        max-height: 180px;
+    }
+}
+
+/* Orientación horizontal en móviles */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .chat-container {
+        height: 280px;
+        max-height: 80vh;
+    }
+
+    .chat-box {
+        max-height: 150px;
+    }
+}

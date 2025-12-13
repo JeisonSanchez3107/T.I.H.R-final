@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sidebar</title>
+    <style>
+        /* Botón toggle del sidebar - SIEMPRE VISIBLE Y FUNCIONAL */
+        .sidebar-toggle {
+            display: flex !important;
+            position: fixed !important;
+            top: 20px !important;
+            left: 15px !important;
+            z-index: 10003 !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #A0662F !important;
+            border: 2px solid rgba(160, 102, 47, 0.3) !important;
+            border-radius: 8px !important;
+            width: 45px !important;
+            height: 45px !important;
+            cursor: pointer !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+            transition: all 0.3s ease !important;
+            font-size: 22px !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-weight: bold !important;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: #A0662F !important;
+            transform: scale(1.05) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Overlay del sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(135deg, #A0662F, #7A3E0E);
+            color: #ffffff;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active {
+            transform: translateX(0) !important;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background: #A0662F;
+            color: white;
+            padding: 20px;
+            margin: -20px -20px 20px -20px;
+        }
+    </style>
+    <script>
+        // Definir la función toggleSidebar INMEDIATAMENTE de forma global
+        window.toggleSidebar = function() {
+            console.log('toggleSidebar llamado');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            if (!sidebar) {
+                console.error('Sidebar no encontrado');
+                return;
+            }
+            
+            const isActive = sidebar.classList.contains('active');
+            console.log('Sidebar activo:', isActive);
+            
+            if (isActive) {
+                sidebar.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                const btn = document.querySelector('.sidebar-toggle');
+                if (btn) btn.innerHTML = '☰';
+                console.log('Sidebar CERRADO');
+            } else {
+                sidebar.classList.add('active');
+                if (overlay) overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                const btn = document.querySelector('.sidebar-toggle');
+                if (btn) btn.innerHTML = '✕';
+                console.log('Sidebar ABIERTO');
+            }
+        };
+        console.log('Script cargado - toggleSidebar disponible');
+    </script>
+</head>
+<body>
+
+<!-- Overlay para cerrar sidebar -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>Menú</h2>
+    <ul style="list-style: none; padding: 0;">
+        <li style="padding: 10px 0;"><a href="#" style="color: white; text-decoration: none;">Gangazos</a></li>
+        <li style="padding: 10px 0;"><a href="#" style="color: white; text-decoration: none;">Crear Idea</a></li>
+        <li style="padding: 10px 0;"><a href="#" style="color: white; text-decoration: none;">Mis Pedidos</a></li>
+        <li style="padding: 10px 0;"><a href="#" style="color: white; text-decoration: none;">Contáctenos</a></li>
+    </ul>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="main-content-wrapper">
+    <header>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+        <h1>Test Sidebar Button</h1>
+    </header>
+
+    <section>
+        <h2>Prueba del Botón Sidebar</h2>
+        <p>Haz click en el botón ☰ arriba a la izquierda</p>
+        <p>También puedes hacer click fuera del sidebar para cerrarlo</p>
+        <ol>
+            <li>El botón debe estar VISIBLE en la esquina superior izquierda</li>
+            <li>Al hacer click, el sidebar debe aparecer desde la izquierda</li>
+            <li>El icono debe cambiar de ☰ a ✕</li>
+            <li>Al hacer click en ✕ o en el overlay, el sidebar debe cerrarse</li>
+        </ol>
+        
+        <button onclick="console.log('toggleSidebar existe:', typeof toggleSidebar); toggleSidebar();" 
+                style="padding: 10px 20px; background: #A0662F; color: white; border: none; cursor: pointer; border-radius: 5px;">
+            Test Toggle Directo
+        </button>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Cargado');
+        console.log('toggleSidebar disponible:', typeof window.toggleSidebar);
+        console.log('Sidebar encontrado:', !!document.querySelector('.sidebar'));
+        console.log('Botón encontrado:', !!document.querySelector('.sidebar-toggle'));
+    });
+</script>
+
+</body>
+</html>

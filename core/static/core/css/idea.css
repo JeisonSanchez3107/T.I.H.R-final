@@ -1,0 +1,447 @@
+.seccion-at {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.seccion-at h2 {
+    color: #7A3E0E;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.idea-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 600;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"] {
+    height: 40px;
+}
+
+.form-group textarea {
+    height: 120px;
+    resize: vertical;
+    min-height: 80px;
+    max-height: 200px;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    border-color: #A0662F;
+    outline: none;
+}
+
+.form-group input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.contenedor-articulos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.articulo {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.articulo:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.articulo.en-proceso {
+    border-left: 5px solid #ffd700;
+}
+
+.articulo.completada {
+    border-left: 5px solid #4CAF50;
+}
+
+.contenido-articulo {
+    padding: 15px;
+}
+
+.contenido-articulo h3 {
+    color: #7A3E0E;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.contenido-articulo p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.contenido-articulo .idea-estado {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.articulo.en-proceso .idea-estado {
+    background-color: rgba(255, 215, 0, 0.2);
+    color: #b8860b;
+}
+
+.articulo.completada .idea-estado {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #2e7d32;
+}
+
+.contenedor-articulos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.contenido-articulo {
+    padding: 15px;
+}
+
+.idea-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.idea-usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.usuario-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #A0662F;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #A0662F;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.usuario-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.usuario-info h4 {
+    margin: 0;
+    color: #7A3E0E;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.idea-fecha {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.ideas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.idea-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.idea-card:hover {
+    transform: translateY(-5px);
+}
+
+.idea-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #A0662F;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* ============================================
+   MEDIA QUERIES RESPONSIVAS PARA IDEAS
+   ============================================ */
+
+/* Tablets */
+@media screen and (max-width: 1366px) and (min-width: 768px) {
+    .seccion-at {
+        max-width: 100%;
+        padding: 20px 15px;
+    }
+
+    .contenedor-articulos,
+    .ideas-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+
+    .idea-form {
+        max-width: 100%;
+    }
+}
+
+/* Móviles */
+@media screen and (max-width: 767px) {
+    .seccion-at {
+        max-width: 100%;
+        padding: 15px 10px;
+        margin: 15px auto;
+    }
+
+    .seccion-at h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .idea-form {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .form-group input[type="text"] {
+        height: 38px;
+    }
+
+    .form-group textarea {
+        height: 100px;
+        min-height: 80px;
+    }
+
+    .contenedor-articulos,
+    .ideas-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 10px 5px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .articulo,
+    .idea-card {
+        margin: 0 auto;
+        max-width: 100%;
+    }
+
+    .contenido-articulo {
+        padding: 12px;
+        text-align: center;
+    }
+
+    .contenido-articulo h3 {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .contenido-articulo p {
+        font-size: 13px;
+        text-align: center;
+    }
+
+    .idea-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-bottom: 12px;
+    }
+
+    .idea-usuario {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .usuario-avatar {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+
+    .usuario-info {
+        align-items: center;
+        text-align: center;
+    }
+
+    .usuario-info h4 {
+        font-size: 15px;
+    }
+
+    .idea-fecha {
+        font-size: 11px;
+    }
+
+    .idea-actions {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    .form-text {
+        font-size: 11px;
+    }
+}
+
+/* Móviles pequeños */
+@media screen and (max-width: 480px) {
+    .seccion-at {
+        padding: 12px 8px;
+        margin: 10px auto;
+    }
+
+    .seccion-at h2 {
+        font-size: 18px;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea {
+        padding: 9px;
+        font-size: 13px;
+    }
+
+    .contenedor-articulos,
+    .ideas-grid {
+        padding: 8px 5px;
+        gap: 12px;
+    }
+
+    .contenido-articulo {
+        padding: 10px;
+    }
+
+    .contenido-articulo h3 {
+        font-size: 15px;
+    }
+
+    .contenido-articulo p {
+        font-size: 12px;
+    }
+
+    .usuario-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .btn {
+        padding: 9px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Pantallas grandes */
+@media screen and (min-width: 1367px) {
+    .seccion-at {
+        max-width: 1000px;
+    }
+
+    .contenedor-articulos,
+    .ideas-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        max-width: 1400px;
+    }
+}

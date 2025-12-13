@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Verificación 2FA - TIHR</title>
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #d4c5b0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .verify-container {
+            max-width: 450px;
+            width: 90%;
+            margin: 40px auto;
+            padding: 50px 45px;
+            background: #f5f5f5;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .verify-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .verify-header h1 {
+            color: #2c2c2c;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .verify-header p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .company-info {
+            background: #ffffff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #c86d3c;
+            text-align: center;
+        }
+
+        .company-info p {
+            margin: 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .company-info strong {
+            color: #c86d3c;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 30px;
+            font-size: 24px;
+            box-sizing: border-box;
+            background: #ffffff;
+            color: #2c2c2c;
+            transition: all 0.3s;
+            text-align: center;
+            letter-spacing: 8px;
+            font-weight: bold;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px #c86d3c;
+        }
+
+        .form-control::placeholder {
+            color: #ccc;
+            letter-spacing: 5px;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+            text-align: center;
+        }
+        
+        .btn-verify {
+            width: 100%;
+            background: #c86d3c;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 30px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .btn-verify:hover {
+            background: #b55d30;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(200, 109, 60, 0.3);
+        }
+
+        .btn-cancel {
+            width: 100%;
+            background: transparent;
+            color: #7a7a7a;
+            padding: 16px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-cancel:hover {
+            background: #f0f0f0;
+            border-color: #c86d3c;
+            color: #c86d3c;
+        }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .security-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .timer-info {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <div class="verify-header">
+            <div class="security-icon">🔐</div>
+            <h1>Verificación de Seguridad</h1>
+            <p>Ingresa el código de tu aplicación de autenticación</p>
+        </div>
+
+        <div class="company-info">
+            <p>Iniciando sesión como:</p>
+            <p><strong>{{ empresa.nombre_empresa }}</strong></p>
+        </div>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post" id="verifyForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="codigo">Código de 6 dígitos</label>
+                <input 
+                    type="text" 
+                    id="codigo" 
+                    name="codigo" 
+                    class="form-control" 
+                    placeholder="000000" 
+                    maxlength="6" 
+                    pattern="\d{6}" 
+                    required 
+                    autocomplete="off"
+                    autofocus
+                >
+                <div class="form-help">El código cambia cada 30 segundos</div>
+            </div>
+            
+            <button type="submit" class="btn-verify">✓ Verificar e Ingresar</button>
+        </form>
+
+        <a href="{% url 'loginEmpresa_login' %}" class="btn-cancel">← Volver al Login</a>
+
+        <div class="timer-info">
+            <p>💡 Abre tu aplicación de autenticación y usa el código actual</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-submit cuando se complete el código
+        document.getElementById('codigo').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length === 6) {
+                document.getElementById('verifyForm').submit();
+            }
+        });
+
+        // Focus automático en el campo
+        window.onload = function() {
+            document.getElementById('codigo').focus();
+        };
+    </script>
+</body>
+</html>

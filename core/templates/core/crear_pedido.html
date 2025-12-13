@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Completa los datos de envío para tu pedido de muebles artesanales. Envío seguro a toda Colombia.">
+    <meta name="keywords" content="datos envío, crear pedido, dirección entrega, checkout">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Completar Pedido - Gangazos">
+    <meta property="og:description" content="Completa tu pedido con los datos de envío.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Completar Datos de Envío | Gangazos</title>
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/carrito.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/crear_pedido.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/responsive.css' %}">
+</head>
+<body>
+    <div class="pedido-container">
+        <div class="pedido-header">
+            <h1>¡Pago Confirmado!</h1>
+            <p>Por favor, completa los datos de envío para procesar tu pedido</p>
+        </div>
+
+        <div class="resumen-pedido">
+            <h2>Resumen de tu Compra</h2>
+            {% for producto in productos %}
+                <div class="producto-resumen">
+                    <span>{{ producto.nombre }} x{{ producto.cantidad }}</span>
+                    <span>${{ producto.subtotal }}</span>
+                </div>
+            {% endfor %}
+            <div class="producto-resumen">
+                <span>Total a Pagar:</span>
+                <span>${{ pago.monto_total }}</span>
+            </div>
+        </div>
+
+        <form method="POST" action="{% url 'crear_pedido' pago.id %}">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                <h2>Información de Contacto</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre_completo">Nombre Completo <span class="required">*</span></label>
+                        <input type="text" id="nombre_completo" name="nombre_completo" value="{{ cliente.nombre_completo|default:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono <span class="required">*</span></label>
+                        <input type="tel" id="telefono" name="telefono" value="{{ cliente.telefono|default:'' }}" required placeholder="Ej: 3001234567" 
+                               pattern="[0-9]{7,15}" title="Solo números, entre 7 y 15 dígitos"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Dirección de Envío</h2>
+                <div class="form-group">
+                    <label for="direccion">Dirección Completa <span class="required">*</span></label>
+                    <input type="text" id="direccion" name="direccion" value="{{ cliente.direccion|default:'' }}" required placeholder="Calle, número, apartamento, etc.">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad <span class="required">*</span></label>
+                        <input type="text" id="ciudad" name="ciudad" value="{{ cliente.ciudad|default:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="departamento">Departamento <span class="required">*</span></label>
+                        <input type="text" id="departamento" name="departamento" value="{{ cliente.departamento|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="codigo_postal">Código Postal (Opcional)</label>
+                    <input type="text" id="codigo_postal" name="codigo_postal" value="{{ cliente.codigo_postal|default:'' }}" placeholder="Ej: 110111"
+                           pattern="[0-9]{0,10}" title="Solo números"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                </div>
+                
+                <div class="form-group" style="margin-top: 20px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" name="guardar_direccion" style="margin-right: 10px;" checked>
+                        <span>Guardar/Actualizar esta dirección como predeterminada para futuros pedidos</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Notas Adicionales</h2>
+                <div class="form-group">
+                    <label for="notas_adicionales">Instrucciones especiales para la entrega (Opcional)</label>
+                    <textarea id="notas_adicionales" name="notas_adicionales" placeholder="Ej: Tocar el timbre dos veces, dejar en la portería, etc."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Confirmar Pedido y Datos de Envío
+            </button>
+        </form>
+    </div>
+<script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+</body>
+</html>
+

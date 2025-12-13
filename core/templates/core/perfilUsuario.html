@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Gestiona tu perfil en Tu Idea Hecha Realidad. Actualiza tu información personal, configura tu seguridad y revisa tu historial de compras.">
+  <meta name="keywords" content="perfil usuario, mi cuenta, datos personales, configuración cuenta">
+  <meta name="author" content="Tu Idea Hecha Realidad">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Mi Perfil - Tu Idea Hecha Realidad">
+  <meta property="og:description" content="Gestiona tu perfil y configuración de cuenta.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_CO">
+  
+  <title>Mi Perfil - TIHR</title>
+  <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/responsive.css' %}">
+  <script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+</head>
+<body>
+
+<!-- Overlay para cerrar sidebar en móvil -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- BARRA LATERAL (MENÚ + FILTROS) -->
+<div class="sidebar">
+    <div class="sidebar-user-info">
+        <a href="{% url 'perfilUsuario' %}" class="user-avatar-link">
+            {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F; object-fit: cover;">
+            {% else %}
+                <div class="perfil-foto-placeholder" style="width: 50px; height: 50px; font-size: 24px; line-height: 50px;">
+                    {{ usuario.usernameCliente|first|upper }}
+                </div>
+            {% endif %}
+        </a>
+        <span class="username-display">{{ usuario.usernameCliente }}</span>
+    </div>
+  <ul>
+    <li><a href="{% url 'productos' %}">Gangazos</a></li>
+    <li><a href="{% url 'idea' %}">Crear Idea</a></li>
+    <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+    <li><a href="{% url 'contact' %}">Contáctenos</a></li>
+    <li><a href="{% url 'comentarios' %}">Comentarios</a></li>
+    <li><a href="{% url 'logout' %}" class="logout-button">Cerrar Sesión</a></li>
+  </ul>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <h2 for="categoria" class="h2-side">Categoría:</h2>
+    <select id="categoria">
+        <option value="">Elegir Categoria</option> 
+        <option value="carpinteria">Armarios</option>
+        <option value="marroquineria">Escritorios</option>
+        <option value="vidrieria">Sillas</option>
+        <option value="metaleria">Cajoneras</option>
+        <option value="ceramica">Mesas</option>
+        <option value="tapiceria">Utensilios</option>
+    </select>
+    <button onclick="aplicarFiltros()">Aplicar filtros</button>
+  </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="main-content-wrapper">
+  <header>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <h1 class="div" style="text-align: center;">
+      <img src="{% static 'core/img/Gemini_Generated_Image_tzay6utzay6utzay.jfif' %}" alt="Logo" width="75" height="75">
+      Tu Idea Hecha Realidad
+    </h1>
+  </header>
+
+  <section>
+    <div class="perfil-container">
+      {% if messages %}
+      <div class="messages">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+          </div>
+          {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Header del perfil -->
+      <div class="perfil-header-card">
+          <div class="perfil-foto-container">
+              {% if usuario.foto_perfil %}
+                  <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" class="perfil-foto">
+              {% else %}
+                  <div class="perfil-foto-placeholder">
+                      {{ usuario.usernameCliente|first|upper }}
+                  </div>
+              {% endif %}
+          </div>
+          <h3 class="perfil-nombre" style="color: #ffffff;">{{ usuario.nombre_completo|default:usuario.usernameCliente }}</h3>
+          <p class="perfil-email">{{ usuario.email }}</p>
+          {% if usuario.telefono %}
+          <p class="perfil-email"><strong>📞</strong> {{ usuario.telefono }}</p>
+          {% endif %}
+          {% if usuario.cedula %}
+          <p class="perfil-email"><strong>🆔</strong> {{ usuario.cedula }}</p>
+          {% endif %}
+          {% if usuario.direccion %}
+          <p class="perfil-email"><strong>📍</strong> {{ usuario.direccion }}</p>
+          {% endif %}
+          {% if usuario.ciudad or usuario.departamento %}
+          <p class="perfil-email"><strong>🏙️</strong> {{ usuario.ciudad }}{% if usuario.ciudad and usuario.departamento %}, {% endif %}{{ usuario.departamento }}</p>
+          {% endif %}
+          <a href="{% url 'editar_perfil' %}" class="btn-editar-perfil">Editar Perfil</a>
+      </div>
+
+      <!-- Sección de Seguridad -->
+      <div class="perfil-header-card" style="margin-top: 20px;">
+          <h3 style="color: #ffffff; margin-bottom: 15px;">Seguridad de la Cuenta</h3>
+          
+          {% if usuario.two_factor_enabled %}
+              <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #28a745;">
+                  <strong style="color: #155724;">Autenticación de dos factores activada</strong>
+                  <p style="color: #155724; margin: 5px 0 0 0; font-size: 14px;">Tu cuenta está protegida con 2FA</p>
+              </div>
+              
+              <form method="POST" action="{% url 'desactivar_2fa' %}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas desactivar la autenticación de dos factores? Esto reducirá la seguridad de tu cuenta.');">
+                  {% csrf_token %}
+                  <input type="hidden" name="passwordCliente" id="password-desactivar">
+                  <button type="button" class="btn-editar-perfil" style="background: #dc3545;" onclick="desactivar2FA()">
+                      Desactivar 2FA
+                  </button>
+              </form>
+          {% else %}
+              <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                  <strong style="color: #856404;">Autenticación de dos factores desactivada</strong>
+                  <p style="color: #856404; margin: 5px 0 0 0; font-size: 14px;">Aumenta la seguridad de tu cuenta activando 2FA</p>
+              </div>
+              
+              <a href="{% url 'activar_2fa' %}" class="btn-editar-perfil" style="background: #28a745;">
+                  Activar 2FA
+              </a>
+          {% endif %}
+      </div>
+
+      <!-- Cards de información -->
+      <div class="info-cards">
+          <div class="info-card">
+              <div class="info-card-title">Miembro desde</div>
+              <div class="info-card-value">{{ usuario.fecha_registro|date:"M Y" }}</div>
+          </div>
+          <div class="info-card">
+              <div class="info-card-title">Compras realizadas</div>
+              <div class="info-card-value">6</div>
+          </div>
+          <div class="info-card">
+              <div class="info-card-title">Ideas enviadas</div>
+              <div class="info-card-value">3</div>
+          </div>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3 class="footer-title">📞 Contáctenos</h3>
+            <div class="footer-info">
+                <i>📞</i>
+                <span>+57 300 123 4567</span>
+            </div>
+            <div class="footer-info">
+                <i>✉️</i>
+                <span>info@gangasca-tirr.com</span>
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <h3 class="footer-title">📍 Dirección</h3>
+            <div class="footer-info">
+                <i>📍</i>
+                <span>Carrera 45 P. 26-85<br>RoyalA, Colombia</span>
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <h3 class="footer-title">🌐 Síguenos</h3>
+            <div class="footer-social">
+                <a href="https://www.instagram.com/tu_idea_hecha_realidad?igsh=Y3ByM2lyZGcwNHVy" class="social-icon-img" aria-label="Instagram">
+                        <img src="{% static 'core/img/Instagram.webp' %}" alt="Instagram" class="social-logo" width="40" height="40">
+                    </a>
+                    <a href="https://www.facebook.com/share/1ACEVZbZHV/" class="social-icon-img" aria-label="Facebook">
+                        <img src="{% static 'core/img/Facebook.png' %}" alt="Facebook" class="social-logo" width="40" height="40">
+                    </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>© 2025 Tu Idea Herba Realidad - Todos los derechos reservados</p>
+    </div>
+  </footer>
+</div>
+<script>
+  function aplicarFiltros() {
+        const categoria = document.getElementById('categoria').value;
+        console.log('Aplicando filtros y redirigiendo...');
+        console.log('Categoría seleccionada:', categoria);
+
+        if (categoria) {
+            const urlRedireccion = '/' + categoria + '/';
+            
+            console.log('Redirigiendo a:', urlRedireccion);
+            window.location.href = urlRedireccion;
+        } else {
+            window.location.href = '/productos/'; 
+        }
+    }
+    
+  function desactivar2FA() {
+      const password = prompt('Por favor, ingresa tu contraseña para desactivar 2FA:');
+      if (password) {
+          document.getElementById('password-desactivar').value = password;
+          document.querySelector('form[action*="desactivar_2fa"]').submit();
+      }
+  }
+</script>
+<script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>
+{% include 'core/floating_buttons.html' %}
+{% include 'core/modal_notificaciones.html' %}
+</body>
+</html>
+

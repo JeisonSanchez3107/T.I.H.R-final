@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Configura la autenticación de dos factores para proteger tu cuenta empresarial con seguridad adicional.">
+    <meta name="keywords" content="2FA, autenticación dos factores, seguridad empresa, configurar seguridad">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Configurar Autenticación - TIHR">
+    <meta property="og:description" content="Configura la autenticación de dos factores para tu cuenta.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Configurar Autenticación - TIHR</title>
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #d4c5b0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .config-container {
+            max-width: 500px;
+            width: 90%;
+            margin: 40px auto;
+            padding: 50px 45px;
+            background: #f5f5f5;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .config-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .config-header h1 {
+            color: #2c2c2c;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .config-header p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .info-box {
+            background: #ffffff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #c86d3c;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            box-sizing: border-box;
+            background: #ffffff;
+            color: #7a7a7a;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px #c86d3c;
+        }
+
+        .form-control::placeholder {
+            color: #9a9a9a;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+            padding-left: 20px;
+        }
+        
+        .btn-config {
+            width: 100%;
+            background: #c86d3c;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 30px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .btn-config:hover {
+            background: #b55d30;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(200, 109, 60, 0.3);
+        }
+
+        .btn-omitir {
+            width: 100%;
+            background: transparent;
+            color: #7a7a7a;
+            padding: 16px;
+            border: 2px solid #c86d3c;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-omitir:hover {
+            background: #c86d3c;
+            color: white;
+        }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .divider {
+            margin: 20px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider span {
+            background: #f5f5f5;
+            padding: 0 15px;
+            position: relative;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-container">
+        <div class="config-header">
+            <h1>🔐 Configurar Autenticación 2FA</h1>
+            {% if obligatorio %}
+            <p><strong style="color: #c86d3c;">⚠️ Configuración obligatoria para continuar</strong></p>
+            <p>Escanea el código QR con tu aplicación de autenticación</p>
+            {% else %}
+            <p>Protege tu cuenta con verificación en dos pasos</p>
+            {% endif %}
+        </div>
+
+        <div class="info-box">
+            <p><strong>{{ empresa.nombre_empresa }}</strong></p>
+            <p style="margin-top: 10px;">
+                1. Descarga una aplicación de autenticación como:<br>
+                <strong>Google Authenticator</strong>, <strong>Microsoft Authenticator</strong>, o <strong>Authy</strong>
+            </p>
+            <p style="margin-top: 10px;">
+                2. Escanea el código QR con la aplicación
+            </p>
+            <p style="margin-top: 10px;">
+                3. Ingresa el código de 6 dígitos que aparece en la app
+            </p>
+        </div>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Código QR -->
+        <div style="text-align: center; margin: 30px 0; background: white; padding: 20px; border-radius: 10px;">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="Código QR" style="max-width: 250px; width: 100%;">
+            <p style="margin-top: 15px; font-size: 12px; color: #666;">
+                Clave manual: <code style="background: #f0f0f0; padding: 5px 10px; border-radius: 5px; font-size: 11px;">{{ secret_key }}</code>
+            </p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="codigo">Código de Verificación <span style="color: #c86d3c;">*</span></label>
+                <input type="text" id="codigo" name="codigo" class="form-control" placeholder="000000" maxlength="6" pattern="\d{6}" required autocomplete="off" style="text-align: center; font-size: 24px; letter-spacing: 5px; font-weight: bold;">
+                <div class="form-help">Ingresa el código de 6 dígitos de tu aplicación de autenticación</div>
+            </div>
+            
+            <button type="submit" class="btn-config">✓ Activar 2FA y Continuar</button>
+        </form>
+    </div>
+</body>
+</html>

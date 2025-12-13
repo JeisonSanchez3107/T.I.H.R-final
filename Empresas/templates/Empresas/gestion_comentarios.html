@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Administra los comentarios y reseñas de tus productos. Modera, aprueba o rechaza comentarios de clientes.">
+    <meta name="keywords" content="gestión comentarios, moderación comentarios, reseñas productos, feedback clientes">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Gestión de Comentarios - Empresa">
+    <meta property="og:description" content="Administra los comentarios de tus productos.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Gestión de Comentarios - Empresa</title>
+    <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/pedidos.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/pagos.css' %}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- BARRA LATERAL -->
+    <aside>
+        <h2>Dashboard de Empresa</h2>
+        <nav>
+            <ul>
+                <li><a href="{% url 'dashboardEmpresa' %}">Inicio</a></li>
+                <li><a href="{% url 'usuarios' %}">Gestión de usuarios</a></li>
+                <li><a href="{% url 'GestiProductos' %}">Gestión de productos</a></li> 
+                <li><a href="{% url 'inventario' %}">Inventario</a></li>
+                <li><a href="{% url 'empresa_ideas' %}">Gestión de ideas</a></li>
+                <li><a href="{% url 'empresa_comentarios' %}">Gestión de comentarios</a></li>
+                <li><a href="{% url 'gestion_pagos' %}">Gestión de pagos</a></li>
+                <li><a href="{% url 'gestion_pedidos' %}">Gestión de pedidos</a></li>
+                <li><a href="{% url 'estadisticas' %}">Estadísticas</a></li>
+            </ul>
+        </nav>
+        <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <header>
+            <h1>Gestión de Comentarios</h1>
+        </header>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if clientes_con_comentarios %}
+            <div class="tabla-clientes">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Cantidad de Comentarios</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes_con_comentarios %}
+                        <tr>
+                            <td>{{ cliente.usernameCliente }}</td>
+                            <td>{{ cliente.email }}</td>
+                            <td><strong>{{ cliente.cantidad_comentarios }}</strong></td>
+                            <td>
+                                <button class="btn-ver-comentarios" onclick="verComentariosCliente({{ cliente.id }}, '{{ cliente.usernameCliente }}')">
+                                    Ver Comentarios
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="no-datos">
+                No hay comentarios registrados aún.
+            </div>
+        {% endif %}
+    </main>
+</div>
+
+<!-- Modal Ver Comentarios del Cliente -->
+<div id="modalComentariosCliente" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Comentarios de <span id="nombreClienteComentarios"></span></h2>
+            <button class="close" onclick="cerrarModalComentarios()">&times;</button>
+        </div>
+        <div class="modal-body" id="listaComentarios">
+            <!-- Se cargará dinámicamente -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Ver comentarios del cliente
+    function verComentariosCliente(clienteId, nombreCliente) {
+        document.getElementById('nombreClienteComentarios').textContent = nombreCliente;
+        
+        fetch(`/obtener-comentarios-cliente/${clienteId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mostrarComentarios(data.comentarios);
+                document.getElementById('modalComentariosCliente').style.display = 'block';
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar los comentarios');
+        });
+    }
+
+    // Mostrar lista de comentarios
+    function mostrarComentarios(comentarios) {
+        const lista = document.getElementById('listaComentarios');
+        
+        if (comentarios.length === 0) {
+            lista.innerHTML = '<div class="no-datos">Este cliente no tiene comentarios aún.</div>';
+            return;
+        }
+        
+        lista.innerHTML = comentarios.map(comentario => {
+            const estadoClass = 'badge-estado badge-' + comentario.estado;
+            const estadoTexto = comentario.estado === 'pendiente' ? 'Pendiente' : comentario.estado === 'aprobado' ? 'Aprobado' : 'Rechazado';
+            
+            let botones = '';
+            if (comentario.estado === 'pendiente') {
+                botones = `
+                    <button class="btn-small btn-confirmar" onclick="aprobarComentario(${comentario.id})">Aprobar</button>
+                    <button class="btn-small btn-rechazar" onclick="rechazarComentario(${comentario.id})">Rechazar</button>
+                `;
+            }
+            
+            return `
+                <div class="pedido-card">
+                    <div class="pedido-header">
+                        <h3>Comentario #${comentario.id}</h3>
+                        <span class="${estadoClass}">${estadoTexto}</span>
+                    </div>
+                    <div class="pedido-info">
+                        <div class="info-item">
+                            <span class="info-label">Fecha</span>
+                            <span class="info-value">${comentario.fecha_creacion}</span>
+                        </div>
+                        ${comentario.fecha_aprobacion ? `
+                        <div class="info-item">
+                            <span class="info-label">Fecha Aprobación</span>
+                            <span class="info-value">${comentario.fecha_aprobacion}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div style="margin-top: 15px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+                        <strong>Contenido:</strong>
+                        <p style="margin: 10px 0 0 0;">${comentario.contenido}</p>
+                    </div>
+                    ${botones ? `<div style="margin-top: 15px; display: flex; gap: 10px;">${botones}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Aprobar comentario
+    function aprobarComentario(comentarioId) {
+        if (!confirm('¿Aprobar este comentario?')) return;
+        
+        window.location.href = `/empresa/comentarios/aprobar/${comentarioId}/`;
+    }
+
+    // Rechazar comentario
+    function rechazarComentario(comentarioId) {
+        if (!confirm('¿Rechazar este comentario?')) return;
+        
+        window.location.href = `/empresa/comentarios/rechazar/${comentarioId}/`;
+    }
+
+    // Cerrar modal
+    function cerrarModalComentarios() {
+        document.getElementById('modalComentariosCliente').style.display = 'none';
+    }
+
+    // Cerrar al hacer clic fuera
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
+</script>
+
+<!-- Incluir modal de notificaciones -->
+{% include 'core/modal_notificaciones.html' %}
+
+{% load static %}
+<!-- Incluir estilos para el botón flotante de notificaciones empresa -->
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Botón flotante de notificaciones para empresa -->
+<a id="floating-notif-btn-empresa" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+    <span class="fb-icon">🔔</span>
+    <span id="floating-notif-badge-empresa" class="fb-badge" style="display:none">0</span>
+</a>
+
+<script>
+// Actualizar notificaciones cada 30 segundos para empresa
+function actualizarNotificacionesEmpresa() {
+    fetch('/api/conversaciones/')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('floating-notif-btn-empresa');
+            const badge = document.getElementById('floating-notif-badge-empresa');
+            
+            if (data.success && data.conversaciones) {
+                const tieneNoLeidos = data.conversaciones.some(c => c.mensajes_no_leidos > 0);
+                
+                if (tieneNoLeidos) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'inline-block';
+                } else if (data.conversaciones.length > 0) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'none';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.warn('Error al verificar notificaciones empresa:', err));
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(actualizarNotificacionesEmpresa, 30000);
+});
+</script>
+
+</body>
+</html>

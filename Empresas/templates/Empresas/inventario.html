@@ -1,0 +1,541 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Control de inventario empresarial. Administra el stock de tus muebles artesanales, actualiza cantidades y gestiona disponibilidad.">
+    <meta name="keywords" content="inventario, control stock, gestión inventario, disponibilidad productos">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Inventario - Panel Empresa">
+    <meta property="og:description" content="Controla el inventario de tus productos.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <title>Inventario | Panel Empresa</title>
+    <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside>
+            <h2>Dashboard de Empresa</h2>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'dashboardEmpresa' %}">Inicio</a></li>
+                    <li><a href="{% url 'usuarios' %}">Gestión de usuarios</a></li>
+                    <li><a href="{% url 'GestiProductos' %}">Gestión de productos</a></li>
+                    <li><a href="{% url 'inventario' %}">Inventario</a></li>
+                    <li><a href="{% url 'empresa_ideas' %}">Gestión de ideas</a></li>
+                    <li><a href="{% url 'empresa_comentarios' %}">Gestión de comentarios</a></li>
+                    <li><a href="{% url 'gestion_pagos' %}">Gestión de pagos</a></li>
+                    <li><a href="{% url 'gestion_pedidos' %}">Gestión de pedidos</a></li>
+                    <li><a href="{% url 'estadisticas' %}">Estadísticas</a></li>
+                </ul>
+            </nav>
+            <a href="{% url 'logout' %}" class="logout-button">Cerrar sesión</a>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <header>
+                <h1>Gestión de Inventario</h1>
+            </header>
+
+            <!-- Mesas -->
+            <div class="inventario-seccion">
+                <h2 class="seccion-titulo" onclick="toggleSeccion('mesas')">
+                    <span>Mesas</span>
+                    <i class="fas fa-chevron-down icono-toggle" style="transform: rotate(-90deg);"></i>
+                </h2>
+                <div id="mesas" class="productos-tabla seccion-content" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Cantidad Disponible</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mesa in mesas %}
+                            <tr class="{% if not mesa.is_active %}producto-inactivo{% endif %}">
+                                <td>{{ mesa.id }}</td>
+                                <td>{{ mesa.nombre1 }}</td>
+                                <td><span class="descripcion-cell">{{ mesa.descripcion1|truncatewords:10 }}</span></td>
+                                <td>${{ mesa.precio1|floatformat:0 }}</td>
+                                <td>
+                                    <span class="stock-badge {% if mesa.cantidad_disponible == 0 %}sin-stock{% elif mesa.cantidad_disponible < 10 %}bajo-stock{% else %}en-stock{% endif %}">
+                                        {{ mesa.cantidad_disponible }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if mesa.is_active %}
+                                        <span class="badge-activo">Activo</span>
+                                    {% else %}
+                                        <span class="badge-inactivo">Inhabilitado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if mesa.is_active %}
+                                        <button class="btn-editar" onclick="editarInventario('mesa', {{ mesa.id }}, {{ mesa.cantidad_disponible }}, '{{ mesa.nombre1 }}')">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% else %}
+                                        <button class="btn-editar" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="no-datos">No hay mesas registradas</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sillas -->
+            <div class="inventario-seccion">
+                <h2 class="seccion-titulo" onclick="toggleSeccion('sillas')">
+                    <span>Sillas</span>
+                    <i class="fas fa-chevron-down icono-toggle" style="transform: rotate(-90deg);"></i>
+                </h2>
+                <div id="sillas" class="productos-tabla seccion-content" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Cantidad Disponible</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for silla in sillas %}
+                            <tr class="{% if not silla.is_active %}producto-inactivo{% endif %}">
+                                <td>{{ silla.id }}</td>
+                                <td>{{ silla.nombre2 }}</td>
+                                <td><span class="descripcion-cell">{{ silla.descripcion2|truncatewords:10 }}</span></td>
+                                <td>${{ silla.precio2|floatformat:0 }}</td>
+                                <td>
+                                    <span class="stock-badge {% if silla.cantidad_disponible == 0 %}sin-stock{% elif silla.cantidad_disponible < 10 %}bajo-stock{% else %}en-stock{% endif %}">
+                                        {{ silla.cantidad_disponible }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if silla.is_active %}
+                                        <span class="badge-activo">Activo</span>
+                                    {% else %}
+                                        <span class="badge-inactivo">Inhabilitado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if silla.is_active %}
+                                        <button class="btn-editar" onclick="editarInventario('silla', {{ silla.id }}, {{ silla.cantidad_disponible }}, '{{ silla.nombre2 }}')">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% else %}
+                                        <button class="btn-editar" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="no-datos">No hay sillas registradas</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Armarios -->
+            <div class="inventario-seccion">
+                <h2 class="seccion-titulo" onclick="toggleSeccion('armarios')">
+                    <span>Armarios</span>
+                    <i class="fas fa-chevron-down icono-toggle" style="transform: rotate(-90deg);"></i>
+                </h2>
+                <div id="armarios" class="productos-tabla seccion-content" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Cantidad Disponible</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for armario in armarios %}
+                            <tr class="{% if not armario.is_active %}producto-inactivo{% endif %}">
+                                <td>{{ armario.id }}</td>
+                                <td>{{ armario.nombre3 }}</td>
+                                <td><span class="descripcion-cell">{{ armario.descripcion3|truncatewords:10 }}</span></td>
+                                <td>${{ armario.precio3|floatformat:0 }}</td>
+                                <td>
+                                    <span class="stock-badge {% if armario.cantidad_disponible == 0 %}sin-stock{% elif armario.cantidad_disponible < 10 %}bajo-stock{% else %}en-stock{% endif %}">
+                                        {{ armario.cantidad_disponible }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if armario.is_active %}
+                                        <span class="badge-activo">Activo</span>
+                                    {% else %}
+                                        <span class="badge-inactivo">Inhabilitado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if armario.is_active %}
+                                        <button class="btn-editar" onclick="editarInventario('armario', {{ armario.id }}, {{ armario.cantidad_disponible }}, '{{ armario.nombre3 }}')">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% else %}
+                                        <button class="btn-editar" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="no-datos">No hay armarios registrados</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cajoneras -->
+            <div class="inventario-seccion">
+                <h2 class="seccion-titulo" onclick="toggleSeccion('cajoneras')">
+                    <span>Cajoneras</span>
+                    <i class="fas fa-chevron-down icono-toggle" style="transform: rotate(-90deg);"></i>
+                </h2>
+                <div id="cajoneras" class="productos-tabla seccion-content" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Cantidad Disponible</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cajonera in cajoneras %}
+                            <tr class="{% if not cajonera.is_active %}producto-inactivo{% endif %}">
+                                <td>{{ cajonera.id }}</td>
+                                <td>{{ cajonera.nombre4 }}</td>
+                                <td><span class="descripcion-cell">{{ cajonera.descripcion4|truncatewords:10 }}</span></td>
+                                <td>${{ cajonera.precio4|floatformat:0 }}</td>
+                                <td>
+                                    <span class="stock-badge {% if cajonera.cantidad_disponible == 0 %}sin-stock{% elif cajonera.cantidad_disponible < 10 %}bajo-stock{% else %}en-stock{% endif %}">
+                                        {{ cajonera.cantidad_disponible }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if cajonera.is_active %}
+                                        <span class="badge-activo">Activo</span>
+                                    {% else %}
+                                        <span class="badge-inactivo">Inhabilitado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if cajonera.is_active %}
+                                        <button class="btn-editar" onclick="editarInventario('cajonera', {{ cajonera.id }}, {{ cajonera.cantidad_disponible }}, '{{ cajonera.nombre4 }}')">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% else %}
+                                        <button class="btn-editar" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="no-datos">No hay cajoneras registradas</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Escritorios -->
+            <div class="inventario-seccion">
+                <h2 class="seccion-titulo" onclick="toggleSeccion('escritorios')">
+                    <span>Escritorios</span>
+                    <i class="fas fa-chevron-down icono-toggle" style="transform: rotate(-90deg);"></i>
+                </h2>
+                <div id="escritorios" class="productos-tabla seccion-content" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Cantidad Disponible</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for escritorio in escritorios %}
+                            <tr class="{% if not escritorio.is_active %}producto-inactivo{% endif %}">
+                                <td>{{ escritorio.id }}</td>
+                                <td>{{ escritorio.nombre5 }}</td>
+                                <td><span class="descripcion-cell">{{ escritorio.descripcion5|truncatewords:10 }}</span></td>
+                                <td>${{ escritorio.precio5|floatformat:0 }}</td>
+                                <td>
+                                    <span class="stock-badge {% if escritorio.cantidad_disponible == 0 %}sin-stock{% elif escritorio.cantidad_disponible < 10 %}bajo-stock{% else %}en-stock{% endif %}">
+                                        {{ escritorio.cantidad_disponible }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if escritorio.is_active %}
+                                        <span class="badge-activo">Activo</span>
+                                    {% else %}
+                                        <span class="badge-inactivo">Inhabilitado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if escritorio.is_active %}
+                                        <button class="btn-editar" onclick="editarInventario('escritorio', {{ escritorio.id }}, {{ escritorio.cantidad_disponible }}, '{{ escritorio.nombre5 }}')">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% else %}
+                                        <button class="btn-editar" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="no-datos">No hay escritorios registrados</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Utensilios -->
+            <div class="inventario-seccion">
+                <h2 class="seccion-titulo" onclick="toggleSeccion('utensilios')">
+                    <span>Utensilios</span>
+                    <i class="fas fa-chevron-down icono-toggle" style="transform: rotate(-90deg);"></i>
+                </h2>
+                <div id="utensilios" class="productos-tabla seccion-content" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Cantidad Disponible</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for utensilio in utensilios %}
+                            <tr class="{% if not utensilio.is_active %}producto-inactivo{% endif %}">
+                                <td>{{ utensilio.id }}</td>
+                                <td>{{ utensilio.nombre6 }}</td>
+                                <td><span class="descripcion-cell">{{ utensilio.descripcion6|truncatewords:10 }}</span></td>
+                                <td>${{ utensilio.precio6|floatformat:0 }}</td>
+                                <td>
+                                    <span class="stock-badge {% if utensilio.cantidad_disponible == 0 %}sin-stock{% elif utensilio.cantidad_disponible < 10 %}bajo-stock{% else %}en-stock{% endif %}">
+                                        {{ utensilio.cantidad_disponible }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if utensilio.is_active %}
+                                        <span class="badge-activo">Activo</span>
+                                    {% else %}
+                                        <span class="badge-inactivo">Inhabilitado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if utensilio.is_active %}
+                                        <button class="btn-editar" onclick="editarInventario('utensilio', {{ utensilio.id }}, {{ utensilio.cantidad_disponible }}, '{{ utensilio.nombre6 }}')">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% else %}
+                                        <button class="btn-editar" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="no-datos">No hay utensilios registrados</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div id="modalInventario" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h2>Actualizar Inventario</h2>
+            <form id="formInventario">
+                {% csrf_token %}
+                <input type="hidden" id="producto_tipo" name="tipo">
+                <input type="hidden" id="producto_id" name="id">
+                
+                <div class="form-group">
+                    <label>Producto:</label>
+                    <input type="text" id="producto_nombre" readonly class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cantidad">Nueva Cantidad Disponible:</label>
+                    <input type="number" id="cantidad" name="cantidad" min="0" required class="form-control"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function editarInventario(tipo, id, cantidadActual, nombre) {
+            document.getElementById('producto_tipo').value = tipo;
+            document.getElementById('producto_id').value = id;
+            document.getElementById('producto_nombre').value = nombre;
+            document.getElementById('cantidad').value = cantidadActual;
+            document.getElementById('modalInventario').style.display = 'block';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalInventario').style.display = 'none';
+        }
+
+        document.getElementById('formInventario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            fetch('{% url "actualizar_inventario" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.mensaje);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al actualizar el inventario');
+            });
+        });
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalInventario');
+            if (event.target == modal) {
+                cerrarModal();
+            }
+        }
+
+        // Toggle secciones desplegables
+        function toggleSeccion(seccionId) {
+            const seccion = document.getElementById(seccionId);
+            const icono = event.currentTarget.querySelector('.icono-toggle');
+            
+            if (seccion.style.display === 'none') {
+                seccion.style.display = 'block';
+                icono.style.transform = 'rotate(0deg)';
+            } else {
+                seccion.style.display = 'none';
+                icono.style.transform = 'rotate(-90deg)';
+            }
+        }
+    </script>
+
+{% load static %}
+<!-- Incluir estilos para el botón flotante de notificaciones empresa -->
+<link rel="stylesheet" href="{% static 'core/css/floating.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/notificaciones.css' %}">
+
+<!-- Botón flotante de notificaciones para empresa -->
+<a id="floating-notif-btn-empresa" class="floating-btn floating-notif" style="display: flex;" title="Notificaciones" onclick="event.preventDefault(); abrirNotificaciones();">
+    <span class="fb-icon">🔔</span>
+    <span id="floating-notif-badge-empresa" class="fb-badge" style="display:none">0</span>
+</a>
+
+{% include 'core/modal_notificaciones.html' %}
+
+<script>
+// Actualizar notificaciones cada 30 segundos para empresa
+function actualizarNotificacionesEmpresa() {
+    fetch('/api/conversaciones/')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('floating-notif-btn-empresa');
+            const badge = document.getElementById('floating-notif-badge-empresa');
+            
+            if (data.success && data.conversaciones) {
+                const tieneNoLeidos = data.conversaciones.some(c => c.mensajes_no_leidos > 0);
+                
+                if (tieneNoLeidos) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'inline-block';
+                } else if (data.conversaciones.length > 0) {
+                    btn.style.display = 'flex';
+                    badge.style.display = 'none';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.warn('Error al verificar notificaciones empresa:', err));
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(actualizarNotificacionesEmpresa, 30000);
+});
+</script>
+
+</body>
+</html>

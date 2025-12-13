@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Tu Idea Hecha Realidad - Encuentra gangazos en muebles artesanales de madera. Carpintería, marroquinería, vidriería y más. Productos colombianos de alta calidad a precios increíbles.">
+    <meta name="keywords" content="gangazos, muebles artesanales, carpintería, muebles de madera, muebles colombia, artesanias, marroquinería, vidriería, metaleria, ceramica, tapiceria, ofertas muebles, muebles personalizados">
+    <meta name="author" content="Tu Idea Hecha Realidad">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Spanish">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Tu Idea Hecha Realidad - Gangazos en Muebles Artesanales">
+    <meta property="og:description" content="Encuentra gangazos en muebles artesanales de madera. Productos colombianos de alta calidad a precios increíbles.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_CO">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tu Idea Hecha Realidad - Gangazos en Muebles Artesanales">
+    <meta name="twitter:description" content="Encuentra gangazos en muebles artesanales de madera. Productos colombianos de alta calidad.">
+    
+    <title>{% block title %} {% endblock %} | ¡Oferta Exclusiva!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+</head>
+<body class="landing-page">
+
+    <!-- Navbar superior para landing page -->
+    <nav class="landing-navbar">
+        <div class="landing-nav-container">
+            <div class="landing-nav-logo">
+                <img src="{% static 'core/img/Gemini_Generated_Image_tzay6utzay6utzay.jfif' %}" alt="Logo">
+                <span>Gangazos</span>
+            </div>
+            <ul class="landing-nav-menu">
+                <li><a href="{% url 'home' %}">Inicio</a></li>
+                <li><a href="{% url 'reglas' %}">Sobre Gangazos y Reglas</a></li>
+                <li><a href="{% url 'login' %}" class="btn-registro">Iniciar sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-content-wrapper">
+    
+    <!-- Carrusel de Categorías -->
+    <section class="carousel-hero">
+        <div class="carousel-hero-container">
+            <button class="carousel-hero-btn prev-btn" onclick="moveHeroCarousel(-1)">❮</button>
+            
+            <div class="carousel-hero-wrapper">
+                <div class="carousel-hero-track" id="heroTrack">
+                    <div class="carousel-hero-item">
+                        <img src="{% static 'core/img/Mesa.jpg' %}" alt="Mesas">
+                        <div class="carousel-hero-caption">
+                            <h2>Carpintería Artesanal</h2>
+                            <p>Muebles únicos hechos a mano con la mejor calidad</p>
+                        </div>
+                    </div>
+                    <div class="carousel-hero-item">
+                        <img src="{% static 'core/img/Sillas.jpg' %}" alt="Sillas">
+                        <div class="carousel-hero-caption">
+                            <h2>Sillas Elegantes</h2>
+                            <p>Diseños modernos y cómodos para tu hogar</p>
+                        </div>
+                    </div>
+                    <div class="carousel-hero-item">
+                        <img src="{% static 'core/img/Armario.jpg' %}" alt="Armarios">
+                        <div class="carousel-hero-caption">
+                            <h2>Almacenamiento</h2>
+                            <p>Armarios y cajoneras funcionales</p>
+                        </div>
+                    </div>
+                    <div class="carousel-hero-item">
+                        <img src="{% static 'core/img/Mesa.jpg' %}" alt="Escritorios">
+                        <div class="carousel-hero-caption">
+                            <h2>Escritorios</h2>
+                            <p>Espacios de trabajo personalizados</p>
+                        </div>
+                    </div>
+                    <div class="carousel-hero-item">
+                        <img src="{% static 'core/img/Sillas.jpg' %}" alt="Mesas">
+                        <div class="carousel-hero-caption">
+                            <h2>Mesas de Centro</h2>
+                            <p>El punto focal de tu sala de estar</p>
+                        </div>
+                    </div>
+                    <div class="carousel-hero-item">
+                        <img src="{% static 'core/img/Armario.jpg' %}" alt="Estanterías">
+                        <div class="carousel-hero-caption">
+                            <h2>Estanterías</h2>
+                            <p>Soluciones de almacenamiento con estilo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="carousel-hero-btn next-btn" onclick="moveHeroCarousel(1)">❯</button>
+        </div>
+        <div class="carousel-hero-indicators" id="heroIndicators"></div>
+    </section>
+
+    <section>
+        <div>
+            <h2>GANGAZOS TIHR</h2>
+            <br>
+        </div>
+    </section>
+
+    <!-- Sección contenido en columnas -->
+    <section class="seccion-at">
+        <div class="content-columns">
+            <div class="content-column">
+                <h2>¿QUIENES SOMOS?</h2>
+                <p>En Tu Idea Hecha Realidad, diseñamos y creamos productos únicos, adaptados a tus necesidades y gustos. Trabajamos con la carpintería para hacer diseños únicos en nuestras subcategorías a base de las ideas de nuestros usuarios y clientes tanto de la empresa para garantizar diseños de alta calidad y originalidad.</p>
+            </div>
+            <div class="content-column">
+                <h2>GANGAZOS</h2>
+                <p>Disfruta de nuevos productos y en oferta que puedes que puedes llevar a buen precio y de buena calidad, donde apollas a personas y empresas que se dedican a hacer estos productos a base de ideas por los usuarios de nuestra plataforma. ¡Disfruta de nuestros productos en oferta!</p>
+            </div>
+        </div>
+    </section>
+    <br>
+    <section class="seccion-at">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 3rem;">
+            <h2 style="text-align: center;">¿Por qué aprovechar los diferentes gangazos?</h2>
+            <p style="text-align: center; font-size: 1.1rem; color: #555; max-width: 900px; margin: 0 auto 2rem;">Aprovechar los gangazos no solo es una excelente manera de comprar de forma inteligente, 
+                sino también una oportunidad de maximizar el valor de cada peso que inviertes.</p>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <span class="benefit-icon">💰</span>
+                <h3>Ahorra dinero</h3>
+                <p>Los gangazos te permiten acceder a productos y servicios a precios reducidos sin sacrificar la calidad. 
+                    Esto significa que puedes cuidar tu presupuesto, comprar más por menos y destinar tus ahorros a otras prioridades 
+                    o gustos personales.</p>
+            </div>
+            <div class="benefit-card">
+                <span class="benefit-icon">⭐</span>
+                <h3>Calidad superior</h3>
+                <p>Muchas ofertas especiales incluyen artículos de alta gama o con excelente reputación en el mercado. Al aprovechar 
+                    estos descuentos, puedes llevarte a casa productos de gran calidad que quizás no adquirirías a precio completo.</p>
+            </div>
+            <div class="benefit-card">
+                <span class="benefit-icon">🎁</span>
+                <h3>Características exclusivas</h3>
+                <p>Algunos gangazos incluyen ediciones limitadas, productos con diseños únicos o servicios con beneficios adicionales 
+                    que normalmente no están disponibles. Esto te permite disfrutar de una experiencia más personalizada y especial.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div>
+            <h2></h2>
+        </div>
+    </section>
+    <!-- Sección Productos Disponibles -->
+    <section>
+        <div>
+            <h2>Productos Disponibles</h2>
+        </div>
+        <div class="productos-disponibles-grid">
+            {% if mesa_destacada %}
+            <div class="producto-card">
+                <img src="{{ mesa_destacada.imagen1.url }}" alt="{{ mesa_destacada.nombre1 }}">
+                <div class="producto-info">
+                    <h3>{{ mesa_destacada.nombre1 }}</h3>
+                    <p class="producto-descripcion">{{ mesa_destacada.descripcion1|truncatewords:15 }}</p>
+                    <div class="producto-precio">
+                        <span class="precio-oferta">${{ mesa_destacada.precio1|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if silla_destacada %}
+            <div class="producto-card">
+                <img src="{{ silla_destacada.imagen2.url }}" alt="{{ silla_destacada.nombre2 }}">
+                <div class="producto-info">
+                    <h3>{{ silla_destacada.nombre2 }}</h3>
+                    <p class="producto-descripcion">{{ silla_destacada.descripcion2|truncatewords:15 }}</p>
+                    <div class="producto-precio">
+                        <span class="precio-oferta">${{ silla_destacada.precio2|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if armario_destacado %}
+            <div class="producto-card">
+                <img src="{{ armario_destacado.imagen3.url }}" alt="{{ armario_destacado.nombre3 }}">
+                <div class="producto-info">
+                    <h3>{{ armario_destacado.nombre3 }}</h3>
+                    <p class="producto-descripcion">{{ armario_destacado.descripcion3|truncatewords:15 }}</p>
+                    <div class="producto-precio">
+                        <span class="precio-oferta">${{ armario_destacado.precio3|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if escritorio_destacado %}
+            <div class="producto-card">
+                <img src="{{ escritorio_destacado.imagen5.url }}" alt="{{ escritorio_destacado.nombre5 }}">
+                <div class="producto-info">
+                    <h3>{{ escritorio_destacado.nombre5 }}</h3>
+                    <p class="producto-descripcion">{{ escritorio_destacado.descripcion5|truncatewords:15 }}</p>
+                    <div class="producto-precio">
+                        <span class="precio-oferta">${{ escritorio_destacado.precio5|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if utensilio_destacado %}
+            <div class="producto-card">
+                <img src="{{ utensilio_destacado.imagen6.url }}" alt="{{ utensilio_destacado.nombre6 }}">
+                <div class="producto-info">
+                    <h3>{{ utensilio_destacado.nombre6 }}</h3>
+                    <p class="producto-descripcion">{{ utensilio_destacado.descripcion6|truncatewords:15 }}</p>
+                    <div class="producto-precio">
+                        <span class="precio-oferta">${{ utensilio_destacado.precio6|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if cajonera_destacada %}
+            <div class="producto-card">
+                <img src="{{ cajonera_destacada.imagen4.url }}" alt="{{ cajonera_destacada.nombre4 }}">
+                <div class="producto-info">
+                    <h3>{{ cajonera_destacada.nombre4 }}</h3>
+                    <p class="producto-descripcion">{{ cajonera_destacada.descripcion4|truncatewords:15 }}</p>
+                    <div class="producto-precio">
+                        <span class="precio-oferta">${{ cajonera_destacada.precio4|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+    <br>
+    <section class="comments-section">
+        <section class="seccion-at">
+        <div class="container">
+            <div class="row">
+                    <h2 style="text-align: center; margin-bottom: 30px;">Lo que dicen nuestros clientes</h2>
+                    
+                    <!-- Carrusel de Comentarios -->
+                    <div class="carousel-comentarios-container">
+                        <button class="carousel-btn prev-btn" onclick="moveComentariosCarousel(-1)">❮</button>
+                        
+                        <div class="carousel-comentarios-wrapper">
+                            <div class="carousel-comentarios-track" id="comentariosTrack">
+                                {% for comentario in comentarios %}
+                                <div class="comentario-landing-card carousel-item">
+                                    <div class="comentario-landing-avatar">
+                                        {% if comentario.usuario.foto_perfil %}
+                                            <img src="{{ comentario.usuario.foto_perfil.url }}" alt="{{ comentario.usuario.usernameCliente }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                        {% else %}
+                                            {{ comentario.usuario.usernameCliente|first|upper }}
+                                        {% endif %}
+                                    </div>
+                                    <h5 class="comentario-landing-nombre">{{ comentario.usuario.usernameCliente }}</h5>
+                                    <p class="comentario-landing-texto">{{ comentario.contenido }}</p>
+                                </div>
+                                {% empty %}
+                                <div class="comentario-landing-card carousel-item">
+                                    <div class="comentario-landing-avatar">C</div>
+                                    <h5 class="comentario-landing-nombre">Carlos S.</h5>
+                                    <p class="comentario-landing-texto">Me encanta el enfoque sostenible de la empresa. Es genial poder comprar productos de alta calidad sabiendo que también cuidan el medio ambiente.</p>
+                                </div>
+
+                                <div class="comentario-landing-card carousel-item">
+                                    <div class="comentario-landing-avatar">A</div>
+                                    <h5 class="comentario-landing-nombre">Ana M.</h5>
+                                    <p class="comentario-landing-texto">El envío fue muy rápido y los productos llegaron en perfectas condiciones. ¡Muy satisfecha con mi compra!</p>
+                                </div>
+
+                                <div class="comentario-landing-card carousel-item">
+                                    <div class="comentario-landing-avatar">J</div>
+                                    <h5 class="comentario-landing-nombre">Juan P.</h5>
+                                    <p class="comentario-landing-texto">La variedad de productos es excelente y los precios son muy competitivos. Recomiendo esta tienda a todos mis amigos y familiares.</p>
+                                </div>
+
+                                <div class="comentario-landing-card carousel-item">
+                                    <div class="comentario-landing-avatar">S</div>
+                                    <h5 class="comentario-landing-nombre">Sofía R.</h5>
+                                    <p class="comentario-landing-texto">Tenía una duda sobre un producto y el equipo de soporte me ayudó de manera muy eficiente y amable. ¡Gran experiencia de compra!</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <button class="carousel-btn next-btn" onclick="moveComentariosCarousel(1)">❯</button>
+                    </div>
+                    
+                    <!-- Indicadores del carrusel -->
+                    <div class="carousel-indicators" id="comentariosIndicators"></div>
+        </section>
+    </section>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">📞 Contáctenos</h3>
+                <div class="footer-info">
+                    <i>📞</i>
+                    <span>+57 300 123 4567</span>
+                </div>
+                <div class="footer-info">
+                    <i>✉️</i>
+                    <span>info@gangasca-tirr.com</span>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">📍 Dirección</h3>
+                <div class="footer-info">
+                    <i>📍</i>
+                    <span>Carrera 45 P. 26-85<br>RoyalA, Colombia</span>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">🌐 Síguenos</h3>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/tu_idea_hecha_realidad?igsh=Y3ByM2lyZGcwNHVy" class="social-icon-img" aria-label="Instagram">
+                        <img src="{% static 'core/img/Instagram.webp' %}" alt="Instagram" class="social-logo" width="40" height="40">
+                    </a>
+                    <a href="https://www.facebook.com/share/1ACEVZbZHV/" class="social-icon-img" aria-label="Facebook">
+                        <img src="{% static 'core/img/Facebook.png' %}" alt="Facebook" class="social-logo" width="40" height="40">
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 Tu Idea Hecha Realidad - Todos los derechos reservados</p>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // Carrusel Hero de Categorías
+    let currentHeroIndex = 0;
+    let heroAutoplayInterval;
+
+    function initHeroCarousel() {
+        const track = document.getElementById('heroTrack');
+        const items = track.querySelectorAll('.carousel-hero-item');
+        const indicatorsContainer = document.getElementById('heroIndicators');
+        
+        // Crear indicadores
+        items.forEach((_, index) => {
+            const indicator = document.createElement('span');
+            indicator.className = 'indicator';
+            indicator.onclick = () => goToHero(index);
+            indicatorsContainer.appendChild(indicator);
+        });
+        
+        updateHeroCarousel();
+        startHeroAutoplay();
+        
+        // Event listeners para pausar en hover
+        const container = document.querySelector('.carousel-hero-container');
+        container.addEventListener('mouseenter', pauseHeroAutoplay);
+        container.addEventListener('mouseleave', startHeroAutoplay);
+    }
+
+    function updateHeroCarousel() {
+        const track = document.getElementById('heroTrack');
+        const items = track.querySelectorAll('.carousel-hero-item');
+        const indicators = document.querySelectorAll('#heroIndicators .indicator');
+        
+        if (items.length === 0) return;
+        
+        const offset = -(currentHeroIndex * 100);
+        track.style.transform = `translateX(${offset}%)`;
+        
+        // Actualizar indicadores
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentHeroIndex);
+        });
+    }
+
+    function moveHeroCarousel(direction) {
+        const track = document.getElementById('heroTrack');
+        const items = track.querySelectorAll('.carousel-hero-item');
+        
+        currentHeroIndex += direction;
+        
+        if (currentHeroIndex < 0) {
+            currentHeroIndex = items.length - 1;
+        } else if (currentHeroIndex >= items.length) {
+            currentHeroIndex = 0;
+        }
+        
+        updateHeroCarousel();
+    }
+
+    function goToHero(index) {
+        currentHeroIndex = index;
+        updateHeroCarousel();
+    }
+
+    function startHeroAutoplay() {
+        if (heroAutoplayInterval) {
+            clearInterval(heroAutoplayInterval);
+        }
+        heroAutoplayInterval = setInterval(() => {
+            moveHeroCarousel(1);
+        }, 4000);
+    }
+
+    function pauseHeroAutoplay() {
+        if (heroAutoplayInterval) {
+            clearInterval(heroAutoplayInterval);
+            heroAutoplayInterval = null;
+        }
+    }
+
+    // Carrusel de Comentarios
+    let currentComentarioIndex = 0;
+    let comentariosAutoplayInterval;
+    let comentariosLastInteraction = Date.now();
+    let comentariosIsAutoplay = true;
+    const COMENTARIOS_AUTOPLAY_DELAY = 1500; // 1.5 segundos entre cambios
+    const COMENTARIOS_RESUME_DELAY = 3000; // 3 segundos para reanudar
+
+    function initComentariosCarousel() {
+        const track = document.getElementById('comentariosTrack');
+        const items = track.querySelectorAll('.carousel-item');
+        const indicatorsContainer = document.getElementById('comentariosIndicators');
+        
+        // Crear indicadores
+        items.forEach((_, index) => {
+            const indicator = document.createElement('span');
+            indicator.className = 'indicator';
+            indicator.onclick = () => goToComentario(index);
+            indicatorsContainer.appendChild(indicator);
+        });
+        
+        updateComentariosCarousel();
+        startComentariosAutoplay();
+        
+        // Event listeners para pausar en hover
+        const container = document.querySelector('.carousel-comentarios-container');
+        container.addEventListener('mouseenter', pauseComentariosAutoplay);
+        container.addEventListener('mouseleave', scheduleComentariosResume);
+        container.addEventListener('click', handleComentariosInteraction);
+    }
+
+    function updateComentariosCarousel() {
+        const track = document.getElementById('comentariosTrack');
+        const items = track.querySelectorAll('.carousel-item');
+        const indicators = document.querySelectorAll('#comentariosIndicators .indicator');
+        
+        if (items.length === 0) return;
+        
+        // Ajustar según el ancho de la ventana
+        const itemsPerView = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+        const maxIndex = Math.max(0, items.length - itemsPerView);
+        
+        if (currentComentarioIndex > maxIndex) {
+            currentComentarioIndex = maxIndex;
+        }
+        
+        const offset = -(currentComentarioIndex * (100 / itemsPerView));
+        track.style.transform = `translateX(${offset}%)`;
+        
+        // Actualizar indicadores
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentComentarioIndex);
+        });
+    }
+
+    function moveComentariosCarousel(direction) {
+        const track = document.getElementById('comentariosTrack');
+        const items = track.querySelectorAll('.carousel-item');
+        const itemsPerView = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+        const maxIndex = Math.max(0, items.length - itemsPerView);
+        
+        currentComentarioIndex += direction;
+        
+        if (currentComentarioIndex < 0) {
+            currentComentarioIndex = maxIndex;
+        } else if (currentComentarioIndex > maxIndex) {
+            currentComentarioIndex = 0;
+        }
+        
+        updateComentariosCarousel();
+        handleComentariosInteraction();
+    }
+
+    function goToComentario(index) {
+        currentComentarioIndex = index;
+        updateComentariosCarousel();
+        handleComentariosInteraction();
+    }
+
+    function startComentariosAutoplay() {
+        if (comentariosAutoplayInterval) {
+            clearInterval(comentariosAutoplayInterval);
+        }
+        comentariosIsAutoplay = true;
+        comentariosAutoplayInterval = setInterval(() => {
+            moveComentariosCarousel(1);
+        }, COMENTARIOS_AUTOPLAY_DELAY);
+    }
+
+    function pauseComentariosAutoplay() {
+        if (comentariosAutoplayInterval) {
+            clearInterval(comentariosAutoplayInterval);
+            comentariosAutoplayInterval = null;
+        }
+        comentariosIsAutoplay = false;
+    }
+
+    function handleComentariosInteraction() {
+        comentariosLastInteraction = Date.now();
+        pauseComentariosAutoplay();
+        scheduleComentariosResume();
+    }
+
+    function scheduleComentariosResume() {
+        setTimeout(() => {
+            const timeSinceLastInteraction = Date.now() - comentariosLastInteraction;
+            if (timeSinceLastInteraction >= COMENTARIOS_RESUME_DELAY && !comentariosIsAutoplay) {
+                startComentariosAutoplay();
+            }
+        }, COMENTARIOS_RESUME_DELAY);
+    }
+
+    // Inicializar carruseles cuando carga la página
+    document.addEventListener('DOMContentLoaded', () => {
+        initHeroCarousel();
+        initComentariosCarousel();
+    });
+    
+    // Actualizar en resize
+    window.addEventListener('resize', updateComentariosCarousel);
+</script>
+
+</body>
+</html>

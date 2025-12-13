@@ -1,0 +1,73 @@
+/* 1. Estilos Globales para el Centrado */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7fa; /* Un fondo muy sutil */
+    color: #333;
+    /* Elimina cualquier 'text-align: right;' si existe en tu CSS */
+}
+
+/* 2. Contenedor de Formulario (El elemento que quieres centrar) */
+form {
+    /* Centrado Horizontal Clave: Define un ancho máximo y usa margin: auto */
+    width: 100%;
+    max-width: 700px; /* Define un ancho máximo para la "tarjeta" */
+    margin: 40px auto; /* 40px arriba/abajo, auto a los lados para centrar */
+    
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    
+    /* Configuración para eliminar los <br> del HTML (si los quitas) */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre los grupos de formulario */
+}
+
+/* 3. Título (También centrado y estilizado) */
+h1 {
+    text-align: center;
+    color: #A0662F;
+    margin: 20px auto 30px auto; /* Centra el h1 de forma independiente */
+    max-width: 500px; /* Asegura que el h1 esté centrado con el formulario */
+    font-size: 1.8em;
+}
+
+/* 4. Estilos de Elementos del Formulario */
+label {
+    display: block; /* Asegura que el label esté en su propia línea */
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #495057;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%; /* Ocupa todo el ancho del formulario centrado */
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+    /* Es importante que estos elementos NO tengan 'float: right;' si está en otro CSS */
+}
+
+/* 5. Estilo del Botón (Asegura que el botón ocupe todo el ancho) */
+button[type="submit"] {
+    width: 100%; /* ¡Ajuste clave para que ocupe todo el ancho! */
+    background-color: #28a745;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #1e7e34;
+}

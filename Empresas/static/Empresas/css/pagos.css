@@ -1,0 +1,594 @@
+/* Estilos para Gestión de Pagos */
+/* Comentado para usar el estilo estándar del header
+.page-title {
+    background: linear-gradient(135deg, #7A3E0E 0%, #A0662F 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.page-title h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+*/
+
+.tabs-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.tab-button {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6b7280;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tab-button:hover {
+    color: #A0662F;
+}
+
+.tab-button.active {
+    color: #7A3E0E;
+    border-bottom-color: #A0662F;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tabla-pagos {
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tabla-pagos table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-pagos thead {
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+}
+
+.tabla-pagos th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.tabla-pagos td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tabla-pagos tbody tr:hover {
+    background: #f9fafb;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    margin: 2px;
+    transition: all 0.3s;
+}
+
+.btn-ver-pagos {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s;
+}
+
+.btn-ver-pagos:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(160, 102, 47, 0.4);
+}
+
+.btn-ver-comentarios {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s;
+}
+
+.btn-ver-comentarios:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(160, 102, 47, 0.4);
+}
+
+.btn-ver-detalles {
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+}
+
+.btn-ver-detalles:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+.btn-confirmar {
+    background: #10b981;
+    color: white;
+}
+
+.btn-confirmar:hover {
+    background: #059669;
+}
+
+.btn-rechazar {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-rechazar:hover {
+    background: #dc2626;
+}
+
+.btn-chat {
+    background: linear-gradient(135deg, #C9A882, #A0662F);
+    color: white;
+}
+
+.btn-chat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 50px auto;
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 900px;
+    width: 90%;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #6B4E3D, #4A3428);
+    color: white;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2,
+.modal-header h3 {
+    color: white;
+    margin: 0;
+}
+
+.modal-body {
+    padding: 25px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.close:hover {
+    opacity: 0.8;
+}
+
+/* Modal Tabs */
+.modal-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.modal-tab {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6b7280;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+.modal-tab:hover {
+    color: #A0662F;
+    background: #f9fafb;
+}
+
+.modal-tab.active {
+    color: #7A3E0E;
+    border-bottom-color: #A0662F;
+    background: transparent;
+}
+
+.modal-tab-content {
+    display: none;
+    animation: fadeIn 0.3s;
+}
+
+.modal-tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.detalle-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.detalle-tab {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6b7280;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.detalle-tab:hover {
+    color: #A0662F;
+}
+
+.detalle-tab.active {
+    color: #7A3E0E;
+    border-bottom-color: #A0662F;
+}
+
+.detalle-content {
+    display: none;
+}
+
+.detalle-content.active {
+    display: block;
+}
+
+.productos-lista {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.producto-detalle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 12px;
+}
+
+.producto-detalle:last-child {
+    border-bottom: none;
+}
+
+.producto-imagen {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+}
+
+.producto-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comprobante-container {
+    text-align: center;
+}
+
+.comprobante-container img {
+    width: 100px !important;
+    height: auto !important;
+    max-height: 130px !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.comprobante-img {
+    width: 450px !important;
+    height: auto !important;
+    max-height: 450px !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    object-fit: contain;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Chat Modal */
+.chat-modal {
+    max-width: 700px;
+}
+
+.chat-container-pago {
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.chat-message {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message.empresa {
+    align-items: flex-end;
+}
+
+.chat-message.cliente {
+    align-items: flex-start;
+}
+
+.message-bubble {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    word-wrap: break-word;
+}
+
+.chat-message.empresa .message-bubble {
+    background: linear-gradient(135deg, #C9A882, #A0662F);
+    color: white;
+}
+
+.chat-message.cliente .message-bubble {
+    background: white;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+}
+
+.message-sender {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 4px;
+}
+
+.message-image {
+    margin-top: 8px;
+}
+
+.message-image img {
+    max-width: 200px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.chat-input-container textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    resize: none;
+    font-family: inherit;
+}
+
+.chat-input-container button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #A0662F, #7A3E0E);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.chat-input-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
+
+.file-input-label {
+    padding: 10px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-input-label:hover {
+    background: #e5e7eb;
+}
+
+.preview-image {
+    max-width: 150px;
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+.no-datos {
+    text-align: center;
+    padding: 40px;
+    color: #9ca3af;
+}
+
+/* Estilos para las tarjetas de pagos/comentarios en modal */
+.pedido-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+}
+
+.pedido-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.pedido-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.pedido-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #7A3E0E;
+    font-weight: 700;
+}
+
+.badge-estado {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.badge-pendiente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-confirmado,
+.badge-aprobado {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-rechazado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.pedido-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.btn-ver-detalles-pedido {
+    background: linear-gradient(135deg, #A0662F 0%, #7A3E0E 100%);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(160, 102, 47, 0.2);
+}
+
+.btn-ver-detalles-pedido:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(160, 102, 47, 0.4);
+}
