@@ -1317,8 +1317,6 @@ def obtener_ideas_usuario_view(request, usuario_id):
                 'id': idea.id,
                 'titulo': idea.titulo,
                 'descripcion': idea.descripcion,
-                'ancho': float(idea.ancho) if idea.ancho else 0,
-                'altura': float(idea.altura) if idea.altura else 0,
                 'estado': idea.estado,
                 'fecha_creacion': idea.fecha_creacion.strftime('%d/%m/%Y'),
                 'tiene_imagen': bool(idea.imagen),
@@ -1350,8 +1348,33 @@ def obtener_detalle_idea_view(request, idea_id):
     try:
         idea = Idea.objects.get(id=idea_id)
         
+        # Formatear medidas con nombres legibles
+        medidas_formateadas = None
+        if idea.medidas:
+            from core.forms import CATEGORIA_MEDIDAS
+            medidas_formateadas = {}
+            categoria = idea.categoria
+            
+            if categoria in CATEGORIA_MEDIDAS:
+                campos_categoria = CATEGORIA_MEDIDAS.get(categoria, [])
+                for medida in campos_categoria:
+                    campo = medida.get('campo')
+                    if campo in idea.medidas:
+                        nombre = medida.get('nombre', campo)
+                        unidad = medida.get('unidad', '')
+                        valor = idea.medidas[campo]
+                        medidas_formateadas[nombre] = f"{valor} {unidad}"
+        
         return JsonResponse({
             'success': True,
+            'titulo': idea.titulo,
+            'descripcion': idea.descripcion or 'Sin descripción',
+            'categoria': idea.get_categoria_display(),
+            'estado': idea.get_estado_display(),
+            'autor': idea.autor,
+            'fecha_creacion': idea.fecha_creacion.strftime('%d/%m/%Y %H:%M'),
+            'empresa_asignada': idea.empresa_asignada.usernameEmpresa if idea.empresa_asignada else 'No asignada',
+            'medidas': medidas_formateadas,
             'imagen_url': idea.imagen.url if idea.imagen else None,
             'modelo_3d_url': idea.modelo_3d.url if idea.modelo_3d else None,
         })

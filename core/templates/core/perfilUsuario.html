@@ -150,15 +150,15 @@
       <div class="info-cards">
           <div class="info-card">
               <div class="info-card-title">Miembro desde</div>
-              <div class="info-card-value">{{ usuario.fecha_registro|date:"M Y" }}</div>
+              <div class="info-card-value">{{ usuario.fecha_registro|date:"M Y"|default:"Dic 2024" }}</div>
           </div>
           <div class="info-card">
               <div class="info-card-title">Compras realizadas</div>
-              <div class="info-card-value">6</div>
+              <div class="info-card-value">{{ compras_realizadas }}</div>
           </div>
           <div class="info-card">
               <div class="info-card-title">Ideas enviadas</div>
-              <div class="info-card-value">3</div>
+              <div class="info-card-value">{{ ideas_enviadas }}</div>
           </div>
       </div>
     </div>

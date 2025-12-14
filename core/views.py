@@ -445,11 +445,21 @@ def ideas_view(request):
     if request.method == 'POST':
         form = IdeaForm(request.POST, request.FILES)
         if form.is_valid():
-            # Guardar sin commit para agregar el autor
+            # Guardar sin commit para agregar el autor y medidas
             idea = form.save(commit=False)
             # Asignar automáticamente el nombre del usuario de la sesión
             if usuario:
                 idea.autor = usuario.usernameCliente
+            
+            # Procesar medidas JSON del formulario
+            medidas_json = request.POST.get('medidas', '')
+            if medidas_json:
+                try:
+                    import json
+                    idea.medidas = json.loads(medidas_json)
+                except:
+                    idea.medidas = None
+            
             idea.save()
             return redirect('idea')
     else:
@@ -506,8 +516,20 @@ def perfilUsuario_view(request):
     
     try:
         usuario = UserClientes.objects.get(usernameCliente=username)
+        
+        # Contar compras confirmadas (pagos confirmados)
+        compras_realizadas = Pago.objects.filter(
+            cliente=usuario,
+            estado='confirmado'
+        ).count()
+        
+        # Contar ideas enviadas por el usuario
+        ideas_enviadas = Idea.objects.filter(autor=username).count()
+        
         context = {
             'usuario': usuario,
+            'compras_realizadas': compras_realizadas,
+            'ideas_enviadas': ideas_enviadas,
         }
         return render(request, 'core/perfilUsuario.html', context)
     except UserClientes.DoesNotExist:

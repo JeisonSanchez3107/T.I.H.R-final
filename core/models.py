@@ -64,6 +64,7 @@ class UserClientes(models.Model):
     is_active = models.BooleanField(default=True)
     last_modified = models.DateTimeField(auto_now=True)
     status_changed_at = models.DateTimeField(null=True, blank=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     foto_perfil = models.ImageField(upload_to='uploads/perfiles/', blank=True, null=True)
     
     # Campos para autenticación de dos factores (2FA)
