@@ -3,7 +3,8 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from core.models import UserClientes, Pedido, Pago, Mesas, Sillas, Armarios, Cajoneras, Escritorios, Utensilios
 from django.db.models import Sum, Count, Q
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils import timezone
 import io
 import base64
 
@@ -12,11 +13,34 @@ def estadisticas_view(request):
     if 'empresa_id' not in request.session:
         return redirect('login_empresa')
     
+    # Obtener el período seleccionado (por defecto: total)
+    periodo = request.GET.get('periodo', 'total')
+    
+    # Calcular fechas según el período
+    ahora = timezone.now()
+    if periodo == 'diario':
+        fecha_inicio = ahora.replace(hour=0, minute=0, second=0, microsecond=0)
+        titulo_periodo = 'Hoy'
+    elif periodo == 'semanal':
+        # Inicio de la semana (lunes)
+        dias_desde_lunes = ahora.weekday()
+        fecha_inicio = (ahora - timedelta(days=dias_desde_lunes)).replace(hour=0, minute=0, second=0, microsecond=0)
+        titulo_periodo = 'Esta Semana'
+    elif periodo == 'mensual':
+        fecha_inicio = ahora.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        titulo_periodo = 'Este Mes'
+    elif periodo == 'anual':
+        fecha_inicio = ahora.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        titulo_periodo = 'Este Año'
+    else:  # total
+        fecha_inicio = None
+        titulo_periodo = 'Total'
+    
     # Estadísticas de usuarios
     total_usuarios = UserClientes.objects.count()
     usuarios_activos = UserClientes.objects.filter(is_active=True).count()
     
-    # Estadísticas de productos con cantidades en inventario
+    # Estadísticas de productos con cantidades en inventario (no cambian por período)
     total_mesas = Mesas.objects.count()
     inventario_mesas = Mesas.objects.aggregate(total=Sum('cantidad_disponible'))['total'] or 0
     
@@ -39,23 +63,33 @@ def estadisticas_view(request):
     total_productos = total_mesas + total_sillas + total_armarios + total_cajoneras + total_escritorios + total_utensilios
     total_inventario = inventario_mesas + inventario_sillas + inventario_armarios + inventario_cajoneras + inventario_escritorios + inventario_utensilios
     
-    # Estadísticas de pedidos
-    total_pedidos = Pedido.objects.count()
-    pedidos_procesando = Pedido.objects.filter(estado='procesando').count()
-    pedidos_enviado = Pedido.objects.filter(estado='enviado').count()
-    pedidos_en_transito = Pedido.objects.filter(estado='en_transito').count()
-    pedidos_entregado = Pedido.objects.filter(estado='entregado').count()
+    # Estadísticas de pedidos (filtradas por período)
+    pedidos_query = Pedido.objects.all()
+    if fecha_inicio:
+        pedidos_query = pedidos_query.filter(fecha_creacion__gte=fecha_inicio)
     
-    # Estadísticas de pagos
-    total_pagos = Pago.objects.count()
-    pagos_pendientes = Pago.objects.filter(estado='pendiente').count()
-    pagos_confirmados = Pago.objects.filter(estado='confirmado').count()
-    pagos_rechazados = Pago.objects.filter(estado='rechazado').count()
+    total_pedidos = pedidos_query.count()
+    pedidos_procesando = pedidos_query.filter(estado='procesando').count()
+    pedidos_enviado = pedidos_query.filter(estado='enviado').count()
+    pedidos_en_transito = pedidos_query.filter(estado='en_transito').count()
+    pedidos_entregado = pedidos_query.filter(estado='entregado').count()
     
-    # Ingresos totales
-    ingresos_totales = Pago.objects.filter(estado='confirmado').aggregate(total=Sum('monto_total'))['total'] or 0
+    # Estadísticas de pagos (filtradas por período)
+    pagos_query = Pago.objects.all()
+    if fecha_inicio:
+        pagos_query = pagos_query.filter(fecha_creacion__gte=fecha_inicio)
+    
+    total_pagos = pagos_query.count()
+    pagos_pendientes = pagos_query.filter(estado='pendiente').count()
+    pagos_confirmados = pagos_query.filter(estado='confirmado').count()
+    pagos_rechazados = pagos_query.filter(estado='rechazado').count()
+    
+    # Ingresos totales (filtrados por período)
+    ingresos_totales = pagos_query.filter(estado='confirmado').aggregate(total=Sum('monto_total'))['total'] or 0
     
     context = {
+        'periodo_actual': periodo,
+        'titulo_periodo': titulo_periodo,
         'total_usuarios': total_usuarios,
         'usuarios_activos': usuarios_activos,
         'total_productos': total_productos,

@@ -305,6 +305,47 @@
     border: 1px solid #e0e0e0;
 }
 
+/* Estilos para alineación de mensajes con nombre */
+.mensaje-izquierda {
+    align-items: flex-start;
+}
+
+.mensaje-derecha {
+    align-items: flex-end;
+}
+
+/* Nombre del remitente */
+.mensaje-nombre {
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    padding: 0 8px;
+}
+
+.mensaje-izquierda .mensaje-nombre {
+    color: #666;
+    text-align: left;
+}
+
+.mensaje-derecha .mensaje-nombre {
+    color: #A0662F;
+    text-align: right;
+}
+
+/* Burbujas de mensajes con colores específicos */
+.bubble-usuario {
+    background: white;
+    color: #333;
+    border-radius: 15px 15px 15px 5px;
+    border: 1px solid #e0e0e0;
+}
+
+.bubble-empresa {
+    background: linear-gradient(135deg, #C9A882, #A0662F);
+    color: white;
+    border-radius: 15px 15px 5px 15px;
+}
+
 .mensaje-bubble {
     max-width: 75%;
     padding: 12px 16px;

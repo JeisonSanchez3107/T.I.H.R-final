@@ -208,7 +208,13 @@ def api_enviar_mensaje(request, idea_id):
             if idea.empresa_asignada != empresa:
                 return JsonResponse({'success': False, 'error': 'No autorizado'}, status=403)
             remitente_tipo = 'empresa'
-            remitente_nombre = username_empresa
+            # Intentar obtener el nombre de la empresa desde EmpresaRegistrada
+            try:
+                from Empresas.models import EmpresaRegistrada
+                empresa_registrada = EmpresaRegistrada.objects.get(username=username_empresa)
+                remitente_nombre = empresa_registrada.nombre_empresa
+            except:
+                remitente_nombre = 'Tu Idea Hecha Realidad'
         
         # Crear mensaje
         mensaje = MensajeIdea.objects.create(
@@ -372,7 +378,13 @@ def api_enviar_mensaje_pago(request, pago_id):
             remitente_nombre = username_cliente
         else:
             remitente_tipo = 'empresa'
-            remitente_nombre = username_empresa
+            # Intentar obtener el nombre de la empresa desde EmpresaRegistrada
+            try:
+                from Empresas.models import EmpresaRegistrada
+                empresa_registrada = EmpresaRegistrada.objects.get(username=username_empresa)
+                remitente_nombre = empresa_registrada.nombre_empresa
+            except:
+                remitente_nombre = 'Tu Idea Hecha Realidad'
         
         # Crear mensaje
         mensaje = MensajePago.objects.create(

@@ -59,8 +59,27 @@
                 </div>
             </header>
 
+            <!-- Filtros de Período -->
+            <div class="periodo-filtros">
+                <button class="periodo-btn {% if periodo_actual == 'total' or not periodo_actual %}active{% endif %}" data-periodo="total" onclick="cambiarPeriodo('total')">
+                    <i class="fas fa-infinity"></i> Total
+                </button>
+                <button class="periodo-btn {% if periodo_actual == 'diario' %}active{% endif %}" data-periodo="diario" onclick="cambiarPeriodo('diario')">
+                    <i class="fas fa-calendar-day"></i> Hoy
+                </button>
+                <button class="periodo-btn {% if periodo_actual == 'semanal' %}active{% endif %}" data-periodo="semanal" onclick="cambiarPeriodo('semanal')">
+                    <i class="fas fa-calendar-week"></i> Esta Semana
+                </button>
+                <button class="periodo-btn {% if periodo_actual == 'mensual' %}active{% endif %}" data-periodo="mensual" onclick="cambiarPeriodo('mensual')">
+                    <i class="fas fa-calendar-alt"></i> Este Mes
+                </button>
+                <button class="periodo-btn {% if periodo_actual == 'anual' %}active{% endif %}" data-periodo="anual" onclick="cambiarPeriodo('anual')">
+                    <i class="fas fa-calendar"></i> Este Año
+                </button>
+            </div>
+
             <!-- Tarjetas de Estadísticas Principales -->
-            <div class="stats-grid">
+            <div class="stats-grid" id="statsGrid">`
                 <div class="stat-card" data-animate="fade-in">
                     <div class="stat-icon usuarios">
                         <i class="fas fa-users"></i>
@@ -467,6 +486,46 @@ function actualizarNotificacionesEmpresa() {
 document.addEventListener('DOMContentLoaded', function() {
     setInterval(actualizarNotificacionesEmpresa, 30000);
 });
+
+// Variable global para el período actual
+let periodoActual = 'total';
+
+// Función para cambiar el período de estadísticas
+function cambiarPeriodo(periodo) {
+    periodoActual = periodo;
+    
+    // Actualizar botones activos
+    document.querySelectorAll('.periodo-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-periodo="${periodo}"]`).classList.add('active');
+    
+    // Cargar estadísticas del período seleccionado
+    cargarEstadisticasPorPeriodo(periodo);
+}
+
+// Función para cargar estadísticas filtradas por período
+function cargarEstadisticasPorPeriodo(periodo) {
+    // Mostrar indicador de carga
+    const statsGrid = document.getElementById('statsGrid');
+    if (statsGrid) {
+        statsGrid.style.opacity = '0.5';
+    }
+    
+    fetch(`/estadisticas/?periodo=${periodo}`)
+        .then(response => response.text())
+        .then(html => {
+            // Recargar la página completa con el nuevo período
+            window.location.href = `/estadisticas/?periodo=${periodo}`;
+        })
+        .catch(error => {
+            console.error('Error al cargar estadísticas:', error);
+            alert('Error al cargar las estadísticas del período seleccionado');
+            if (statsGrid) {
+                statsGrid.style.opacity = '1';
+            }
+        });
+}
 
 // Función para descargar estadísticas en PDF
 function descargarEstadisticas() {

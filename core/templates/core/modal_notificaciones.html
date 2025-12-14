@@ -372,11 +372,18 @@ function mostrarMensajes(mensajes, idea) {
                 </div>
             `;
         }
-        
+
+        // Determinar si el mensaje es del usuario o de la empresa
+        let esEmpresa = msg.remitente_tipo === 'empresa';
+        let nombreRemitente = msg.remitente_nombre; // Usar siempre el nombre real del remitente
+        // Alineación: empresa a la derecha, cliente a la izquierda
+        let alineacion = esEmpresa ? 'mensaje-derecha' : 'mensaje-izquierda';
+        let bubbleColor = esEmpresa ? 'bubble-empresa' : 'bubble-usuario';
+
         return `
-            <div class="mensaje ${msg.remitente_tipo}">
-                <div class="mensaje-bubble">
-                    <div class="mensaje-autor">${msg.remitente_nombre}</div>
+            <div class="mensaje ${alineacion}">
+                <div class="mensaje-nombre">${nombreRemitente}</div>
+                <div class="mensaje-bubble ${bubbleColor}">
                     <div class="mensaje-texto">${msg.mensaje}</div>
                     <div class="mensaje-fecha">${msg.fecha_envio}</div>
                 </div>
@@ -797,4 +804,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+
 
