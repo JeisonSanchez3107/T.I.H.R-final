@@ -5,16 +5,16 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q, Sum, Case, When, IntegerField
+from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from .forms import LoginForm, AgregarForm, LoginFormEmpresa, IdeaForm
-from .models import UserClientes, Mesas, Sillas, Armarios, Cajoneras, Escritorios, Utensilios, UserEmpresa, Idea, Pago, Pedido, Comentario, CarritoTemporal, Factura
 from .logic import obtener_respuesta
 import json
 import pyotp
 import qrcode
 from io import BytesIO
 import base64
-
+from .models import UserClientes, Mesas, Sillas, Armarios, Cajoneras, Escritorios, Utensilios, Pedido, Pago, UserEmpresa, CarritoTemporal, Idea, Factura, Comentario
 # Create your views here.
 def home(request):
     # Obtener comentarios aprobados primero, luego otros estados, limitado a 10
@@ -152,7 +152,7 @@ def contact(request):
         mensaje = request.POST.get('mensaje', '').strip()
         
         # Validar campos
-        if not nombre or not email or not mensaje:
+        if not (nombre and email and mensaje):
             error_mensaje = 'Por favor, completa todos los campos.'
         else:
             try:
@@ -902,6 +902,8 @@ def mis_pedidos_view(request):
     """Vista para ver los pedidos del cliente"""
     # Verificar sesión de cliente
     if 'usernameCliente' not in request.session:
+        from django.contrib import messages
+        messages.error(request, 'Debes estar logeado para ver tus pedidos')
         return redirect('login')
     
     try:
@@ -993,6 +995,8 @@ def mis_pedidos_view(request):
         return render(request, 'core/mis_pedidos_nuevo.html', context)
         
     except UserClientes.DoesNotExist:
+        from django.contrib import messages
+        messages.error(request, 'Usuario no encontrado')
         return redirect('login')
 
 def detalle_pedido_view(request, pedido_id):

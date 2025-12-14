@@ -36,7 +36,7 @@
             {% if usuario.foto_perfil %}
                 <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F; object-fit: cover;">
             {% else %}
-                <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #A0662F; background: linear-gradient(135deg, #A0662F, #7A3E0E); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">👤</div>
+                <img src="{% static 'core/img/Perfil.png' %}" alt="Logo" width="50" height="50" style="border-radius: 50%; border: 2px solid #A0662F;">
             {% endif %}
         </a>
         <span class="username-display">{{ usuario.usernameCliente }}</span>
@@ -83,15 +83,29 @@
         <h2>Agregar una Nueva Idea a Crear</h2>
         <p>¿Tienes una idea que quieres desarrollar o compartir? Completa el siguiente formulario:</p>
         
-        <form method="post" enctype="multipart/form-data" class="idea-form">
+        <form method="post" enctype="multipart/form-data" class="idea-form" id="ideaForm">
           {% csrf_token %}
-          
           <!-- Título -->
           <div class="form-group">
             <label for="id_titulo">Título de tu idea:</label>
             {{ form.titulo }}
           </div>
-          
+
+          <!-- Categoría (selección múltiple) -->
+          <div class="form-group">
+            <label for="id_categoria">Categoría del mueble:</label>
+            {{ form.categoria }}
+          </div>
+
+          <!-- Medidas dinámicas -->
+          <div class="form-group" id="medidas-section" style="display:none; text-align:center;">
+            <label><b>Medidas personalizadas</b></label>
+            <div id="medidas-campos" style="display: flex; flex-direction: column; align-items: center;"></div>
+            <div id="medidas-recomendacion" class="medidas-recomendacion"></div>
+            <input type="hidden" name="medidas" id="id_medidas">
+            <div id="medidas-error" style="color:red; font-weight:bold; display:none;"></div>
+          </div>
+
           <!-- Descripción mejorada -->
           <div class="form-group">
             <label for="id_descripcion">Descripción detallada:</label>
@@ -103,17 +117,6 @@
             >{{ form.descripcion.value|default:'' }}</textarea>
           </div>
 
-          <!-- Dimensiones -->
-          <div class="form-group">
-            <label for="id_ancho">Ancho (cm): <span style="color: red;">*</span></label>
-            {{ form.ancho }}
-          </div>
-
-          <div class="form-group">
-            <label for="id_altura">Altura (cm): <span style="color: red;">*</span></label>
-            {{ form.altura }}
-          </div>
-
           <!-- Imagen -->
           <div class="form-group">
             <label for="id_imagen">Adjuntar imagen (opcional):</label>
@@ -122,12 +125,10 @@
 
           <!-- Modelo 3D -->
           <div class="form-group">
-            <p>Si deseas subir un modelo 3D, debes dirigirte a al siguiente IA <a href="https://studio.tripo3d.ai/home?utm_source=google&utm_medium=cpc&utm_campaign=2dto3d&utm_id=23000058436&gad_source=1&gad_campaignid=23000058436&gbraid=0AAAAA_N1cpvLpfXPn1FCRoT_1sSftytZz&gclid=CjwKCAiAl-_JBhBjEiwAn3rN7S0AZj0rJ2ONN80WqMlpXgwg3tyVCd-8ZjAjpu7BljOHutILys2-VhoCQPUQAvD_BwE " style="color: #A0662F;">Tripo3D Studio</a></p>
             <label for="id_modelo_3d">Adjuntar Modelo 3D .glb (opcional):</label>
             {{ form.modelo_3d }}
             <small class="form-text">Formatos aceptados: .glb</small>
           </div>
-          
           <button type="submit" class="articulo-boton">Publicar Idea</button>
         </form>
       </section>
@@ -143,7 +144,6 @@
               <div class="contenido-articulo">
                 <h3>{{ idea.titulo }}</h3>
                 <p>{{ idea.descripcion }}</p>
-                <p><strong>Dimensiones:</strong> {{ idea.ancho }} cm (ancho) x {{ idea.altura }} cm (altura)</p>
                 <p><strong>Estado:</strong> {{ idea.get_estado_display }}</p>
                 {% if idea.empresa_asignada %}
                 <p><strong>Empresa asignada:</strong> {{ idea.empresa_asignada.usernameEmpresa }}</p>
@@ -186,7 +186,6 @@
                   <!-- Contenido de la idea -->
                   <h3>{{ idea.titulo }}</h3>
                   <p>{{ idea.descripcion }}</p>
-                  <p><strong>Dimensiones:</strong> {{ idea.ancho }} cm (ancho) x {{ idea.altura }} cm (altura)</p>
                   <p><strong>Estado:</strong> {{ idea.get_estado_display }}</p>
                   {% if idea.empresa_asignada %}
                   <p><strong>Empresa asignada:</strong> {{ idea.empresa_asignada.usernameEmpresa }}</p>
@@ -344,6 +343,118 @@
       });
     }
   }
+
+// Medidas y recomendaciones por categoría
+const CATEGORIA_MEDIDAS = {
+  mesas: {
+    campos: [
+      {nombre: 'Altura de la Superficie', campo: 'altura_superficie', unidad: 'cm', estandar: '73 - 75'},
+      {nombre: 'Profundidad de Escritorio (Min.)', campo: 'profundidad_escritorio', unidad: 'cm', estandar: '60'},
+      {nombre: 'Espacio Libre para Piernas (Altura)', campo: 'espacio_piernas', unidad: 'cm', estandar: '65 (mínimo)'},
+      {nombre: 'Ancho por Persona (Comedor)', campo: 'ancho_persona', unidad: 'cm', estandar: '60 (mínimo)'}
+    ],
+    recomendacion: 'La altura es crucial para la ergonomía; la diferencia ideal entre la mesa y el asiento de la silla es de <b>30 cm</b>.'
+  },
+  sillas: {
+    campos: [
+      {nombre: 'Altura del Asiento', campo: 'altura_asiento', unidad: 'cm', estandar: '40 - 45'},
+      {nombre: 'Profundidad del Asiento', campo: 'profundidad_asiento', unidad: 'cm', estandar: '42 - 49'},
+      {nombre: 'Ancho del Asiento (Min.)', campo: 'ancho_asiento', unidad: 'cm', estandar: '42'}
+    ],
+    recomendacion: 'La altura del asiento debe permitir que los pies toquen el suelo y las rodillas formen un ángulo de 90°. Debe haber soporte lumbar.'
+  },
+  armarios: {
+    campos: [
+      {nombre: 'Profundidad Total (Ropa Colgada)', campo: 'profundidad_total', unidad: 'cm', estandar: '55 - 60'},
+      {nombre: 'Altura Libre para Ropa Corta', campo: 'altura_ropa_corta', unidad: 'cm', estandar: '90 - 110'},
+      {nombre: 'Altura Libre para Ropa Larga', campo: 'altura_ropa_larga', unidad: 'cm', estandar: '150 - 170'},
+      {nombre: 'Altura de Estantes (Separación)', campo: 'altura_estantes', unidad: 'cm', estandar: '30 - 40'}
+    ],
+    recomendacion: 'La profundidad de 60 cm es la necesaria para que una percha cuelgue sin que la ropa choque contra la puerta.'
+  },
+  cajoneras: {
+    campos: [
+      {nombre: 'Profundidad Total', campo: 'profundidad_total', unidad: 'cm', estandar: '40 - 60'},
+      {nombre: 'Altura Frontal de Cajón Chico', campo: 'altura_cajon_chico', unidad: 'cm', estandar: '10 - 15'},
+      {nombre: 'Altura Frontal de Cajón Grande', campo: 'altura_cajon_grande', unidad: 'cm', estandar: '20 - 30'}
+    ],
+    recomendacion: 'Se requiere una buena calidad de <b>correderas</b> que soporten la carga y permitan la extracción completa del cajón.'
+  },
+  escritorios: {
+    campos: [
+      {nombre: 'Altura de la Superficie', campo: 'altura_superficie', unidad: 'cm', estandar: '70 - 75'},
+      {nombre: 'Profundidad', campo: 'profundidad', unidad: 'cm', estandar: '60 - 80'},
+      {nombre: 'Ancho (Mínimo)', campo: 'ancho', unidad: 'cm', estandar: '100 - 120'}
+    ],
+    recomendacion: 'Debe proporcionar suficiente profundidad para mantener la pantalla a una distancia cómoda y tener espacio para apoyar los antebrazos.'
+  },
+  utensilios: {
+    campos: [],
+    recomendacion: ''
+  }
+};
+
+const categoriaSelect = document.getElementById('id_categoria');
+const medidasSection = document.getElementById('medidas-section');
+const medidasCampos = document.getElementById('medidas-campos');
+const medidasRecomendacion = document.getElementById('medidas-recomendacion');
+const medidasInput = document.getElementById('id_medidas');
+const medidasError = document.getElementById('medidas-error');
+
+function renderMedidasCampos(categoria) {
+  medidasCampos.innerHTML = '';
+  medidasError.style.display = 'none';
+  if (!categoria || !CATEGORIA_MEDIDAS[categoria] || CATEGORIA_MEDIDAS[categoria].campos.length === 0) {
+    medidasSection.style.display = 'none';
+    medidasInput.value = '';
+    medidasRecomendacion.innerHTML = '';
+    return;
+  }
+  medidasSection.style.display = 'block';
+  CATEGORIA_MEDIDAS[categoria].campos.forEach(function(campo) {
+    const div = document.createElement('div');
+    div.className = 'medida-campo';
+    div.style.display = 'flex';
+    div.style.flexDirection = 'column';
+    div.style.alignItems = 'center';
+    div.style.marginBottom = '12px';
+    div.innerHTML = `<label style='margin-bottom:4px;'><b>${campo.nombre}</b> <span style='color:#888;'>(Estandar: ${campo.estandar} ${campo.unidad})</span></label><input type='number' min='0' step='any' class='input-medida' name='${campo.campo}' placeholder='Tu medida en ${campo.unidad}' required style='margin-bottom:8px; text-align:center; width: 220px;'> <span>${campo.unidad}</span>`;
+    medidasCampos.appendChild(div);
+  });
+  medidasRecomendacion.innerHTML = `<div class='recomendacion-box'><b>Recomendación:</b> ${CATEGORIA_MEDIDAS[categoria].recomendacion}</div>`;
+}
+
+categoriaSelect.addEventListener('change', function() {
+  renderMedidasCampos(this.value);
+});
+
+// Validación antes de enviar
+const ideaForm = document.getElementById('ideaForm');
+ideaForm.addEventListener('submit', function(e) {
+  const categoria = categoriaSelect.value;
+  if (!categoria || !CATEGORIA_MEDIDAS[categoria]) return;
+  const campos = CATEGORIA_MEDIDAS[categoria].campos;
+  let medidas = {};
+  let incompletos = [];
+  campos.forEach(function(campo) {
+    const input = ideaForm.querySelector(`[name='${campo.campo}']`);
+    if (!input || !input.value) {
+      incompletos.push(campo.nombre);
+    } else {
+      medidas[campo.campo] = input.value;
+    }
+  });
+  if (incompletos.length > 0) {
+    e.preventDefault();
+    medidasError.innerText = 'Termina de adjuntar las medidas necesarias para poder publicar tu idea.';
+    medidasError.style.display = 'block';
+    return false;
+  }
+  medidasInput.value = JSON.stringify(medidas);
+  medidasError.style.display = 'none';
+});
+// Render inicial si hay valor
+if (categoriaSelect.value) renderMedidasCampos(categoriaSelect.value);
 </script>
 
 <script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>

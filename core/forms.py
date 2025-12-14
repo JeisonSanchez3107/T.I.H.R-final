@@ -3,6 +3,36 @@ from .models import UserClientes, Idea, Comentario, Pago
 import re
 import random
 
+CATEGORIA_MEDIDAS = {
+    'mesas': [
+        {'nombre': 'Altura de la Superficie', 'campo': 'altura_superficie', 'unidad': 'cm', 'estandar': '73 - 75'},
+        {'nombre': 'Profundidad de Escritorio (Min.)', 'campo': 'profundidad_escritorio', 'unidad': 'cm', 'estandar': '60'},
+        {'nombre': 'Espacio Libre para Piernas (Altura)', 'campo': 'espacio_piernas', 'unidad': 'cm', 'estandar': '65 (mínimo)'},
+        {'nombre': 'Ancho por Persona (Comedor)', 'campo': 'ancho_persona', 'unidad': 'cm', 'estandar': '60 (mínimo)'},
+    ],
+    'sillas': [
+        {'nombre': 'Altura del Asiento', 'campo': 'altura_asiento', 'unidad': 'cm', 'estandar': '40 - 45'},
+        {'nombre': 'Profundidad del Asiento', 'campo': 'profundidad_asiento', 'unidad': 'cm', 'estandar': '42 - 49'},
+        {'nombre': 'Ancho del Asiento (Min.)', 'campo': 'ancho_asiento', 'unidad': 'cm', 'estandar': '42'},
+    ],
+    'armarios': [
+        {'nombre': 'Profundidad Total (Ropa Colgada)', 'campo': 'profundidad_total', 'unidad': 'cm', 'estandar': '55 - 60'},
+        {'nombre': 'Altura Libre para Ropa Corta', 'campo': 'altura_ropa_corta', 'unidad': 'cm', 'estandar': '90 - 110'},
+        {'nombre': 'Altura Libre para Ropa Larga', 'campo': 'altura_ropa_larga', 'unidad': 'cm', 'estandar': '150 - 170'},
+        {'nombre': 'Altura de Estantes (Separación)', 'campo': 'altura_estantes', 'unidad': 'cm', 'estandar': '30 - 40'},
+    ],
+    'cajoneras': [
+        {'nombre': 'Profundidad Total', 'campo': 'profundidad_total', 'unidad': 'cm', 'estandar': '40 - 60'},
+        {'nombre': 'Altura Frontal de Cajón Chico', 'campo': 'altura_cajon_chico', 'unidad': 'cm', 'estandar': '10 - 15'},
+        {'nombre': 'Altura Frontal de Cajón Grande', 'campo': 'altura_cajon_grande', 'unidad': 'cm', 'estandar': '20 - 30'},
+    ],
+    'escritorios': [
+        {'nombre': 'Altura de la Superficie', 'campo': 'altura_superficie', 'unidad': 'cm', 'estandar': '70 - 75'},
+        {'nombre': 'Profundidad', 'campo': 'profundidad', 'unidad': 'cm', 'estandar': '60 - 80'},
+        {'nombre': 'Ancho (Mínimo)', 'campo': 'ancho', 'unidad': 'cm', 'estandar': '100 - 120'},
+    ],
+    'utensilios': [], # Puedes agregar medidas si lo deseas
+}
 class LoginForm(forms.Form):
     usernameCliente = forms.CharField(max_length=100)
     passwordCliente = forms.CharField(max_length=100, widget=forms.PasswordInput)
@@ -101,44 +131,21 @@ class LoginFormEmpresa(forms.Form):
 class IdeaForm(forms.ModelForm):
     class Meta:
         model = Idea
-        fields = ['titulo', 'descripcion', 'ancho', 'altura', 'imagen', 'modelo_3d']
+        fields = ['titulo', 'descripcion', 'imagen', 'modelo_3d', 'categoria']
         widgets = {
             'descripcion': forms.Textarea(attrs={'rows': 5}),
-            'ancho': forms.NumberInput(attrs={
-                'placeholder': 'Ej: 50',
-                'step': '0.01',
-                'min': '0.01',
-                'required': True
-            }),
-            'altura': forms.NumberInput(attrs={
-                'placeholder': 'Ej: 100',
-                'step': '0.01',
-                'min': '0.01',
-                'required': True
+            'categoria': forms.Select(attrs={
+                'class': 'form-control'
             }),
         }
         labels = {
             'modelo_3d': 'Modelo 3D (.glb)',
-            'ancho': 'Ancho (cm)',
-            'altura': 'Altura (cm)',
+            'categoria': 'Categoría del Producto',
         }
         help_texts = {
             'modelo_3d': 'Sube un archivo de modelo 3D en formato .glb',
-            'ancho': 'Ancho en centímetros',
-            'altura': 'Altura en centímetros',
+            'categoria': 'Selecciona la categoría que mejor se ajuste a tu idea',
         }
-    
-    def clean_ancho(self):
-        ancho = self.cleaned_data.get('ancho')
-        if ancho is None or ancho <= 0:
-            raise forms.ValidationError('El ancho debe ser mayor a 0')
-        return ancho
-    
-    def clean_altura(self):
-        altura = self.cleaned_data.get('altura')
-        if altura is None or altura <= 0:
-            raise forms.ValidationError('La altura debe ser mayor a 0')
-        return altura
 
 class IdeaUpdateForm(forms.ModelForm):
     class Meta:

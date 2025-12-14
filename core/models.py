@@ -117,14 +117,20 @@ class Idea(models.Model):
         ('finalizada', 'Finalizada'),
         ('rechazada', 'Rechazada'),
     ]
+    CATEGORIA_CHOICES = [
+        ('mesas', 'Mesas'),
+        ('sillas', 'Sillas'),
+        ('cajoneras', 'Cajoneras'),
+        ('armarios', 'Armarios'),
+        ('utensilios', 'Utensilios'),
+        ('escritorios', 'Escritorios'),
+    ]
     
     titulo = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=250, default='', blank=True, null=True)
     autor = models.CharField(max_length=100)
     imagen = models.ImageField(upload_to='uploads/ideas/', blank=True, null=True)
     modelo_3d = models.FileField(upload_to='uploads/ideas/modelos3d/', blank=True, null=True)
-    ancho = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text='Ancho en centímetros')
-    altura = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text='Altura en centímetros')
     estado = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendiente')
     empresa_asignada = models.ForeignKey(UserEmpresa, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
@@ -136,6 +142,9 @@ class Idea(models.Model):
     fecha_permiso = models.DateTimeField(null=True, blank=True)
     publicada_como_producto = models.BooleanField(default=False)
     fecha_publicacion = models.DateTimeField(null=True, blank=True)
+    
+    categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default='mesas')
+    medidas = models.JSONField(blank=True, null=True, help_text='Medidas personalizadas del producto')
     
     def __str__(self):
         return self.titulo
