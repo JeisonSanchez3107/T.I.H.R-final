@@ -22,8 +22,15 @@
     <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
     <link rel="stylesheet" href="{% static 'Empresas/css/pedidos.css' %}">
     <link rel="stylesheet" href="{% static 'Empresas/css/pagos.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/dashboard_responsive.css' %}">
 </head>
 <body>
+    <!-- Overlay para cerrar sidebar en móvil -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Botón toggle del sidebar -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
 <div class="dashboard-container">
     <!-- BARRA LATERAL -->
     <aside>
@@ -251,5 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script src="{% static 'Empresas/js/sidebar-toggle.js' %}"></script>
 </body>
 </html>

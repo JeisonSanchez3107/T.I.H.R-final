@@ -21,10 +21,17 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
     <link rel="stylesheet" href="{% static 'Empresas/css/pagos.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/dashboard_responsive.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
 <body>
+    <!-- Overlay para cerrar sidebar en móvil -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Botón toggle del sidebar -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
     <div class="dashboard-container">
         <aside>
             <h2>Dashboard de Empresa</h2>
@@ -529,6 +536,8 @@ function descargarFacturaPDFEmpresa(pagoId) {
     document.body.removeChild(link);
 }
 </script>
+
+<script src="{% static 'Empresas/js/sidebar-toggle.js' %}"></script>
 
 </body>
 </html>

@@ -21,8 +21,15 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'Empresas/css/styles3.css' %}">
     <link rel="stylesheet" href="{% static 'Empresas/css/GestiProductos.css' %}">
+    <link rel="stylesheet" href="{% static 'Empresas/css/dashboard_responsive.css' %}">
 </head>
 <body>
+    <!-- Overlay para cerrar sidebar en móvil -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Botón toggle del sidebar -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
     <div class="dashboard-container">
         <aside>
             <h2>Dashboard de Empresa</h2>
@@ -408,6 +415,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(actualizarNotificacionesEmpresa, 30000);
 });
 </script>
+
+<script src="{% static 'Empresas/js/sidebar-toggle.js' %}"></script>
 
 </body>
 </html>                                                                                                                                                                                                                                                                                                                                                                                              
