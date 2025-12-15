@@ -146,6 +146,7 @@ class Idea(models.Model):
     
     categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default='mesas')
     medidas = models.JSONField(blank=True, null=True, help_text='Medidas personalizadas del producto')
+    veces_editada = models.IntegerField(default=0, help_text='Número de veces que se ha editado la idea')
     
     def __str__(self):
         return self.titulo

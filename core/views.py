@@ -292,6 +292,7 @@ def registro(request):
             request.session['registro_temp'] = {
                 'usernameCliente': form.cleaned_data['usernameCliente'],
                 'email': form.cleaned_data['email'],
+                'telefono': form.cleaned_data['telefono'],
                 'passwordCliente': form.cleaned_data['passwordCliente'],
                 'codigo_verificacion': codigo_verificacion
             }
@@ -358,6 +359,7 @@ def verificar_codigo(request):
             nuevo_usuario = UserClientes(
                 usernameCliente=registro_temp['usernameCliente'],
                 email=registro_temp['email'],
+                telefono=registro_temp['telefono'],
                 passwordCliente=registro_temp['passwordCliente']
             )
             nuevo_usuario.save()
@@ -455,7 +457,6 @@ def ideas_view(request):
             medidas_json = request.POST.get('medidas', '')
             if medidas_json:
                 try:
-                    import json
                     idea.medidas = json.loads(medidas_json)
                 except:
                     idea.medidas = None
@@ -471,12 +472,24 @@ def ideas_view(request):
     # Filtrar las ideas del usuario actual
     mis_ideas = ideas.filter(autor=usernameCliente) if usernameCliente else []
     
-    # Agregar información del usuario a cada idea
+    # Agregar información del usuario a cada idea y serializar medidas
     for idea in ideas:
         try:
             idea.usuario = UserClientes.objects.get(usernameCliente=idea.autor)
         except UserClientes.DoesNotExist:
             idea.usuario = None
+        # Serializar medidas a JSON string para el template
+        if idea.medidas:
+            idea.medidas_json = json.dumps(idea.medidas)
+        else:
+            idea.medidas_json = 'null'
+    
+    # Serializar medidas para mis_ideas también
+    for idea in mis_ideas:
+        if idea.medidas:
+            idea.medidas_json = json.dumps(idea.medidas)
+        else:
+            idea.medidas_json = 'null'
     
     return render(request, 'core/idea.html', {
         'form': form,
@@ -484,6 +497,85 @@ def ideas_view(request):
         'mis_ideas': mis_ideas,
         'usuario': usuario,
     })
+
+@require_http_methods(["POST"])
+def editar_idea_view(request, idea_id):
+    """
+    Vista para editar una idea existente (solo si está pendiente y no ha superado el límite de ediciones).
+    """
+    usernameCliente = request.session.get('usernameCliente')
+    
+    if not usernameCliente:
+        return JsonResponse({'success': False, 'error': 'No autenticado'}, status=401)
+    
+    try:
+        # Verificar que la idea existe y pertenece al usuario
+        idea = Idea.objects.get(id=idea_id, autor=usernameCliente)
+        
+        # Solo permitir editar si está pendiente
+        if idea.estado != 'pendiente':
+            return JsonResponse({
+                'success': False, 
+                'error': 'Solo puedes editar ideas que están en estado pendiente'
+            }, status=400)
+        
+        # Verificar límite de ediciones
+        if idea.veces_editada >= 3:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Has alcanzado el límite de 3 ediciones para esta idea'
+            }, status=400)
+        
+        # Actualizar los campos
+        titulo = request.POST.get('titulo', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        categoria = request.POST.get('categoria', '').strip()
+        
+        if not titulo or not descripcion or not categoria:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Todos los campos son requeridos'
+            }, status=400)
+        
+        idea.titulo = titulo
+        idea.descripcion = descripcion
+        idea.categoria = categoria
+        
+        # Manejar imagen si se subió una nueva
+        if 'imagen' in request.FILES:
+            idea.imagen = request.FILES['imagen']
+        
+        # Manejar medidas JSON
+        medidas_json = request.POST.get('medidas', '')
+        if medidas_json:
+            try:
+                idea.medidas = json.loads(medidas_json)
+            except:
+                pass
+        
+        # Incrementar contador de ediciones
+        idea.veces_editada += 1
+        idea.save()
+        
+        ediciones_restantes = 3 - idea.veces_editada
+        
+        return JsonResponse({
+            'success': True,
+            'mensaje': f'Idea actualizada exitosamente. Te quedan {ediciones_restantes} ediciones disponibles',
+            'veces_editada': idea.veces_editada,
+            'ediciones_restantes': ediciones_restantes
+        })
+        
+    except Idea.DoesNotExist:
+        return JsonResponse({
+            'success': False, 
+            'error': 'Idea no encontrada o no tienes permiso para editarla'
+        }, status=404)
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        }, status=500)
 
 def empresa_ideas_view(request):
     """

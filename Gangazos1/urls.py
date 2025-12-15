@@ -39,6 +39,7 @@ urlpatterns = [
     path('MetodosPago', views.MetodosPago, name='MetodosPago'),
     path('procesar-pago/', views.procesar_pago, name='procesar_pago'),
     path('idea/', views.ideas_view, name='idea'),
+    path('editar-idea/<int:idea_id>/', views.editar_idea_view, name='editar_idea'),
     path('perfilUsuario/', views.perfilUsuario_view, name='perfilUsuario'),
     # URLs para autenticación de dos factores (2FA)
     path('activar-2fa/', views.activar_2fa_view, name='activar_2fa'),

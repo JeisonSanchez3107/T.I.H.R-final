@@ -1,3 +1,5 @@
+{% load static %}
+{% load json_filters %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -151,6 +153,21 @@
                 
                 <!-- Los mensajes y permisos ahora se manejan en el modal de notificaciones -->
                 
+                <!-- Botón de editar solo si está pendiente -->
+                {% if idea.estado == 'pendiente' %}
+                <button type="button" 
+                        class="articulo-boton btn-editar-idea" 
+                        data-id="{{ idea.id }}" 
+                        data-titulo="{{ idea.titulo|escapejs }}" 
+                        data-descripcion="{{ idea.descripcion|escapejs }}" 
+                        data-categoria="{{ idea.categoria }}" 
+                        data-medidas="{{ idea.medidas_json|escapejs }}" 
+                        data-veces="{{ idea.veces_editada|default:0 }}" 
+                        data-imagen="{{ idea.imagen.url|default:'' }}" 
+                        style="background-color: #3b82f6; margin-top: 10px;">
+                  Editar Idea {% if idea.veces_editada > 0 %}({{ idea.veces_editada }}/3){% endif %}
+                </button>
+                {% endif %}
               </div>
             </div>
           {% endfor %}
@@ -455,6 +472,335 @@ ideaForm.addEventListener('submit', function(e) {
 });
 // Render inicial si hay valor
 if (categoriaSelect.value) renderMedidasCampos(categoriaSelect.value);
+
+// Event listener para los botones de editar
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM Cargado - Buscando botones de editar');
+  const botonesEditar = document.querySelectorAll('.btn-editar-idea');
+  console.log('Botones encontrados:', botonesEditar.length);
+  
+  botonesEditar.forEach(function(boton) {
+    boton.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('Botón clickeado');
+      
+      const ideaId = this.getAttribute('data-id');
+      const titulo = this.getAttribute('data-titulo');
+      const descripcion = this.getAttribute('data-descripcion');
+      const categoria = this.getAttribute('data-categoria');
+      const medidasStr = this.getAttribute('data-medidas');
+      const vecesEditada = parseInt(this.getAttribute('data-veces') || '0');
+      const imagenUrl = this.getAttribute('data-imagen');
+      
+      console.log('Datos:', {ideaId, titulo, categoria, vecesEditada});
+      
+      let medidas = null;
+      if (medidasStr && medidasStr !== 'null' && medidasStr !== 'None') {
+        try {
+          medidas = JSON.parse(medidasStr);
+        } catch(err) {
+          console.error('Error parseando medidas:', err);
+        }
+      }
+      
+      abrirModalEditar(ideaId, titulo, descripcion, categoria, medidas, vecesEditada, imagenUrl);
+    });
+  });
+});
+</script>
+
+<!-- Modal para editar idea -->
+<div id="modalEditarIdea" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width: 700px; background: white; border-radius: 12px; padding: 30px; margin: 50px auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;">
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="color: #A0662F; margin: 0;">Editar Idea <span id="editContadorEdiciones" style="font-size: 14px; color: #666;"></span></h2>
+      <button class="close" onclick="cerrarModalEditar()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formEditarIdea" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" id="editIdeaId" name="idea_id">
+        <input type="hidden" id="editVecesEditada" name="veces_editada">
+        <input type="hidden" name="medidas" id="edit_id_medidas">
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="editTitulo" style="display: block; margin-bottom: 8px; font-weight: 600;">Título:</label>
+          <input type="text" id="editTitulo" name="titulo" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="editDescripcion" style="display: block; margin-bottom: 8px; font-weight: 600;">Descripción:</label>
+          <textarea id="editDescripcion" name="descripcion" required rows="5" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical;"></textarea>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="editCategoria" style="display: block; margin-bottom: 8px; font-weight: 600;">Categoría:</label>
+          <select id="editCategoria" name="categoria" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+            <option value="">Seleccionar categoría</option>
+            <option value="mesas">Mesas</option>
+            <option value="sillas">Sillas</option>
+            <option value="armarios">Armarios</option>
+            <option value="cajoneras">Cajoneras</option>
+            <option value="escritorios">Escritorios</option>
+            <option value="utensilios">Utensilios</option>
+          </select>
+        </div>
+        
+        <!-- Medidas dinámicas para edición -->
+        <div class="form-group" id="edit-medidas-section" style="display:none; margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600;">Medidas personalizadas:</label>
+          <div id="edit-medidas-campos" style="background: #f9f9f9; padding: 15px; border-radius: 6px;"></div>
+          <div id="edit-medidas-recomendacion" style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px;"></div>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="editImagen" style="display: block; margin-bottom: 8px; font-weight: 600;">Cambiar imagen (opcional):</label>
+          <div id="imagenActualContainer" style="margin-bottom: 10px; display: none;">
+            <p style="font-size: 12px; color: #666; margin-bottom: 5px;">Imagen actual:</p>
+            <img id="imagenActualPreview" src="" alt="Imagen actual" style="max-width: 200px; max-height: 150px; border-radius: 6px; border: 2px solid #ddd;">
+          </div>
+          <input type="file" id="editImagen" name="imagen" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+          <small style="color: #666; font-size: 12px;">Sube una nueva imagen si deseas cambiar la actual</small>
+        </div>
+        
+        <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+          <button type="button" class="btn-modal-cancelar" onclick="cerrarModalEditar()" style="padding: 10px 24px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-modal-guardar" style="padding: 10px 24px; background: #A0662F; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.btn-modal-cancelar:hover {
+  background: #5a6268 !important;
+}
+
+.btn-modal-guardar:hover {
+  background: #8a5625 !important;
+}
+</style>
+
+<script>
+function abrirModalEditar(ideaId, titulo, descripcion, categoria, medidas, vecesEditada, imagenUrl) {
+  console.log('abrirModalEditar llamada con:', {ideaId, titulo, categoria, vecesEditada, medidas});
+  console.log('Tipo de medidas:', typeof medidas, 'Valor:', medidas);
+  
+  // Validar límite de ediciones
+  if (vecesEditada >= 3) {
+    alert('Has alcanzado el límite de 3 ediciones para esta idea.');
+    return;
+  }
+  
+  document.getElementById('editIdeaId').value = ideaId;
+  document.getElementById('editTitulo').value = titulo;
+  document.getElementById('editDescripcion').value = descripcion;
+  document.getElementById('editCategoria').value = categoria;
+  document.getElementById('editVecesEditada').value = vecesEditada;
+  
+  // Guardar las medidas en un atributo data para usarlas al cambiar de categoría
+  const medidasStr = typeof medidas === 'object' ? JSON.stringify(medidas) : medidas;
+  document.getElementById('editIdeaId').dataset.medidas = medidasStr;
+  console.log('Medidas guardadas en dataset:', medidasStr);
+  
+  // Mostrar contador de ediciones
+  const edicionesRestantes = 3 - vecesEditada;
+  document.getElementById('editContadorEdiciones').textContent = `(${vecesEditada}/3 ediciones - ${edicionesRestantes} restantes)`;
+  
+  // Mostrar imagen actual si existe
+  const imagenContainer = document.getElementById('imagenActualContainer');
+  const imagenPreview = document.getElementById('imagenActualPreview');
+  if (imagenUrl && imagenUrl !== '') {
+    imagenPreview.src = imagenUrl;
+    imagenContainer.style.display = 'block';
+  } else {
+    imagenContainer.style.display = 'none';
+  }
+  
+  // Renderizar medidas para la categoría CON LOS VALORES ACTUALES
+  console.log('Llamando a renderEditMedidasCampos con medidas:', medidas);
+  renderEditMedidasCampos(categoria, medidas);
+  
+  // Mostrar el modal
+  document.getElementById('modalEditarIdea').style.display = 'block';
+  console.log('Modal abierto');
+}
+
+function cerrarModalEditar() {
+  document.getElementById('modalEditarIdea').style.display = 'none';
+  document.getElementById('edit-medidas-campos').innerHTML = '';
+  document.getElementById('edit-medidas-section').style.display = 'none';
+}
+
+// Renderizar campos de medidas en el modal de edición
+function renderEditMedidasCampos(categoria, medidasActuales) {
+  const medidasCampos = document.getElementById('edit-medidas-campos');
+  const medidasSection = document.getElementById('edit-medidas-section');
+  const medidasRecomendacion = document.getElementById('edit-medidas-recomendacion');
+  
+  console.log('renderEditMedidasCampos - categoria:', categoria, 'medidas:', medidasActuales);
+  
+  medidasCampos.innerHTML = '';
+  
+  if (!categoria || !CATEGORIA_MEDIDAS[categoria] || CATEGORIA_MEDIDAS[categoria].campos.length === 0) {
+    medidasSection.style.display = 'none';
+    return;
+  }
+  
+  medidasSection.style.display = 'block';
+  
+  // Parsear medidasActuales si es string
+  let medidas = {};
+  if (medidasActuales) {
+    if (typeof medidasActuales === 'string') {
+      try {
+        medidas = JSON.parse(medidasActuales);
+      } catch(e) {
+        console.error('Error parseando medidas:', e);
+      }
+    } else if (typeof medidasActuales === 'object') {
+      medidas = medidasActuales;
+    }
+  }
+  console.log('Medidas parseadas:', medidas);
+  
+  CATEGORIA_MEDIDAS[categoria].campos.forEach(function(campo) {
+    const valorActual = medidas[campo.campo] || '';
+    console.log('Campo:', campo.campo, 'Valor actual:', valorActual);
+    
+    const div = document.createElement('div');
+    div.className = 'medida-campo';
+    div.style.marginBottom = '12px';
+    
+    const label = document.createElement('label');
+    label.style.display = 'block';
+    label.style.marginBottom = '4px';
+    label.style.fontWeight = '600';
+    label.innerHTML = `${campo.nombre} <span style='color:#888; font-weight: normal;'>(Estándar: ${campo.estandar} ${campo.unidad})</span>`;
+    
+    const inputContainer = document.createElement('div');
+    inputContainer.style.display = 'flex';
+    inputContainer.style.alignItems = 'center';
+    inputContainer.style.gap = '8px';
+    
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = '0';
+    input.step = 'any';
+    input.className = 'edit-input-medida';
+    input.name = campo.campo;
+    input.value = valorActual;
+    input.placeholder = `Tu medida en ${campo.unidad}`;
+    input.required = true;
+    input.style.flex = '1';
+    input.style.padding = '8px';
+    input.style.border = '1px solid #ddd';
+    input.style.borderRadius = '4px';
+    input.style.fontSize = '14px';
+    
+    const unidad = document.createElement('span');
+    unidad.style.color = '#666';
+    unidad.textContent = campo.unidad;
+    
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(unidad);
+    
+    div.appendChild(label);
+    div.appendChild(inputContainer);
+    medidasCampos.appendChild(div);
+  });
+  
+  medidasRecomendacion.innerHTML = `<strong>💡 Recomendación:</strong> ${CATEGORIA_MEDIDAS[categoria].recomendacion}`;
+  console.log('Medidas renderizadas correctamente');
+}
+
+// Actualizar medidas cuando cambie la categoría en el modal de edición
+document.getElementById('editCategoria').addEventListener('change', function() {
+  const medidasActualesGuardadas = document.getElementById('editIdeaId').dataset.medidas;
+  let medidas = null;
+  if (medidasActualesGuardadas && medidasActualesGuardadas !== 'null') {
+    try {
+      medidas = JSON.parse(medidasActualesGuardadas);
+    } catch(e) {
+      console.error('Error al parsear medidas guardadas:', e);
+    }
+  }
+  renderEditMedidasCampos(this.value, medidas);
+});
+
+// Cerrar modal al hacer clic fuera
+window.onclick = function(event) {
+  const modal = document.getElementById('modalEditarIdea');
+  if (event.target === modal) {
+    cerrarModalEditar();
+  }
+}
+
+// Manejar envío del formulario de edición
+document.getElementById('formEditarIdea').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const categoria = document.getElementById('editCategoria').value;
+  const formData = new FormData(this);
+  const ideaId = document.getElementById('editIdeaId').value;
+  
+  // Recopilar medidas si existen
+  if (CATEGORIA_MEDIDAS[categoria] && CATEGORIA_MEDIDAS[categoria].campos.length > 0) {
+    let medidas = {};
+    let incompletos = [];
+    
+    CATEGORIA_MEDIDAS[categoria].campos.forEach(function(campo) {
+      const input = document.querySelector(`.edit-input-medida[name='${campo.campo}']`);
+      if (!input || !input.value) {
+        incompletos.push(campo.nombre);
+      } else {
+        medidas[campo.campo] = input.value;
+      }
+    });
+    
+    if (incompletos.length > 0) {
+      alert('Por favor completa todas las medidas: ' + incompletos.join(', '));
+      return false;
+    }
+    
+    formData.set('medidas', JSON.stringify(medidas));
+  }
+  
+  fetch(`/editar-idea/${ideaId}/`, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert(data.mensaje);
+      location.reload();
+    } else {
+      alert('Error: ' + (data.error || 'No se pudo actualizar la idea'));
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error al actualizar la idea');
+  });
+});
 </script>
 
 <script src="{% static 'core/javascript/sidebar-toggle.js' %}"></script>

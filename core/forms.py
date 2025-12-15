@@ -39,6 +39,12 @@ class LoginForm(forms.Form):
 
 class AgregarForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Correo electrónico')
+    telefono = forms.CharField(
+        max_length=20,
+        required=True,
+        label='Número de celular',
+        help_text='Ingresa tu número de celular (7-15 dígitos)'
+    )
     passwordCliente = forms.CharField(
         min_length=8,
         widget=forms.PasswordInput,
@@ -48,7 +54,7 @@ class AgregarForm(forms.ModelForm):
     
     class Meta:
         model = UserClientes
-        fields = ['usernameCliente', 'email', 'passwordCliente']
+        fields = ['usernameCliente', 'email', 'telefono', 'passwordCliente']
     
     def clean_usernameCliente(self):
         username = self.cleaned_data.get('usernameCliente')
@@ -78,6 +84,22 @@ class AgregarForm(forms.ModelForm):
         
         return username
     
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
+        
+        # Remover espacios, guiones y paréntesis
+        telefono_limpio = re.sub(r'[\s\-\(\)\+]', '', telefono)
+        
+        # Validar que solo contenga dígitos
+        if not telefono_limpio.isdigit():
+            raise forms.ValidationError('El número de teléfono solo debe contener dígitos')
+        
+        # Validar longitud (7-15 dígitos)
+        if len(telefono_limpio) < 7 or len(telefono_limpio) > 15:
+            raise forms.ValidationError('El número de teléfono debe tener entre 7 y 15 dígitos')
+        
+        return telefono_limpio
+    
     def clean_email(self):
         email = self.cleaned_data.get('email')
         
@@ -85,33 +107,41 @@ class AgregarForm(forms.ModelForm):
         if not email.endswith('@gmail.com'):
             raise forms.ValidationError('Solo se permiten correos de Gmail (@gmail.com)')
         
+        # Validación del formato del email
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@gmail\.com$'
+        if not re.match(email_pattern, email):
+            raise forms.ValidationError('Formato de correo inválido.')
+        
+        # Validar que la parte local del email (antes del @) no esté vacía
+        local_part = email.split('@')[0]
+        if not local_part or len(local_part) < 1:
+            raise forms.ValidationError('El correo electrónico no es válido.')
+        
+        # Validar que no tenga puntos consecutivos
+        if '..' in email:
+            raise forms.ValidationError('El correo no puede contener puntos consecutivos.')
+        
+        # Validar que no empiece o termine con punto (antes del @)
+        if local_part.startswith('.') or local_part.endswith('.'):
+            raise forms.ValidationError('El correo no puede empezar o terminar con un punto.')
+        
         # Verificar si el email ya existe en la base de datos
         if UserClientes.objects.filter(email=email).exists():
             raise forms.ValidationError('Correo ya utilizado. Por favor, utiliza otro correo electrónico.')
         
-        # Verificar si el email existe en Gmail usando DNS
+        # Intentar verificar el dominio usando DNS (opcional, no bloqueante)
         try:
-            from dns import resolver # type: ignore
-            import re
-            
-            # Extraer el dominio
+            from dns import resolver
             domain = email.split('@')[1]
-            
-            # Verificar registros MX del dominio
-            try:
-                mx_records = resolver.resolve(domain, 'MX')
-                if not mx_records:
-                    raise forms.ValidationError('El dominio del correo no es válido.')
-            except:
-                raise forms.ValidationError('No se pudo verificar el correo. Asegúrate de que sea un correo de Gmail válido.')
-            
-            # Validación adicional del formato del email
-            email_pattern = r'^[a-zA-Z0-9._%+-]+@gmail\.com$'
-            if not re.match(email_pattern, email):
-                raise forms.ValidationError('Formato de correo inválido.')
-                
+            mx_records = resolver.resolve(domain, 'MX')
+            # Si llegamos aquí, el dominio tiene registros MX válidos
         except ImportError:
-            # Si no está disponible la librería DNS, solo hacer validación básica
+            # La librería dns no está instalada, continuar sin verificación DNS
+            pass
+        except Exception:
+            # Error en la verificación DNS (puede ser red, firewall, etc.)
+            # No lanzar error, permitir que el registro continúe
+            # La verificación real se hará cuando se envíe el código por correo
             pass
         
         return email

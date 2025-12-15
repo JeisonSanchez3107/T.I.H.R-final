@@ -1330,7 +1330,8 @@ def obtener_ideas_usuario_view(request, usuario_id):
             'success': True,
             'usuario': {
                 'id': usuario.id,
-                'username': usuario.usernameCliente
+                'username': usuario.usernameCliente,
+                'telefono': usuario.telefono if usuario.telefono else None
             },
             'ideas': ideas_data
         })

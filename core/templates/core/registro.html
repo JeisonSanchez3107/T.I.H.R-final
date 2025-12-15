@@ -72,6 +72,16 @@
             </div>
 
             <div class="input-group">
+                <input type="tel"
+                       name="telefono"
+                       placeholder="Número de celular"
+                       required
+                       pattern="[0-9]{7,15}"
+                       title="Ingresa un número de teléfono válido (7-15 dígitos)"
+                       value="{{ request.POST.telefono|default:'' }}">
+            </div>
+
+            <div class="input-group">
                 <input type="password"
                        name="passwordCliente"
                        placeholder="Contraseña (mínimo 8 caracteres)"

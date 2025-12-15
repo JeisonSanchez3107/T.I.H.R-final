@@ -207,6 +207,7 @@
     <script>
         let ideaIdParaRechazar = null;
         let usuarioIdActual = null;
+        let telefonoUsuarioActual = null;
 
         // Ver ideas de un usuario
         function verIdeasUsuario(usuarioId, nombreUsuario) {
@@ -217,6 +218,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // Guardar el teléfono del usuario
+                        telefonoUsuarioActual = data.usuario.telefono;
                         mostrarIdeas(data.ideas);
                         document.getElementById('modalIdeasUsuario').style.display = 'block';
                     } else {
@@ -552,13 +555,15 @@
             }
         }
 
-        // Contactar usuario (abre el sistema de notificaciones)
+        // Contactar usuario (abre WhatsApp con el número del usuario)
         function contactarUsuario(ideaId) {
-            // Verificar si existe la función abrirNotificaciones
-            if (typeof abrirNotificaciones === 'function') {
-                abrirNotificaciones();
+            if (telefonoUsuarioActual) {
+                // Limpiar el número de teléfono (remover espacios, guiones, etc.)
+                const numeroLimpio = telefonoUsuarioActual.replace(/[^0-9]/g, '');
+                // Abrir WhatsApp Web en una nueva pestaña
+                window.open(`https://wa.me/+57${numeroLimpio}`, '_blank');
             } else {
-                alert('Para contactar al usuario, usa el sistema de notificaciones en la barra superior');
+                alert('El usuario no tiene un número de teléfono registrado');
             }
         }
 
