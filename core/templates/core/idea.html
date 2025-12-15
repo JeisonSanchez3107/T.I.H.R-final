@@ -163,7 +163,7 @@
                         data-categoria="{{ idea.categoria }}" 
                         data-medidas="{{ idea.medidas_json|escapejs }}" 
                         data-veces="{{ idea.veces_editada|default:0 }}" 
-                        data-imagen="{{ idea.imagen.url|default:'' }}" 
+                        data-imagen="{% if idea.imagen %}{{ idea.imagen.url }}{% endif %}" 
                         style="background-color: #3b82f6; margin-top: 10px;">
                   Editar Idea {% if idea.veces_editada > 0 %}({{ idea.veces_editada }}/3){% endif %}
                 </button>
